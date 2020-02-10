@@ -7,6 +7,7 @@ const serverInfo = {
 
 const net = require('net');
 const readline = require('readline');
+const TINYPacket = require('./src/ParsePacket.js');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -25,32 +26,54 @@ const server = net.createServer(socket => {
     clients.push(socket);
 
     // Send welcome message
-    socket.write(`Welcome to the ${serverInfo.name} version ${serverInfo.version}!`);
-    socket.write(`There is currently ${clients.length} users connected`);
+    sendSystemMessage(socket, `Welcome to the ${serverInfo.name} version ${serverInfo.version}!`)
+    sendSystemMessage(socket, `There is currently ${clients.length} users connected`)
 
     // Handle incoming messages from clients.
+    //packet format
+    samplePacket = {
+        "type": "message",
+        "args": []
+    }
     socket.on('data', function (data) {
-        if (data.indexOf('/') == 0) {
-            // Command
-            let matches = data.toString().match(/(\w+)(.*)/);
-            let command = matches[1].toLowerCase();
-            let args = matches[2].trim();
 
-            switch (command) {
-                case "name":
-                    socket.name = args;
-                    sendSystemMessage(socket, `Changed name to ${args}`);
-                    break;
-                case "list":
-                    sendSystemMessage(socket, Array.prototype.map.call(clients, s => s.name).toString());
-                    break;
-                default:
-                    sendSystemMessage(socket, `Unknown command '${command}'`);
-                    sendSystemMessage(socket, "Current commands are: /name <name>, /list");
-            }
+        let packet = TINYPacket.Parse(data);
+        if (!packet) {
+            console.log(`Recieved invalid packet from ${socket.remoteAddress}`);
+            console.log(data);
+            //socket.end();
+            return;
+        }
 
-        } else {
-            broadcast(data, socket);
+        switch (packet.type) {
+            case undefined:
+                console.log("Missing packet type");
+                socket.end();
+                return;
+            case TINYPacket.MESSAGE:
+                //send to message handler
+                if(!packet.message.indexOf('/')){
+                    handleCommand(socket, packet);
+                } else {
+                    broadcast(packet.name, packet.message);
+                }
+                break;
+            case TINYPacket.LEAVE:
+                //broadcast leave
+                break;
+            case TINYPacket.ENTER:
+                //broadcast enter
+                break;
+            case TINYPacket.SYSTEM:
+                //handle command
+                break;
+            case TINYPacket.UPDATE:
+                //handle location update
+                break;
+            default:
+                console.log("Unknown packet %j", packet);
+                socket.end();
+                return;
         }
     });
 
@@ -60,9 +83,8 @@ const server = net.createServer(socket => {
     //});
 
     socket.once('close', function () {
-        let name = { "name": socket.name };
         clients.splice(clients.indexOf(socket), 1);
-        broadcast(`${socket.name} left the chat.`, socket);
+        broadcast(socket.name, `Leaving the chat.`);
     })
 
     socket.on('error', function (error) {
@@ -76,22 +98,50 @@ const server = net.createServer(socket => {
                 console.log(error.message);
                 break;
         }
-       
+
     });
 
 });
 
-const broadcast = (message, user) => {
-    console.log(`${user.name}> ${message}`);
-    clients.forEach(client => sendMessage(client, message, user));
+const broadcast = (user, message) => {
+    console.log(`${user}> ${message}`);
+    let packet = {
+        "type": TINYPacket.MESSAGE,
+        "name": user,
+        "message": message
+    };
+    clients.forEach(client => sendMessage(client, packet));
 }
 
-const sendMessage = (socket, message, user) => {
-    socket.write(`${user.name}> ${message}`);
+const sendMessage = (socket, packet) => {
+    socket.write(JSON.stringify(packet));
 }
 
 const sendSystemMessage = (to, message) => {
-    to.write(`SERVER> ${message}`);
+    let packet = {
+        "type": TINYPacket.SYSTEM,
+        "message": message
+    };
+    to.write(JSON.stringify(packet));
+}
+
+const handleCommand = (socket, packet) => {
+    let matches = packet.message.toString().match(/(\w+)(.*)/);
+    let command = matches[1].toLowerCase();
+    let args = matches[2].trim();
+
+    switch (command) {
+        case "name":
+            socket.name = args;
+            sendSystemMessage(socket, `Changed name to ${args}`);
+            break;
+        case "list":
+            sendSystemMessage(socket, clients.map(q => q.name || ('Unknown user')).join(', '));
+            break;
+        default:
+            sendSystemMessage(socket, `Unknown command '${command}'`);
+            sendSystemMessage(socket, "Current commands are: /name <name>, /list");
+    }
 }
 
 server.listen(serverInfo.port, serverInfo.address);

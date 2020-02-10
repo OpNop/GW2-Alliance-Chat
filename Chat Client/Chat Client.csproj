@@ -13,10 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\155139.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Assets\155139.png" />
     <Resource Include="Assets\menomonia.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SuperSimpleTcp" Version="1.1.7" />
   </ItemGroup>
 
 </Project>
