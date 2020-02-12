@@ -12,7 +12,8 @@
     MinHeight="180"
     MaxWidth="512"
     MaxHeight="512"
-    mc:Ignorable="d" Topmost="True">
+    Topmost="True"
+    mc:Ignorable="d">
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
     </Window.Background>
@@ -73,7 +74,7 @@
                 BorderBrush="{x:Null}"
                 Focusable="False"
                 FontFamily="Assets/#menomonia"
-                FontSize="14 px"
+                FontSize="13 px"
                 Foreground="#FFA8C138"
                 IsTabStop="False">
                 <RichTextBox.Resources>
@@ -96,25 +97,27 @@
             BorderThickness="2"
             FocusVisualStyle="{x:Null}"
             FontFamily="Assets/#menomonia"
-            FontSize="14"
+            FontSize="13"
             FontStyle="Normal"
             FontWeight="Normal"
-            Foreground="LightSeaGreen"
+            Foreground="DarkTurquoise"
             KeyDown="TextBox_KeyDown"
             TabIndex="-1"
             Text=""
             TextWrapping="NoWrap" />
         <!-- </Border> -->
         <Label
+            Height="23"
+            Padding="5,3,5,5"
             HorizontalAlignment="Left"
             VerticalAlignment="Bottom"
             Background="#33000000"
             Content="[Alliance]"
             FontFamily="Assets/#menomonia"
-            FontSize="14"
+            FontSize="13"
             FontStyle="Normal"
             FontWeight="Normal"
-            Foreground="LightSeaGreen" Height="23" Padding="5,3,5,5" />
+            Foreground="DarkTurquoise" />
 
 
 

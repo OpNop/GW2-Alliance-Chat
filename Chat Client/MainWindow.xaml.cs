@@ -105,8 +105,8 @@ namespace Chat_Client
             ChatBox.Dispatcher.BeginInvoke(new Message((time, from, message) =>
             {
                 ChatBox.AppendText($"[{time}] ", Brushes.Gray);
-                ChatBox.AppendText($"{from}: ", Brushes.LightSeaGreen);
-                ChatBox.AppendText(message, Brushes.White);
+                ChatBox.AppendText($"{from}: ", Brushes.DarkTurquoise);
+                ChatBox.AppendText(message, Brushes.PowderBlue);
                 ChatBox.AppendText(Environment.NewLine);
                 ChatBox.ScrollToEnd();
             }), new object[] { time, from, message });
