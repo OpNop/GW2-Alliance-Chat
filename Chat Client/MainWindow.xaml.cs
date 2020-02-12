@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SimpleTcp;
 using Newtonsoft.Json;
+using Gw2Sharp.Mumble;
+using System.Threading;
 
 delegate void Message(string time, string from, string message);
 
@@ -24,12 +26,35 @@ namespace Chat_Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        private TcpClient client;
+        private readonly TcpClient client;
         private string name = "TINY Member";
+        private bool _autoScroll = true;
+
+        public readonly Game game;
+        public readonly Mumble mumble;
+        public readonly Dictionary<int, Map> maps;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            //Check for running Game
+            game = new Game();
+            game.Load();
+            
+            //Exit if game is not running 
+            //Temporary untill we can watch for game
+            if (!game.IsRunning) { Environment.Exit(0); }
+
+            //Load Map service
+            maps = Map.Load();
+
+            //Load Mumble
+            mumble = new Mumble();
+            mumble.Init();
+            mumble.HookGame();
+
+            Task.Run(() => mumble.UpdateMumble());
 
             //Setup Client
             client = new TcpClient("67.61.134.200", 8888, false, null, null)
@@ -43,9 +68,44 @@ namespace Chat_Client
             WriteToChat("==TINY Alliance Chat System==");
             WriteToChat("==          Version Beta 1         ==");
             WriteToChat("");
-            WriteToChat("Enter your name to start chatting.");
+            //WriteToChat("Enter your name to start chatting.");
+            
+            if (mumble.MumbleData.CharacterName != "")
+            {
+                client.Connect();
+            }
+
+
+            Task.Run(() => updateCharacter());
         }
-       
+
+        private void updateCharacter()
+        {
+            while (true)
+            {
+                var packet = new
+                {
+                    type            = PacketType.UPDATE,
+                    name            = mumble.MumbleData.CharacterName,
+                    commander       = mumble.MumbleData.IsCommander,
+                    race            = mumble.MumbleData.Race,
+                    prof            = mumble.MumbleData.Profession,
+                    spec            = EliteSpec.GetElite(mumble.MumbleData.Specialization),
+                    map             = maps[mumble.MumbleData.MapId].MapName,
+                    position        = new
+                                    {
+                                        X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
+                                        Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
+                                        Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
+                                    },
+                server_address  = mumble.MumbleData.ServerAddress
+                };
+                client.Send(JsonConvert.SerializeObject(packet));
+                //WriteToChat($"Position:   X: {mumble.MumbleData.AvatarPosition.X:N6} Y: {mumble.MumbleData.AvatarPosition.Y:N6} Z: {mumble.MumbleData.AvatarPosition.Z:N6}");
+                Thread.Sleep(500);
+            }
+        }
+
         async Task MessageReceived(byte[] data)
         {
             var packetRaw = Encoding.UTF8.GetString(data);
@@ -100,6 +160,16 @@ namespace Chat_Client
             WriteToChat("Server disconnected");
         }
 
+        async Task UpdateMumble()
+        {
+            //check if game is running 
+            
+
+            //check if Mumble is running
+
+            //update
+        }
+
         private void WriteToChat(string time, string from, string message)
         {
             ChatBox.Dispatcher.BeginInvoke(new Message((time, from, message) =>
@@ -124,13 +194,6 @@ namespace Chat_Client
             
         }
 
-        public void onMessage(string message)
-        {
-
-            WriteToChat(message);
-        }
-
-        private bool _autoScroll = true;
         private void ScrollViewer_OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             if (e.ExtentHeightChange == 0)
@@ -149,23 +212,23 @@ namespace Chat_Client
             if (e.Key == Key.Return && message.Text != "")
             {
 
-                //check if we are connected
-                if(!client.IsConnected)
-                {
-                    name = message.Text;
-                    //connect to server
-                    client.Connect();
-                } else
-                {
+                ////check if we are connected
+                //if(!client.IsConnected)
+                //{
+                //    //name = message.Text;
+                //    //connect to server
+                //    client.Connect();
+                //} else
+                //{
                     //send packet as nomral
                     var packet = new
                     {
                         type = PacketType.MESSAGE,
-                        name = name,
+                        //name = mumble.MumbleData.CharacterName,
                         message = message.Text
                     };
                     client.Send(JsonConvert.SerializeObject(packet));
-                }
+                //}
                 message.Text = "";
             }
         }
