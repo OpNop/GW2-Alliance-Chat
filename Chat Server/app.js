@@ -55,7 +55,7 @@ const server = net.createServer(socket => {
                 if(!packet.message.indexOf('/')){
                     handleCommand(socket, packet);
                 } else {
-                    broadcast(packet.name, packet.message);
+                    broadcast(socket.info.name, packet.message);
                 }
                 break;
             case TINYPacket.LEAVE:
@@ -69,6 +69,8 @@ const server = net.createServer(socket => {
                 break;
             case TINYPacket.UPDATE:
                 //handle location update
+                socket.info = packet;
+                console.dir(packet);
                 break;
             default:
                 console.log("Unknown packet %j", packet);
@@ -84,7 +86,7 @@ const server = net.createServer(socket => {
 
     socket.once('close', function () {
         clients.splice(clients.indexOf(socket), 1);
-        broadcast(socket.name, `Leaving the chat.`);
+        broadcast(socket.info.name, `Leaving the chat.`);
     })
 
     socket.on('error', function (error) {
