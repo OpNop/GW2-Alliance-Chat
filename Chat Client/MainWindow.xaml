@@ -70,12 +70,14 @@
             ScrollChanged="ScrollViewer_OnScrollChanged">
             <RichTextBox
                 x:Name="ChatBox"
+                AllowDrop="False"
                 Background="{x:Null}"
                 BorderBrush="{x:Null}"
-                Focusable="False"
+                Cursor="IBeam"
                 FontFamily="Assets/#menomonia"
                 FontSize="13 px"
                 Foreground="#FFA8C138"
+                IsReadOnly="True"
                 IsTabStop="False">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
