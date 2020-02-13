@@ -4,14 +4,52 @@ const serverInfo = {
     "address": "0.0.0.0",
     "port": "8888"
 }
+String.prototype.firstWord = function(){return this.replace(/\s.*/,'')}
 
 const net = require('net');
-const readline = require('readline');
+//const readline = require('readline');
 const TINYPacket = require('./src/ParsePacket.js');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+const tcolors = require('./src/tinyColor.js').colors;
+const tinyPrompt = require('serverline');
+tinyPrompt.init();
+tinyPrompt.setCompletion(['help', 'list', 'say', 'announce', 'inspect']);
+tinyPrompt.setPrompt('TINY> ');
+tinyPrompt.on('line', line => {
+    data = parseCommad(line);
+    switch(data.command) {
+        case 'help':
+            console.log("=== Console Commands ===")
+            console.log("HELP\t\t Shows this message.");
+            console.log("LIST\t\t List the current users and map.");
+            console.log("SAY\t\t Broadcast a message to all clients as \"Server\"");
+            console.log("ANNOUNCE\t Broadcast an announcement to all clients");
+            console.log("INSPECT\t\t Show the mumble data on a user");
+            break;
+        case 'list':
+            console.log(clients.map(q => `${q.info.name} [${q.info.map}]` || ('Unknown user')).join(', '));
+            break;
+        case 'say':
+            broadcast("Server", data.args);
+            break;
+        case 'announce':
+            break;
+        case 'inspect':
+            let character = data.args;
+            if( !character ){
+                console.log(tcolors.fg.Red,"Missing Argument: Character Name", tcolors.Reset);
+            }
+            let characterSocket = clients.find((client => {return client.info.name === character}));
+            if( !characterSocket ) {
+                console.log(tcolors.fg.Red, "Character not found", tcolors.Reset);
+            } else {
+                console.dir(characterSocket.info);
+            }
+            break;
+        default:
+
+            break;
+    }
+})
 
 // Keep track of the chat clients
 let clients = [];
@@ -70,7 +108,7 @@ const server = net.createServer(socket => {
             case TINYPacket.UPDATE:
                 //handle location update
                 socket.info = packet;
-                console.dir(packet);
+                //console.dir(packet);
                 break;
             default:
                 console.log("Unknown packet %j", packet);
@@ -138,12 +176,19 @@ const handleCommand = (socket, packet) => {
             sendSystemMessage(socket, `Changed name to ${args}`);
             break;
         case "list":
-            sendSystemMessage(socket, clients.map(q => q.name || ('Unknown user')).join(', '));
+            sendSystemMessage(socket, clients.map(q => `${q.info.name} [${q.info.map}]` || ('Unknown user')).join(', '));
             break;
         default:
             sendSystemMessage(socket, `Unknown command '${command}'`);
             sendSystemMessage(socket, "Current commands are: /name <name>, /list");
     }
+}
+
+const parseCommad = (line) => {
+    let matches = line.match(/(\w+)(.*)/);
+    let command = matches[1].toLowerCase();
+    let args = matches[2].trim();
+    return {"command": command, "args": args};
 }
 
 server.listen(serverInfo.port, serverInfo.address);
