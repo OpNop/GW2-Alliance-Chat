@@ -153,6 +153,10 @@ const broadcast = (user, message) => {
     clients.forEach(client => sendMessage(client, packet));
 }
 
+const broadcastSystemMessage = (message) => {
+    clients.forEach(client => sendSystemMessage(client, message));
+}
+
 const sendMessage = (socket, packet) => {
     socket.write(JSON.stringify(packet));
 }
