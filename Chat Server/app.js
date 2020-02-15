@@ -11,6 +11,159 @@ const net = require('net');
 const TINYPacket = require('./src/ParsePacket.js');
 const tcolors = require('./src/tinyColor.js').colors;
 const tinyPrompt = require('serverline');
+const chatCommand = require('./src/chatCommand.ts');
+let cmd = new chatCommand()
+
+//#region Chat Commands
+cmd.addCommand("beckon", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} beckons to ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} beckons.`);
+})
+cmd.addCommand("bow", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} bows for ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} bows.`);
+})
+cmd.addCommand("cheer", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} cheers for ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} cheers.`);
+})
+cmd.addCommand("cower", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} cowers in fear from ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} cowers.`);
+})
+cmd.addCommand("crossarms", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} crosses their arms.`);
+})
+cmd.addCommand("cry", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} is crying.`);
+})
+cmd.addCommand("dance", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} is busting out some moves, some sweet dance moves.`);
+})
+cmd.addCommand("facepalm", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} is upset.`);
+})
+cmd.addCommand("geargrind", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} does the Gear Grind.`);
+})
+cmd.addCommand("kneel", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} kneels.`);
+})
+cmd.addCommand("laugh", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} laughs at ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} laughs.`);
+})
+cmd.addCommand("no", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} disagrees with ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} disagrees.`);
+})
+cmd.addCommand("point", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} points at ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} points.`);
+})
+cmd.addCommand("ponder", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} ponders.`);
+})
+cmd.addCommand("rockout", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} is rocking out!.`);
+})
+cmd.addCommand("sad", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} is sad.`);
+})
+cmd.addCommand("salute", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} salutes ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} salutes.`);
+})
+cmd.addCommand("shiver", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} shivers.`);
+})
+cmd.addCommand("shrug", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} shrugs at ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} shrugs.`);
+})
+cmd.addCommand("shuffle", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} does the Inventory Shuffle.`);
+})
+cmd.addCommand("sit", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} sits.`);
+})
+cmd.addCommand("sleep", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} goes to sleep.`);
+})
+cmd.addCommand("step", (socket) => {
+    broadcastSystemMessage(`${socket.info.name} does the Dodge Step.`);
+})
+cmd.addCommand("surprised", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} is surprised by ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} is surprised.`);
+})
+cmd.addCommand("talk", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} is talking to ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} is talking.`);
+})
+cmd.addCommand("thanks", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} thanks ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} is grateful.`);
+})
+cmd.addCommand("threaten", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} threatens ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} is threatening.`);
+})
+cmd.addCommand("wave", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} waves at ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} waves.`);
+})
+cmd.addCommand("yes", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} agrees with ${args}.`);
+    else
+        broadcastSystemMessage(`${socket.info.name} agrees.`);
+})
+cmd.addCommand("me", (socket, args) => {
+    if(args)
+        broadcastSystemMessage(`${socket.info.name} ${args}`);
+    else
+        sendSystemMessage(socket, 'Usage: /me <whatever you like>');
+})
+cmd.addCommand("list", (socket) => {
+    sendSystemMessage(socket, clients.map(q => `${q.info.name} [${q.info.map}]` || ('Unknown user')).join(', '));
+})
+cmd.addCommand("help", (socket) => {
+    sendSystemMessage(socket, `The following commands are available: ${cmd.allCommands}`);
+})
+
+//#endregion
+
+
+
 tinyPrompt.init();
 tinyPrompt.setCompletion(['help', 'list', 'say', 'announce', 'inspect']);
 tinyPrompt.setPrompt('TINY> ');
@@ -170,21 +323,16 @@ const sendSystemMessage = (to, message) => {
 }
 
 const handleCommand = (socket, packet) => {
+    
     let matches = packet.message.toString().match(/(\w+)(.*)/);
     let command = matches[1].toLowerCase();
     let args = matches[2].trim();
 
-    switch (command) {
-        case "name":
-            socket.name = args;
-            sendSystemMessage(socket, `Changed name to ${args}`);
-            break;
-        case "list":
-            sendSystemMessage(socket, clients.map(q => `${q.info.name} [${q.info.map}]` || ('Unknown user')).join(', '));
-            break;
-        default:
-            sendSystemMessage(socket, `Unknown command '${command}'`);
-            sendSystemMessage(socket, "Current commands are: /name <name>, /list");
+    try {
+        cmd.run(socket, command, args);
+    } catch (error) {
+        console.log(tcolors.fg.Red, `${error}: ${command}`, tcolors.Reset);
+        sendSystemMessage(socket, error);
     }
 }
 
