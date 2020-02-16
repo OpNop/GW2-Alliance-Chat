@@ -223,28 +223,26 @@ namespace Chat_Client
 
         private void WriteToChat(string time, string from, string message)
         {
-            ChatBox.Dispatcher.BeginInvoke(new Message((time, from, message) =>
+            ChatBox.Dispatcher.Invoke(() =>
             {
                 ChatBox.AppendText($"[{time}] ", Brushes.Gray);
                 ChatBox.AppendText($"{from}: ", Brushes.DarkTurquoise);
                 ChatBox.AppendText(message, Brushes.PowderBlue);
                 ChatBox.AppendText(Environment.NewLine);
                 ChatBox.ScrollToEnd();
-            }), new object[] { time, from, message });
-
+            });
         }
 
         private void WriteToChat(string message)
         {
-            ChatBox.Dispatcher.BeginInvoke(new Action<string>((message) =>
+            ChatBox.Dispatcher.Invoke(() =>
             {
                 var time = DateTime.Now.ToString("h:mm tt");
                 ChatBox.AppendText($"[{time}] ", Brushes.Gray);
                 ChatBox.AppendText(message, Brushes.DarkGray);
                 ChatBox.AppendText(Environment.NewLine);
                 ChatBox.ScrollToEnd();
-            }), new object[] { message });
-            
+            });
         }
 
         private void ScrollViewer_OnScrollChanged(object sender, ScrollChangedEventArgs e)
