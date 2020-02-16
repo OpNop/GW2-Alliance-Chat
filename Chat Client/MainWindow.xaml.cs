@@ -238,7 +238,9 @@ namespace Chat_Client
         {
             ChatBox.Dispatcher.BeginInvoke(new Action<string>((message) =>
             {
-                ChatBox.AppendText(message, Brushes.Gray);
+                var time = DateTime.Now.ToString("h:mm tt");
+                ChatBox.AppendText($"[{time}] ", Brushes.Gray);
+                ChatBox.AppendText(message, Brushes.DarkGray);
                 ChatBox.AppendText(Environment.NewLine);
                 ChatBox.ScrollToEnd();
             }), new object[] { message });
