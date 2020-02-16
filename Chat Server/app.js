@@ -307,7 +307,7 @@ const chatCommands = [{
     {
         names: 'help',
         func: (socket) => {
-            sendSystemMessage(socket, `The following commands are available: ${cmd.allCommands}`);
+            sendSystemMessage(socket, `The following commands are available: ${commandHandler.allCommands}`);
         }
     },
     {
