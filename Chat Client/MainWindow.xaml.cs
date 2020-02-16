@@ -29,6 +29,7 @@ namespace Chat_Client
         private readonly TcpClient client;
         private string name = "TINY Member";
         private bool _autoScroll = true;
+        private bool _debugMode = false;
 
         public readonly Game game;
         public readonly Mumble mumble;
@@ -44,17 +45,29 @@ namespace Chat_Client
             
             //Exit if game is not running 
             //Temporary untill we can watch for game
-            if (!game.IsRunning) { Environment.Exit(0); }
+            if (!game.IsRunning) {
+                var startDebugMode = MessageBox.Show("Game not detected, do you want to load in test client mode?", "Game not running", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(startDebugMode == MessageBoxResult.Yes)
+                {
+                    _debugMode = true;
+                } else
+                {
+                    Environment.Exit(0);
+                }
+            }
 
             //Load Map service
             maps = Map.Load();
 
             //Load Mumble
-            mumble = new Mumble();
-            mumble.Init();
-            mumble.HookGame();
+            if (!_debugMode)
+            {
+                mumble = new Mumble();
+                mumble.Init();
+                mumble.HookGame();
 
-            Task.Run(() => mumble.UpdateMumble());
+                Task.Run(() => mumble.UpdateMumble());
+            }
 
             //Setup Client
             client = new TcpClient("67.61.134.200", 8888, false, null, null)
@@ -70,7 +83,7 @@ namespace Chat_Client
             WriteToChat("");
             //WriteToChat("Enter your name to start chatting.");
             
-            if (mumble.MumbleData.CharacterName != "")
+            if (_debugMode || mumble.MumbleData.CharacterName != "")
             {
                 client.Connect();
             }
@@ -81,27 +94,74 @@ namespace Chat_Client
 
         private void updateCharacter()
         {
+            var debugMumble = new
+            {
+                MumbleData = new
+                {
+                    CharacterName = "Test Client",
+                    IsCommander = false,
+                    Race = "Asura",
+                    Profession = "test Profession",
+                    Specialization = 34,
+                    MapId = 18,
+                    AvatarPosition = new
+                    {
+                        X = 0,
+                        Y = 0,
+                        Z = 0
+                    },
+                    ServerAddress = "0.0.0.0"
+
+                }
+            };
+
+            
             while (true)
             {
-                var packet = new
+                object packet;
+
+                if (_debugMode)
                 {
-                    type            = PacketType.UPDATE,
-                    name            = mumble.MumbleData.CharacterName,
-                    commander       = mumble.MumbleData.IsCommander,
-                    race            = mumble.MumbleData.Race,
-                    prof            = mumble.MumbleData.Profession,
-                    spec            = EliteSpec.GetElite(mumble.MumbleData.Specialization),
-                    map             = maps[mumble.MumbleData.MapId].MapName,
-                    position        = new
-                                    {
-                                        X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
-                                        Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
-                                        Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
-                                    },
-                server_address  = mumble.MumbleData.ServerAddress
-                };
+                    packet = new
+                    {
+                        type = PacketType.UPDATE,
+                        name = debugMumble.MumbleData.CharacterName,
+                        commander = debugMumble.MumbleData.IsCommander,
+                        race = debugMumble.MumbleData.Race,
+                        prof = debugMumble.MumbleData.Profession,
+                        spec = EliteSpec.GetElite(debugMumble.MumbleData.Specialization),
+                        map = maps[debugMumble.MumbleData.MapId].MapName,
+                        position = new
+                        {
+                            X = $"{debugMumble.MumbleData.AvatarPosition.X:N6}",
+                            Y = $"{debugMumble.MumbleData.AvatarPosition.Y:N6}",
+                            Z = $"{debugMumble.MumbleData.AvatarPosition.Z:N6}"
+                        },
+                        server_address = debugMumble.MumbleData.ServerAddress
+                    };
+                }
+                else
+                {
+                    packet = new
+                    {
+                        type = PacketType.UPDATE,
+                        name = mumble.MumbleData.CharacterName,
+                        commander = mumble.MumbleData.IsCommander,
+                        race = mumble.MumbleData.Race,
+                        prof = mumble.MumbleData.Profession,
+                        spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
+                        map = maps[mumble.MumbleData.MapId].MapName,
+                        position = new
+                        {
+                            X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
+                            Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
+                            Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
+                        },
+                        server_address = mumble.MumbleData.ServerAddress
+                    };
+                }
+                
                 client.Send(JsonConvert.SerializeObject(packet));
-                //WriteToChat($"Position:   X: {mumble.MumbleData.AvatarPosition.X:N6} Y: {mumble.MumbleData.AvatarPosition.Y:N6} Z: {mumble.MumbleData.AvatarPosition.Z:N6}");
                 Thread.Sleep(500);
             }
         }
@@ -144,15 +204,6 @@ namespace Chat_Client
         async Task ServerConnected()
         {
             WriteToChat("Server connected");
-            //Name Change
-            var packet = new
-            {
-                type = PacketType.MESSAGE,
-                name = name,
-                message = $"/name {name}"
-            };
-            //client.SendAsync(message.Text);
-            client.Send(JsonConvert.SerializeObject(packet));
         }
 
         async Task ServerDisconnected()
