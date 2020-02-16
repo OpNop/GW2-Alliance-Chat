@@ -4,10 +4,11 @@ const serverInfo = {
     "address": "0.0.0.0",
     "port": "8888"
 }
-String.prototype.firstWord = function(){return this.replace(/\s.*/,'')}
+String.prototype.firstWord = function () {
+    return this.replace(/\s.*/, '')
+}
 
 const net = require('net');
-//const readline = require('readline');
 const TINYPacket = require('./src/ParsePacket.js');
 const tcolors = require('./src/tinyColor.js').colors;
 const tinyPrompt = require('serverline');
@@ -169,7 +170,7 @@ tinyPrompt.setCompletion(['help', 'list', 'say', 'announce', 'inspect']);
 tinyPrompt.setPrompt('TINY> ');
 tinyPrompt.on('line', line => {
     data = parseCommad(line);
-    switch(data.command) {
+    switch (data.command) {
         case 'help':
             console.log("=== Console Commands ===")
             console.log("HELP\t\t Shows this message.");
@@ -188,11 +189,13 @@ tinyPrompt.on('line', line => {
             break;
         case 'inspect':
             let character = data.args;
-            if( !character ){
-                console.log(tcolors.fg.Red,"Missing Argument: Character Name", tcolors.Reset);
+            if (!character) {
+                console.log(tcolors.fg.Red, "Missing Argument: Character Name", tcolors.Reset);
             }
-            let characterSocket = clients.find((client => {return client.info.name === character}));
-            if( !characterSocket ) {
+            let characterSocket = clients.find((client => {
+                return client.info.name === character
+            }));
+            if (!characterSocket) {
                 console.log(tcolors.fg.Red, "Character not found", tcolors.Reset);
             } else {
                 console.dir(characterSocket.info);
@@ -243,7 +246,7 @@ const server = net.createServer(socket => {
                 return;
             case TINYPacket.MESSAGE:
                 //send to message handler
-                if(!packet.message.indexOf('/')){
+                if (!packet.message.indexOf('/')) {
                     handleCommand(socket, packet);
                 } else {
                     broadcast(socket.info.name, packet.message);
@@ -323,7 +326,7 @@ const sendSystemMessage = (to, message) => {
 }
 
 const handleCommand = (socket, packet) => {
-    
+
     let matches = packet.message.toString().match(/(\w+)(.*)/);
     let command = matches[1].toLowerCase();
     let args = matches[2].trim();
@@ -340,7 +343,10 @@ const parseCommad = (line) => {
     let matches = line.match(/(\w+)(.*)/);
     let command = matches[1].toLowerCase();
     let args = matches[2].trim();
-    return {"command": command, "args": args};
+    return {
+        "command": command,
+        "args": args
+    };
 }
 
 server.listen(serverInfo.port, serverInfo.address);
