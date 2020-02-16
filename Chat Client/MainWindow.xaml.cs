@@ -92,7 +92,6 @@ namespace Chat_Client
             WriteToChat("==TINY Alliance Chat System==");
             WriteToChat("==          Version Beta 1         ==");
             WriteToChat("");
-            //WriteToChat("Enter your name to start chatting.");
             
             if (_debugMode || mumble.MumbleData.CharacterName != "")
             {
@@ -185,7 +184,7 @@ namespace Chat_Client
             try
             {
                 packet = JsonConvert.DeserializeObject<dynamic>(packetRaw);
-                switch ((PacketType) packet.type)
+                switch ((PacketType)packet.type)
                 {
                     case PacketType.ENTER:
                         //Handle ENTER message
@@ -273,24 +272,14 @@ namespace Chat_Client
         {
             if (e.Key == Key.Return && message.Text != "")
             {
+                //send packet as nomral
+                var packet = new
+                {
+                    type = PacketType.MESSAGE,
+                    message = message.Text
+                };
+                client.Send(JsonConvert.SerializeObject(packet));
 
-                ////check if we are connected
-                //if(!client.IsConnected)
-                //{
-                //    //name = message.Text;
-                //    //connect to server
-                //    client.Connect();
-                //} else
-                //{
-                    //send packet as nomral
-                    var packet = new
-                    {
-                        type = PacketType.MESSAGE,
-                        //name = mumble.MumbleData.CharacterName,
-                        message = message.Text
-                    };
-                    client.Send(JsonConvert.SerializeObject(packet));
-                //}
                 message.Text = "";
             }
         }
