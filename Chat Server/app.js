@@ -122,15 +122,6 @@ const chatCommands = [{
         }
     },
     {
-        names: 'beckon',
-        func: (socket, args) => {
-            if (args)
-                broadcastSystemMessage(`${socket.info.name} beckons to ${args}.`);
-            else
-                broadcastSystemMessage(`${socket.info.name} beckons.`);
-        }
-    },
-    {
         names: 'geargrind',
         func: (socket) => {
             broadcastSystemMessage(`${socket.info.name} does the Gear Grind.`);
@@ -273,6 +264,15 @@ const chatCommands = [{
     },
     {
         names: 'wave',
+        func: (socket, args) => {
+            if (args)
+                broadcastSystemMessage(`${socket.info.name} waves at ${args}.`);
+            else
+                broadcastSystemMessage(`${socket.info.name} waves.`);
+        }
+    },
+    {
+        names: 'yes',
         func: (socket, args) => {
             if (args)
                 broadcastSystemMessage(`${socket.info.name} agrees with ${args}.`);
