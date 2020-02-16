@@ -24,7 +24,8 @@
   <ItemGroup>
     <PackageReference Include="gw2sharp" Version="0.7.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SuperSimpleTcp" Version="1.1.7" />
+    <PackageReference Include="SuperSimpleTcp" Version="1.1.8" />
+  </ItemGroup>
   </ItemGroup>
 
   <ItemGroup>
