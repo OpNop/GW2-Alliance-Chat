@@ -95,11 +95,19 @@ namespace Chat_Client
             
             if (_debugMode || mumble.MumbleData.CharacterName != "")
             {
-                client.Connect();
+                try
+                {
+                    client.Connect();
+                }
+                catch (Exception)
+                {
+                    WriteToChat("Can not connect to server, retrying in 5 seconds");
+                }
+                
             }
 
 
-            Task.Run(() => updateCharacter());
+            
         }
 
         private void updateCharacter()
@@ -108,7 +116,7 @@ namespace Chat_Client
             {
                 MumbleData = new
                 {
-                    CharacterName = "Test Client",
+                    CharacterName = "Test Client " + DateTime.Now.ToString("hhmmss"),
                     IsCommander = false,
                     Race = "Asura",
                     Profession = "test Profession",
@@ -128,6 +136,7 @@ namespace Chat_Client
             
             while (true)
             {
+
                 object packet;
 
                 if (_debugMode)
@@ -170,9 +179,14 @@ namespace Chat_Client
                         server_address = mumble.MumbleData.ServerAddress
                     };
                 }
-                
-                client.Send(JsonConvert.SerializeObject(packet));
-                Thread.Sleep(500);
+                if (client.IsConnected)
+                {
+                    client.Send(JsonConvert.SerializeObject(packet));
+                    Thread.Sleep(500);
+                } else
+                {
+                    return;
+                }
             }
         }
 
@@ -214,11 +228,18 @@ namespace Chat_Client
         async Task ServerConnected()
         {
             WriteToChat("Server connected");
+
+            await Task.Run(() => updateCharacter());
         }
 
         async Task ServerDisconnected()
         {
-            WriteToChat("Server disconnected");
+            WriteToChat("Server disconnected, Retrying in 5 seconds -- But in reality I wont, need to fix this.");
+            while (client.IsConnected == false)
+            {
+                Thread.Sleep(5000);
+                client.Connect();
+            }
         }
 
         async Task UpdateMumble()
