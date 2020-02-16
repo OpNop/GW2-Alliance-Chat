@@ -72,6 +72,7 @@
                 x:Name="ChatBox"
                 AllowDrop="False"
                 Background="{x:Null}"
+                Block.TextAlignment="Left"
                 BorderBrush="{x:Null}"
                 Cursor="IBeam"
                 FontFamily="Assets/#menomonia"
@@ -82,6 +83,7 @@
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="0" />
+                        <Setter Property="Block.TextAlignment" Value="left" />
                     </Style>
                 </RichTextBox.Resources>
             </RichTextBox>
@@ -92,7 +94,7 @@
         <TextBox
             x:Name="message"
             Height="23"
-            Margin="66,0,0,0"
+            Margin="61,0,0,0"
             VerticalAlignment="Bottom"
             Background="#33000000"
             BorderBrush="Black"
@@ -104,11 +106,13 @@
             FontWeight="Normal"
             Foreground="DarkTurquoise"
             KeyDown="TextBox_KeyDown"
+            SpellCheck.IsEnabled="True"
             TabIndex="-1"
             Text=""
             TextWrapping="NoWrap" />
         <!-- </Border> -->
         <Label
+            Width="61"
             Height="23"
             Padding="5,3,5,5"
             HorizontalAlignment="Left"
