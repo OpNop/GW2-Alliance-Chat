@@ -69,8 +69,19 @@ namespace Chat_Client
                 Task.Run(() => mumble.UpdateMumble());
             }
 
+            string[] args = Environment.GetCommandLineArgs();
+
             //Setup Client
-            client = new TcpClient("67.61.134.200", 8888, false, null, null)
+            string address = "67.61.134.200";
+            if (args.Length > 0)
+                address = args[0];
+
+            int port = 8888;
+            if (args.Length > 1)
+                port = int.Parse(args[1]);
+
+
+            client = new TcpClient(address, port, false, null, null)
             {
                 Connected = ServerConnected,
                 Disconnected = ServerDisconnected,
