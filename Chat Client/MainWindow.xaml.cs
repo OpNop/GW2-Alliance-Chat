@@ -73,12 +73,18 @@ namespace Chat_Client
 
             //Setup Client
             string address = "67.61.134.200";
-            if (args.Length > 0)
-                address = args[0];
+            if (args.Length >= 2)
+            {
+                address = args[1];
+                Console.WriteLine($"Using Server IP: {address}");
+            }
 
             int port = 8888;
-            if (args.Length > 1)
-                port = int.Parse(args[1]);
+            if (args.Length == 3)
+            {
+                port = int.Parse(args[2]);
+                Console.WriteLine($"Using Server Port: {port}");
+            }
 
 
             client = new TcpClient(address, port, false, null, null)
