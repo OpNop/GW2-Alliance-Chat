@@ -42,15 +42,17 @@ namespace Chat_Client
 
         public void HookGame()
         {
+            //IsAvailable will always be false untill you call Update
             MumbleData.Update();
-            if (!MumbleData.IsAvailable)
+
+            while (MumbleData.IsAvailable == false)
             {
-                throw new Exception("MumbleLink not ready!");
+                Console.WriteLine("MumbleAPI is not ready (at first character selection or first map load)");
+                MumbleData.Update();
+                Thread.Sleep(1000);
             }
-            else
-            {
-                tick = MumbleData.Tick;
-            }
+
+            tick = MumbleData.Tick;
         }
 
         public void UpdateMumble()
