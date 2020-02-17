@@ -380,6 +380,7 @@ const server = net.createServer(socket => {
                 socket.end();
                 return;
         }
+
     });
 
     //socket.on('end', function () {
@@ -423,7 +424,7 @@ const broadcastSystemMessage = (message) => {
 }
 
 const sendMessage = (socket, packet) => {
-    socket.write(JSON.stringify(packet));
+    socket.write(JSON.stringify(packet) + '\r');
 }
 
 const sendSystemMessage = (to, message) => {
@@ -431,7 +432,7 @@ const sendSystemMessage = (to, message) => {
         "type": TINYPacket.SYSTEM,
         "message": message
     };
-    to.write(JSON.stringify(packet));
+    to.write(JSON.stringify(packet) + '\r');
 }
 
 const handleCommand = (socket, packet) => {

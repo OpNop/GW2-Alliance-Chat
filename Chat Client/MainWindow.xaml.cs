@@ -208,37 +208,45 @@ namespace Chat_Client
 
         async Task MessageReceived(byte[] data)
         {
-            var packetRaw = Encoding.UTF8.GetString(data);
-            dynamic packet;
-            //Try and parse JSON
-            try
+            var rawData = Encoding.UTF8.GetString(data);
+            //check for multiple packets
+            var rawPackets = rawData.Split(new char[] { '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var rawPacket in rawPackets)
             {
-                packet = JsonConvert.DeserializeObject<dynamic>(packetRaw);
-                switch ((PacketType)packet.type)
+                Console.WriteLine($"RECV> {rawPacket}");
+                dynamic packet;
+                //Try and parse JSON
+                try
                 {
-                    case PacketType.ENTER:
-                        //Handle ENTER message
-                        break;
-                    case PacketType.LEAVE:
-                        //Handle LEAVE message
-                        break;
-                    case PacketType.MESSAGE:
-                        WriteToChat(DateTime.Now.ToString("h:mm tt"), (string)packet.name, (string)packet.message);
-                        break;
-                    case PacketType.SYSTEM:
-                        WriteToChat((string)packet.message);
-                        break;
-                    case PacketType.UPDATE:
-                        //Handle location update
-                        break;
-                    default:
-                        throw new Exception("Missing packet type");
+                    packet = JsonConvert.DeserializeObject<dynamic>(rawPacket);
+                    switch ((PacketType)packet.type)
+                    {
+                        case PacketType.ENTER:
+                            //Handle ENTER message
+                            break;
+                        case PacketType.LEAVE:
+                            //Handle LEAVE message
+                            break;
+                        case PacketType.MESSAGE:
+                            WriteToChat(DateTime.Now.ToString("h:mm tt"), (string)packet.name, (string)packet.message);
+                            break;
+                        case PacketType.SYSTEM:
+                            WriteToChat((string)packet.message);
+                            break;
+                        case PacketType.UPDATE:
+                            //Handle location update
+                            break;
+                        default:
+                            throw new Exception("Missing packet type");
+                    }
+                }
+                catch (Exception e)
+                {
+                    WriteToChat(e.Message);
                 }
             }
-            catch (Exception e)
-            {
-                WriteToChat(e.Message);
-            }
+
+            
         }
 
         async Task ServerConnected()
