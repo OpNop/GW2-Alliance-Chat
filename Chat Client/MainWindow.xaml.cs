@@ -16,6 +16,8 @@ using SimpleTcp;
 using Newtonsoft.Json;
 using Gw2Sharp.Mumble;
 using System.Threading;
+using System.Runtime.InteropServices;
+
 
 delegate void Message(string time, string from, string message);
 
@@ -35,9 +37,17 @@ namespace Chat_Client
         public readonly Mumble mumble;
         public readonly Dictionary<int, Map> maps;
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+
         public MainWindow()
         {
+            //Debug console
+            AllocConsole();
+
             InitializeComponent();
+            Console.WriteLine("About to check for game");
 
             //Check for running Game
             game = new Game();
