@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using DLG.ToolBox.Log;
 
 namespace Chat_Client
 {
@@ -23,9 +24,11 @@ namespace Chat_Client
         private bool _IsRunning = false;
         private Process _Process;
         public IntPtr Gw2WindowHandle { get; private set; }
+        private static readonly Logger _log = Logger.getInstance();
 
         public Game() {
-            Console.WriteLine("=== Started Game() ===");
+            _log.AddDebug("=== Started Game() ===");
+            //Console.WriteLine("=== Started Game() ===");
         }
 
         public bool IsRunning
@@ -50,7 +53,7 @@ namespace Chat_Client
 
         public void Load()
         {
-            Console.WriteLine("Game::Load() Called");
+            _log.AddDebug("Called");
             Process = GetProcess();
         }
         public Process Process
@@ -84,27 +87,27 @@ namespace Chat_Client
 
         private Process GetProcess()
         {
-            Console.WriteLine("Game::GetProcess() Called");
+            _log.AddInfo("Checking for GW2 Process");
             // Check to see if 64-bit Gw2 process is running (since it's likely the most common at this point)
             Process[] Processes = Process.GetProcessesByName(GW2_64_BIT_PROCESSNAME);
-            Console.WriteLine($"Game::GetProcess() Processes = {Processes.Length}");
+            _log.AddDebug($"Processes = {Processes.Length}");
 
             if (Processes.Length == 0)
             {
                 // 64-bit process not found so see if they're using a 32-bit client instead
-                Console.WriteLine("Game::GetProcess() Checking for 32-bit client");
+                _log.AddInfo("Checking for 32-bit client");
                 Processes = Process.GetProcessesByName(GW2_32_BIT_PROCESSNAME);
-                Console.WriteLine($"Game::GetProcess() Processes = {Processes.Length}");
+                _log.AddDebug($"Processes = {Processes.Length}");
             }
 
             if (Processes.Length > 0)
             {
                 // TODO: We don't currently have multibox support, but future updates should at least handle
                 // multiboxing in a better way
-                Console.WriteLine($"Game::GetProcess() found the game");
+                _log.AddInfo($"Game found: ({Processes[0].Id}) {Processes[0].MainModule.FileName}");
                 return Processes[0];
             }
-            Console.WriteLine($"Game::GetProcess() game not running");
+            _log.AddError("Game is not running");
             return null;
         }
 

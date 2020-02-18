@@ -16,7 +16,7 @@ using SimpleTcp;
 using Newtonsoft.Json;
 using Gw2Sharp.Mumble;
 using System.Threading;
-using System.Runtime.InteropServices;
+using DLG.ToolBox.Log;
 
 
 delegate void Message(string time, string from, string message);
@@ -29,25 +29,20 @@ namespace Chat_Client
     public partial class MainWindow : Window
     {
         private readonly TcpClient client;
-        private string name = "TINY Member";
         private bool _autoScroll = true;
         private bool _debugMode = false;
 
         public readonly Game game;
         public readonly Mumble mumble;
         public readonly Dictionary<int, Map> maps;
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool AllocConsole();
+        private static readonly Logger _log = Logger.getInstance();
 
         public MainWindow()
         {
-            //Debug console
-            AllocConsole();
+            //Init logger class
+            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 
             InitializeComponent();
-            Console.WriteLine("About to check for game");
 
             //Check for running Game
             game = new Game();
