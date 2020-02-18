@@ -390,7 +390,9 @@ const server = net.createServer(socket => {
 
     socket.once('close', function () {
         clients.splice(clients.indexOf(socket), 1);
-        broadcast(socket.info.name, `Leaving the chat.`);
+        //Rando bots
+        if(typeof socket.info !== 'undefined')
+            broadcast(socket.info.name, `Leaving the chat.`);
     })
 
     socket.on('error', function (error) {
