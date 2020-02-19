@@ -28,7 +28,6 @@ namespace Chat_Client
 
         public Game() {
             _log.AddDebug("=== Started Game() ===");
-            //Console.WriteLine("=== Started Game() ===");
         }
 
         public bool IsRunning

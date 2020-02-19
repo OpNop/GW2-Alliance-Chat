@@ -12,12 +12,41 @@
     MinHeight="180"
     MaxWidth="512"
     MaxHeight="512"
+    AllowsTransparency="True"
     Topmost="True"
+    WindowStyle="None"
     mc:Ignorable="d">
+
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
     </Window.Background>
     <Window.Resources>
+        <Style TargetType="local:MainWindow">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To=".7"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -61,74 +90,109 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid FocusManager.FocusedElement="{Binding ElementName=message}">
-        <ScrollViewer
-            x:Name="ScrollViewer"
-            Margin="0,0,0,23"
-            VerticalAlignment="Stretch"
-            VerticalContentAlignment="Top"
-            ScrollChanged="ScrollViewer_OnScrollChanged">
-            <RichTextBox
-                x:Name="ChatBox"
-                AllowDrop="False"
-                Background="{x:Null}"
-                Block.TextAlignment="Left"
-                BorderBrush="{x:Null}"
-                Cursor="IBeam"
+    <DockPanel VerticalAlignment="Top">
+        <DockPanel
+            x:Name="TitleBar"
+            Height="20"
+            Background="Black"
+            DockPanel.Dock="Top"
+            MouseDown="DragWindow">
+
+            <TextBlock
+                Margin="4,0,0,0"
+                VerticalAlignment="Center"
+                Background="Transparent"
                 FontFamily="Assets/#menomonia"
-                FontSize="13 px"
-                Foreground="#FFA8C138"
-                IsReadOnly="True"
-                IsTabStop="False">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0" />
-                        <Setter Property="Block.TextAlignment" Value="left" />
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
+                FontStyle="Italic"
+                Foreground="#FF8BB9E0"
+                TextDecorations="{x:Null}">
+                Tiny Alliance Chat Service (TACS)
+            </TextBlock>
+            <Image
+                x:Name="btnExit"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                MouseDown="btnExit_Click"
+                Source="Assets/close.png"
+                Stretch="UniformToFill" />
+
+        </DockPanel>
+        <Grid
+            Height="430"
+            VerticalAlignment="Top"
+            DockPanel.Dock="Top"
+            FocusManager.FocusedElement="{Binding ElementName=message}">
+            <ScrollViewer
+                x:Name="ScrollViewer"
+                Margin="0,0,0,23"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                ScrollChanged="ScrollViewer_OnScrollChanged">
+                <RichTextBox
+                    x:Name="ChatBox"
+                    AllowDrop="False"
+                    Background="{x:Null}"
+                    Block.TextAlignment="Left"
+                    BorderBrush="{x:Null}"
+                    Cursor="IBeam"
+                    FontFamily="Assets/#menomonia"
+                    FontSize="13 px"
+                    Foreground="#FFA8C138"
+                    IsReadOnly="True"
+                    IsTabStop="False">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Block.TextAlignment" Value="left" />
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
 
 
-        </ScrollViewer>
-        <!-- <Border BorderBrush="Black" BorderThickness="2" Height="22" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" FocusManager.FocusedElement="{Binding ElementName=message}"> -->
-        <TextBox
-            x:Name="message"
-            Height="23"
-            Margin="61,0,0,0"
-            VerticalAlignment="Bottom"
-            Background="#33000000"
-            BorderBrush="Black"
-            BorderThickness="2"
-            FocusVisualStyle="{x:Null}"
-            FontFamily="Assets/#menomonia"
-            FontSize="13"
-            FontStyle="Normal"
-            FontWeight="Normal"
-            Foreground="DarkTurquoise"
-            KeyDown="TextBox_KeyDown"
-            SpellCheck.IsEnabled="True"
-            TabIndex="-1"
-            Text=""
-            TextWrapping="NoWrap" />
-        <!-- </Border> -->
-        <Label
-            Width="61"
-            Height="23"
-            Padding="5,3,5,5"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
-            Background="#33000000"
-            Content="[Alliance]"
-            FontFamily="Assets/#menomonia"
-            FontSize="13"
-            FontStyle="Normal"
-            FontWeight="Normal"
-            Foreground="DarkTurquoise" />
+            </ScrollViewer>
+            <!-- <Border BorderBrush="Black" BorderThickness="2" Height="22" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" FocusManager.FocusedElement="{Binding ElementName=message}"> -->
+            <TextBox
+                x:Name="message"
+                Height="23"
+                Margin="61,0,0,0"
+                VerticalAlignment="Bottom"
+                Background="#33000000"
+                BorderBrush="Black"
+                BorderThickness="2"
+                FocusVisualStyle="{x:Null}"
+                FontFamily="Assets/#menomonia"
+                FontSize="13"
+                FontStyle="Normal"
+                FontWeight="Normal"
+                Foreground="DarkTurquoise"
+                KeyDown="TextBox_KeyDown"
+                SpellCheck.IsEnabled="True"
+                TabIndex="-1"
+                Text=""
+                TextWrapping="NoWrap" />
+            <!-- </Border> -->
+            <Label
+                Width="61"
+                Height="23"
+                Padding="5,3,5,5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Background="#33000000"
+                Content="[Alliance]"
+                FontFamily="Assets/#menomonia"
+                FontSize="13"
+                FontStyle="Normal"
+                FontWeight="Normal"
+                Foreground="DarkTurquoise" />
 
 
 
 
-    </Grid>
+        </Grid>
+    </DockPanel>
+
 
 </Window>
 

@@ -12,6 +12,8 @@ namespace Chat_Client
     {
         private IGw2MumbleClient _mumbleClient;
         private int tick = -1;
+        public event EventHandler<MapStatusChangedArgs> MapStatusChanged;
+        private bool LastMapState;
 
         public IGw2MumbleClient MumbleData {
             get => _mumbleClient;
@@ -60,8 +62,24 @@ namespace Chat_Client
             while (MumbleData.IsAvailable)
             {
                 MumbleData.Update();
+                if(LastMapState != MumbleData.IsMapOpen)
+                {
+                    LastMapState = MumbleData.IsMapOpen;
+                    OnMapStatusChanged(new MapStatusChangedArgs() { IsMapOpen = LastMapState });
+                }
                 Thread.Sleep(100);
             }
         }
+
+        protected virtual void OnMapStatusChanged(MapStatusChangedArgs e)
+        {
+            EventHandler<MapStatusChangedArgs> handler = MapStatusChanged;
+            handler?.Invoke(this, e);
+        }
+    }
+
+    public class MapStatusChangedArgs : EventArgs
+    {
+        public bool IsMapOpen { get; set; }
     }
 }

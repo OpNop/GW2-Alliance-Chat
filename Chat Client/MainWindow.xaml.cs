@@ -68,6 +68,7 @@ namespace Chat_Client
             if (!_debugMode)
             {
                 mumble = new Mumble();
+                mumble.MapStatusChanged += isMapShowing;
                 mumble.Init();
                 mumble.HookGame();
 
@@ -119,6 +120,23 @@ namespace Chat_Client
 
 
             
+        }
+
+        private void isMapShowing(object sender, MapStatusChangedArgs e)
+        {
+            if (e.IsMapOpen)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Hide();
+                });
+            } else
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Show();
+                });
+            }
         }
 
         private void updateCharacter()
@@ -331,6 +349,16 @@ namespace Chat_Client
             LEAVE,
             SYSTEM,
             UPDATE
+        }
+
+        private void DragWindow(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void btnExit_Click(object sender, MouseButtonEventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }
