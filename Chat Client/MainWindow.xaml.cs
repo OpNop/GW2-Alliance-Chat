@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 using Gw2Sharp.Mumble;
 using System.Threading;
 using DLG.ToolBox.Log;
-
+using System.Net;
 
 delegate void Message(string time, string from, string message);
 
@@ -28,6 +28,14 @@ namespace Chat_Client
     /// </summary>
     public partial class MainWindow : Window
     {
+#if DEBUG
+        private string serverAddr = "chat.noobnetwork.net";
+        private int serverPort = 8888;
+#else
+        private string serverAddr = "chat.jumpsfor.science";
+        private int serverPort = 8888;
+#endif
+
         private readonly TcpClient client;
         private bool _autoScroll = true;
         private bool _debugMode = false;
@@ -78,22 +86,24 @@ namespace Chat_Client
             string[] args = Environment.GetCommandLineArgs();
 
             //Setup Client
-            string address = "67.61.134.200";
             if (args.Length >= 2)
             {
-                address = args[1];
-                Console.WriteLine($"Using Server IP: {address}");
+                serverAddr = args[1];
+                Console.WriteLine($"Using Server IP: {serverAddr}");
             }
 
-            int port = 8888;
             if (args.Length == 3)
             {
-                port = int.Parse(args[2]);
-                Console.WriteLine($"Using Server Port: {port}");
+                serverPort = int.Parse(args[2]);
+                Console.WriteLine($"Using Server Port: {serverPort}");
             }
 
-
-            client = new TcpClient(address, port, false, null, null)
+            if (!IPAddress.TryParse(serverAddr, out IPAddress ipAddress))
+            {
+                ipAddress = Dns.GetHostEntry(serverAddr).AddressList[0];
+            }
+            _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
+            client = new TcpClient(ipAddress.ToString(), serverPort, false, null, null)
             {
                 Connected = ServerConnected,
                 Disconnected = ServerDisconnected,
