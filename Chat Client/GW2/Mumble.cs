@@ -49,7 +49,7 @@ namespace Chat_Client
 
             while (MumbleData.IsAvailable == false)
             {
-                Console.WriteLine("MumbleAPI is not ready (at first character selection or first map load)");
+                Console.WriteLine("MumbleAPI is not ready (at first character selection or first map load?)");
                 MumbleData.Update();
                 Thread.Sleep(1000);
             }
