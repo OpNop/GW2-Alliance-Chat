@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>tiny_icon.ico</ApplicationIcon>
     <StartupObject />
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -38,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="gw2sharp" Version="0.7.4" />
+    <PackageReference Include="gw2sharp" Version="0.8.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SuperSimpleTcp" Version="1.1.8" />
   </ItemGroup>
@@ -57,4 +58,11 @@
     </None>
   </ItemGroup>
 
+  <PropertyGroup>
+    <DateFormat>$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</DateFormat>
+  </PropertyGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release (powershell Compress-Archive -Path '$(TargetDir)*' -DestinationPath '$(TargetDir)\..\..\ChatClient-$(ConfigurationName)-$(DateFormat).zip' -Force)" />
+  </Target>
 </Project>
