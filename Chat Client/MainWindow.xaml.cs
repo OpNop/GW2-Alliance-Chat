@@ -54,7 +54,11 @@ namespace Chat_Client
 
             //Check for running Game
             game = new Game();
-            game.Load();
+            game.GameStateChanged += GameStateChanged;
+            game.StartWatch();
+            
+            Console.ReadLine();
+            //game.Load();
             
             //Exit if game is not running 
             //Temporary untill we can watch for game
@@ -128,6 +132,19 @@ namespace Chat_Client
                 
             }
 
+        private void GameStateChanged(object sender, GameStateChangedArgs e)
+        {
+            _log.AddNotice($"Game State is: {e.GameState}");
+            switch (e.GameState)
+            {
+                case GameState.NotRunning:
+                    break;
+                case GameState.Launcher:
+                    break;
+                case GameState.InGame:
+                    break;
+            }
+        }
 
             
         }

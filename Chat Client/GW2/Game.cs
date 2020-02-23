@@ -1,113 +1,114 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using DLG.ToolBox.Log;
 
 namespace Chat_Client
 {
     public class Game
     {
-        [DllImport("USER32.DLL")]
-        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        public event EventHandler<EventArgs> Gw2Closed;
-        public event EventHandler<EventArgs> Gw2Started;
-
-        private const string GW2_64_BIT_PROCESSNAME = "Gw2-64";
-        private const string GW2_32_BIT_PROCESSNAME = "Gw2";
-
+        [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
         private const string GW2_GAMEWINDOW_NAME = "ArenaNet_Dx_Window_Class";
 
-        private bool _IsRunning = false;
-        private Process _Process;
-        public IntPtr Gw2WindowHandle { get; private set; }
         private static readonly Logger _log = Logger.getInstance();
+        private Thread _gameWatcher;
+        private bool _requestStop;
+        private Process _gw2Process;
+        private GameState _gameState;
 
-        public Game() {
-            _log.AddDebug("=== Started Game() ===");
-        }
+        public event EventHandler<GameStateChangedArgs> GameStateChanged;
 
-        public bool IsRunning
+        public GameState GameState
         {
-            get => _IsRunning;
-            private set
+            get => _gameState; private set
             {
-                if (_IsRunning == value) return;
+                if (_gameState == value)
+                    return;
 
-                _IsRunning = value;
-
-                if (_IsRunning)
-                {
-                    this.Gw2Started?.Invoke(this, EventArgs.Empty);
-                }
-                else
-                {
-                    this.Gw2Closed?.Invoke(this, EventArgs.Empty);
-                }
+                _gameState = value;
+                GameStateChanged?.Invoke(this, new GameStateChangedArgs(GameState));
             }
         }
 
-        public void Load()
+        public Game()
         {
-            _log.AddDebug("Called");
-            Process = GetProcess();
+            GameState = GameState.NotRunning;
+            _requestStop = false;
         }
-        public Process Process
+
+        public void StartWatch()
         {
-            get => _Process;
-            set
+            _log.AddDebug("Starting Game Watcher Thread");
+            _gameWatcher = new Thread(GameWatchLoop);
+            _gameWatcher.Start();
+        }
+
+        public void StopWatch()
+        {
+            _log.AddDebug("Stopping Game Watcher Thread");
+            _requestStop = true;
+        }
+
+        private void GameWatchLoop()
+        {
+            while (!_requestStop)
             {
-                if (_Process == value) return;
-
-                _Process = value;
-
-                if (value == null || _Process.MainWindowHandle == IntPtr.Zero)
+                if (_gw2Process == null)
                 {
-                    //BlishHud.Form.Invoke((MethodInvoker)(() => { BlishHud.Form.Visible = false; }));
-
-                    _Process = null;
+                    //Check if GuildWars is running
+                    GetProcess();
                 }
                 else
                 {
-                    Gw2WindowHandle = _Process.MainWindowHandle;
+                    //Refresh data to catch window className change
+                    _gw2Process.Refresh();
 
-                    if (_Process.MainModule != null)
+                    //Check what mode the game is in
+                    var gameWindow = GetWindowClassName(_gw2Process.MainWindowHandle);
+                    if (gameWindow == GW2_PATCHWINDOW_NAME)
                     {
-                        //_gw2ExecutablePath.Value = _Process.MainModule.FileName;
+                        GameState = GameState.Launcher;
+                    }
+                    else if (gameWindow == GW2_GAMEWINDOW_NAME)
+                    {
+                        //Game is in proper game
+                        _requestStop = true;
+                        GameState = GameState.InGame;
                     }
                 }
-
-                IsRunning = _Process != null && GetWindowClassName(Process.MainWindowHandle) == GW2_GAMEWINDOW_NAME;
+                Thread.Sleep(1000);
             }
         }
 
-        private Process GetProcess()
+        private void GetProcess()
         {
-            _log.AddInfo("Checking for GW2 Process");
-            // Check to see if 64-bit Gw2 process is running (since it's likely the most common at this point)
-            Process[] Processes = Process.GetProcessesByName(GW2_64_BIT_PROCESSNAME);
-            _log.AddDebug($"Processes = {Processes.Length}");
-
-            if (Processes.Length == 0)
+            _log.AddDebug("Checking for GW2 Process");
+            
+            // Only checking for x64 client 
+            Process[] Processes = Process.GetProcessesByName("Gw2-64");
+            
+            if (Processes.Length >= 1 )
             {
-                // 64-bit process not found so see if they're using a 32-bit client instead
-                _log.AddInfo("Checking for 32-bit client");
-                Processes = Process.GetProcessesByName(GW2_32_BIT_PROCESSNAME);
-                _log.AddDebug($"Processes = {Processes.Length}");
+                _log.AddDebug($"Found {Processes.Length} Processes");
+                _gw2Process = Processes[0];
+                _gw2Process.EnableRaisingEvents = true;
+                _gw2Process.Exited += GameExited;
             }
+        }
 
-            if (Processes.Length > 0)
-            {
-                // TODO: We don't currently have multibox support, but future updates should at least handle
-                // multiboxing in a better way
-                _log.AddInfo($"Game found: ({Processes[0].Id}) {Processes[0].MainModule.FileName}");
-                return Processes[0];
-            }
-            _log.AddError("Game is not running");
-            return null;
+        private void GameExited(object sender, EventArgs e)
+        {
+            _log.AddInfo("Game exited");
+            GameState = GameState.NotRunning;
+            _gw2Process = null;
+            _requestStop = false;
+
+            //Start the watcher again
+            StartWatch();
         }
 
         private string GetWindowClassName(IntPtr handle)
@@ -116,5 +117,12 @@ namespace Chat_Client
             GetClassName(handle, className, className.Capacity);
             return className.ToString();
         }
+    }
+
+    public enum GameState
+    {
+        NotRunning,
+        Launcher,
+        InGame
     }
 }
