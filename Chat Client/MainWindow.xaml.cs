@@ -18,6 +18,7 @@ using Gw2Sharp.Mumble;
 using System.Threading;
 using DLG.ToolBox.Log;
 using System.Net;
+using System.IO;
 
 delegate void Message(string time, string from, string message);
 
@@ -40,6 +41,9 @@ namespace Chat_Client
         private bool _autoScroll = true;
         private bool _debugMode = false;
 
+        private System.Windows.Forms.NotifyIcon _notifyIcon;
+        private bool _isExit;
+
         public readonly Game game;
         public readonly Mumble mumble;
         public readonly Dictionary<int, Map> maps;
@@ -52,6 +56,8 @@ namespace Chat_Client
 
             InitializeComponent();
 
+            SetupNotifyIcon();
+
             //Check for running Game
             game = new Game();
             game.GameStateChanged += GameStateChanged;
@@ -62,7 +68,8 @@ namespace Chat_Client
             
             //Exit if game is not running 
             //Temporary untill we can watch for game
-            if (!game.IsRunning) {
+            //if (!game.IsRunning)
+            {
                 var startDebugMode = MessageBox.Show("Game not detected, do you want to load in test client mode?", "Game not running", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if(startDebugMode == MessageBoxResult.Yes)
                 {
@@ -131,6 +138,7 @@ namespace Chat_Client
                 }
                 
             }
+        }
 
         private void GameStateChanged(object sender, GameStateChangedArgs e)
         {
@@ -146,7 +154,35 @@ namespace Chat_Client
             }
         }
 
-            
+        private void SetupNotifyIcon()
+        {
+            _notifyIcon = new System.Windows.Forms.NotifyIcon();
+            _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
+            _notifyIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/Assets/tiny_icon.ico")).Stream);
+            _notifyIcon.Visible = true;
+            _notifyIcon.Text = "Tiny Alliance Chat Service (TACS)";
+
+            CreateContextMenu();
+        }
+
+        private void CreateContextMenu()
+        {
+            _notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+            _notifyIcon.ContextMenuStrip.Items.Add("Show Chat").Click += (s, e) => ShowMainWindow();
+            _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, e) => ExitApplication();
+        }
+
+        private void ExitApplication()
+        {
+            _isExit = true;
+            Close();
+            _notifyIcon.Dispose();
+            _notifyIcon = null;
+        }
+
+        private void ShowMainWindow()
+        {
+            this.Show();
         }
 
         private void isMapShowing(object sender, MapStatusChangedArgs e)
@@ -385,7 +421,17 @@ namespace Chat_Client
 
         private void btnExit_Click(object sender, MouseButtonEventArgs e)
         {
-            Environment.Exit(0);
+            //Environment.Exit(0);
+            Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!_isExit)
+            {
+                e.Cancel = true;
+                Hide(); // A hidden window can be shown again, a closed one not
+            }
         }
     }
 }
