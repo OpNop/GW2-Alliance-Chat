@@ -37,8 +37,8 @@ namespace Chat_Client
 
         public void Init()
         {
-            var connection = new Connection();
-            var GW2client = new Gw2Client(connection);
+            
+            var GW2client = new Gw2Client();
             MumbleData = GW2client.Mumble;
         }
 

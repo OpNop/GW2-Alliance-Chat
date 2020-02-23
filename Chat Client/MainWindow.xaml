@@ -16,7 +16,7 @@
     Topmost="True"
     WindowStyle="None"
     mc:Ignorable="d"
-    ResizeMode="CanResizeWithGrip">
+    ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
 
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />

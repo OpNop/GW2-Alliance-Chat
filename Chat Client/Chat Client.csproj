@@ -24,6 +24,7 @@
     <None Remove="Assets\156106.png" />
     <None Remove="Assets\close.png" />
     <None Remove="Assets\menomonia.ttf" />
+    <None Remove="Assets\tiny_icon.ico" />
     <None Remove="Assets\tiny_icon.png" />
   </ItemGroup>
 
@@ -31,6 +32,7 @@
     <Resource Include="Assets\155139.png" />
     <Resource Include="Assets\close.png" />
     <Resource Include="Assets\menomonia.ttf" />
+    <Resource Include="Assets\tiny_icon.ico" />
     <Resource Include="Assets\tiny_icon.png" />
   </ItemGroup>
 
@@ -50,6 +52,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>
