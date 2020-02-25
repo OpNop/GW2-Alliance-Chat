@@ -168,7 +168,7 @@ namespace Chat_Client
             this.Show();
         }
 
-        private void isMapShowing(object sender, MapStatusChangedArgs e)
+        private void IsMapShowing(object sender, MapStatusChangedArgs e)
         {
             if (e.IsMapOpen)
             {
@@ -185,7 +185,7 @@ namespace Chat_Client
             }
         }
 
-        private void updateCharacter()
+        private void UpdateCharacter()
         {
             var debugMumble = new
             {
@@ -314,7 +314,7 @@ namespace Chat_Client
         {
             WriteToChat("Server connected");
 
-            await Task.Run(() => updateCharacter());
+            await Task.Run(() => UpdateCharacter());
         }
 
         void ServerDisconnected(object sender, EventArgs e)
@@ -454,7 +454,7 @@ namespace Chat_Client
             if (!_debugMode)
             {
                 mumble = new Mumble();
-                mumble.MapStatusChanged += isMapShowing;
+                mumble.MapStatusChanged += IsMapShowing;
                 mumble.Init();
                 mumble.HookGame();
 
