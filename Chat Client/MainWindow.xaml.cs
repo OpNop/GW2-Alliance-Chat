@@ -19,6 +19,7 @@ using System.Threading;
 using DLG.ToolBox.Log;
 using System.Net;
 using System.IO;
+using Chat_Client.utils;
 
 delegate void Message(string time, string from, string message);
 
@@ -54,11 +55,51 @@ namespace Chat_Client
         {
             InitializeComponent();
 
+            //Parse Arguments
+            ParseArguments();
+
             //Init logger class
             _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 
             //Setup Tray Icon
             SetupNotifyIcon();
+        }
+
+        private void ParseArguments()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            Arguments CommandLine = new Arguments(args);
+
+            if (CommandLine["?"] != null || CommandLine["help"] != null)
+            {
+                Console.WriteLine("Options:");
+                Console.WriteLine("  --help\tShows this message");
+                Console.WriteLine("  --server\tSets the chat server to connect to");
+                Console.WriteLine("  --port\tSets the port to use for the chat server");
+                Console.WriteLine("  --debug\tStarts the client in debug mode");
+                Environment.Exit(0);
+            }
+                        
+            // --server
+            if(CommandLine["server"] != null)
+            {
+                serverAddr = CommandLine["server"];
+                _log.AddInfo($"Using Server IP: {serverAddr}");
+            }
+
+            // --port
+            if(CommandLine["port"] != null)
+            {
+                serverPort = int.Parse(CommandLine["port"]);
+                _log.AddInfo($"Using Server Port: {serverPort}");
+            }
+
+            // --debug
+            if(CommandLine["debug"] != null)
+            {
+                _debugMode = true;
+                _log.AddWarning("Starting in Debug Mode");
+            }
         }
 
         private void CheckForAPIKey()
@@ -403,6 +444,8 @@ namespace Chat_Client
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
+
             //Check For API key
             CheckForAPIKey();
 
@@ -437,20 +480,9 @@ namespace Chat_Client
                 Task.Run(() => mumble.UpdateMumble());
             }
 
-            string[] args = Environment.GetCommandLineArgs();
+            
 
-            //Setup Client
-            if (args.Length >= 2)
-            {
-                serverAddr = args[1];
-                Console.WriteLine($"Using Server IP: {serverAddr}");
-            }
-
-            if (args.Length == 3)
-            {
-                serverPort = int.Parse(args[2]);
-                Console.WriteLine($"Using Server Port: {serverPort}");
-            }
+            
 
             if (!IPAddress.TryParse(serverAddr, out IPAddress ipAddress))
             {
