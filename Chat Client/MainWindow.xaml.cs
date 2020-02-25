@@ -266,9 +266,9 @@ namespace Chat_Client
             }
         }
 
-        async Task MessageReceived(byte[] data)
+        async void MessageReceived(object sender, DataReceivedFromServerEventArgs e)
         {
-            var rawData = Encoding.UTF8.GetString(data);
+            var rawData = Encoding.UTF8.GetString(e.Data);
             //check for multiple packets
             var rawPackets = rawData.Split(new char[] { '\r' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var rawPacket in rawPackets)
@@ -300,23 +300,23 @@ namespace Chat_Client
                             throw new Exception("Missing packet type");
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    WriteToChat(e.Message);
+                    WriteToChat(ex.Message);
                 }
             }
 
             
         }
 
-        async Task ServerConnected()
+        async void ServerConnected(object sender, EventArgs e)
         {
             WriteToChat("Server connected");
 
             await Task.Run(() => updateCharacter());
         }
 
-        async Task ServerDisconnected()
+        void ServerDisconnected(object sender, EventArgs e)
         {
             WriteToChat("Server disconnected, Retrying in 5 seconds -- But in reality I wont, need to fix this.");
             while (client.IsConnected == false)
@@ -464,21 +464,11 @@ namespace Chat_Client
                 Task.Run(() => mumble.UpdateMumble());
             }
 
-            
-
-            
-
-            if (!IPAddress.TryParse(serverAddr, out IPAddress ipAddress))
-            {
-                ipAddress = Dns.GetHostEntry(serverAddr).AddressList[0];
-            }
             _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
-            client = new TcpClient(ipAddress.ToString(), serverPort, false, null, null)
-            {
-                Connected = ServerConnected,
-                Disconnected = ServerDisconnected,
-                DataReceived = MessageReceived
-            };
+            client = new TcpClient(serverAddr, serverPort, false, null, null);
+            client.Connected += ServerConnected;
+            client.Disconnected += ServerDisconnected;
+            client.DataReceived += MessageReceived;
 
             //Send default messages
             WriteToChat("==TINY Alliance Chat System==");
