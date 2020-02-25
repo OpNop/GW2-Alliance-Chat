@@ -105,11 +105,10 @@ namespace Chat_Client
         private void CheckForAPIKey()
         {
             APIKey = Properties.Settings.Default.apiKey;
-            if (APIKey == "")
+            if (APIKey.Length == 0)
             {
                 ShowKeyDialog();
             }
-            
         }
 
         private void ShowKeyDialog()
@@ -413,7 +412,6 @@ namespace Chat_Client
 
         private void btnExit_Click(object sender, MouseButtonEventArgs e)
         {
-            //Environment.Exit(0);
             Close();
         }
 
@@ -444,8 +442,6 @@ namespace Chat_Client
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
-
             //Check For API key
             CheckForAPIKey();
 
@@ -453,20 +449,8 @@ namespace Chat_Client
             game.GameStateChanged += GameStateChanged;
             game.StartWatch();
 
-            if (game.GameState != GameState.InGame)
-            {
-                var startDebugMode = MessageBox.Show("Game not detected, do you want to load in test client mode?", "Game not running", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (startDebugMode == MessageBoxResult.Yes)
-                {
-                    _debugMode = true;
-                }
-                else
-                {
-                    Environment.Exit(0);
-                }
-            }
-
             //Load Map service
+            //This will soon be moved to the server
             maps = Map.Load();
 
             //Load Mumble
