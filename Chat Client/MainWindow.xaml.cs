@@ -47,7 +47,6 @@ namespace Chat_Client
 
         public readonly Game game = new Game();
         public Mumble mumble;
-        public Dictionary<int, Map> maps;
         public string APIKey;
         private static readonly Logger _log = Logger.getInstance();
 
@@ -225,7 +224,8 @@ namespace Chat_Client
                         race = debugMumble.MumbleData.Race,
                         prof = debugMumble.MumbleData.Profession,
                         spec = EliteSpec.GetElite(debugMumble.MumbleData.Specialization),
-                        map = maps[debugMumble.MumbleData.MapId].MapName,
+                        //map = maps[debugMumble.MumbleData.MapId].MapName,
+                        map = debugMumble.MumbleData.MapId,
                         position = new
                         {
                             X = $"{debugMumble.MumbleData.AvatarPosition.X:N6}",
@@ -245,7 +245,8 @@ namespace Chat_Client
                         race = mumble.MumbleData.Race,
                         prof = mumble.MumbleData.Profession,
                         spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
-                        map = maps[mumble.MumbleData.MapId].MapName,
+                        //map = maps[mumble.MumbleData.MapId].MapName,
+                        map = mumble.MumbleData.MapId,
                         position = new
                         {
                             X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
@@ -448,10 +449,6 @@ namespace Chat_Client
             //Start watching for game
             game.GameStateChanged += GameStateChanged;
             game.StartWatch();
-
-            //Load Map service
-            //This will soon be moved to the server
-            maps = Map.Load();
 
             //Load Mumble
             if (!_debugMode)
