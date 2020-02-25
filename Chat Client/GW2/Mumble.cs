@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using DLG.ToolBox.Log;
 using Gw2Sharp;
 using Gw2Sharp.Mumble;
 
@@ -10,76 +8,65 @@ namespace Chat_Client
 {
     public class Mumble
     {
+        private static readonly Logger _log = Logger.getInstance();
         private IGw2MumbleClient _mumbleClient;
-        private int tick = -1;
+        private bool _requestStop;
+        private Thread _mumbleRefresher;
+        private bool _lastMapState;
+
         public event EventHandler<MapStatusChangedArgs> MapStatusChanged;
-        private bool LastMapState;
+        public event EventHandler<MumbleUpdatedArgs> MumbleUpdated;
 
-        public IGw2MumbleClient MumbleData {
-            get => _mumbleClient;
-            private set
+        public Mumble()
+        {
+            _mumbleClient = new Gw2Client().Mumble;
+            _requestStop = false;
+        }
+
+        public void StartMumbleRefresh()
+        {
+            _log.AddDebug("Starting Mumble Refresh Thread");
+            _mumbleRefresher = new Thread(MumbleRefreshLoop);
+            _mumbleRefresher.Start();
+        }
+
+        public void StopMumbleRefresh()
+        {
+            _log.AddDebug("Stopping Mumble Refresh Thread");
+            _requestStop = true;
+        }
+
+        private void MumbleRefreshLoop()
+        {
+            while (!_requestStop)
             {
-                if(value == null) { return; }
+                bool shouldRun = true;
+                _mumbleClient.Update();
 
-                //memory file is stale
-                if( value.Tick == tick )
+                //Check if Mumble is ready
+                if (!_mumbleClient.IsAvailable)
+                    shouldRun = false;
+
+                //Check if player is in a map
+                if (_mumbleClient.MapId == 0)
+                    shouldRun = false;
+
+                if (shouldRun)
                 {
-                    _mumbleClient.Dispose();
+                    if (_lastMapState != _mumbleClient.IsMapOpen)
+                    {
+                        _lastMapState = _mumbleClient.IsMapOpen;
+                        MapStatusChanged?.Invoke(this, new MapStatusChangedArgs(_lastMapState));
+                    }
+                    //Only update the server every 5000 ticks
+                    if ((_mumbleClient.Tick % 500) == 0)
+                    {
+                        _log.AddDebug("Sending Update");
+                        MumbleUpdated?.Invoke(this, new MumbleUpdatedArgs(_mumbleClient));
+                    }
                 }
-                else
-                {
-                    _mumbleClient = value;
-                }
+                Thread.Sleep(1000 / 60);
             }
         }
-
-        public Mumble() { }
-
-        public void Init()
-        {
-            
-            var GW2client = new Gw2Client();
-            MumbleData = GW2client.Mumble;
-        }
-
-        public void HookGame()
-        {
-            //IsAvailable will always be false untill you call Update
-            MumbleData.Update();
-
-            while (MumbleData.IsAvailable == false)
-            {
-                Console.WriteLine("MumbleAPI is not ready (at first character selection or first map load?)");
-                MumbleData.Update();
-                Thread.Sleep(1000);
-            }
-
-            tick = MumbleData.Tick;
-        }
-
-        public void UpdateMumble()
-        {
-            while (MumbleData.IsAvailable)
-            {
-                MumbleData.Update();
-                if(LastMapState != MumbleData.IsMapOpen)
-                {
-                    LastMapState = MumbleData.IsMapOpen;
-                    OnMapStatusChanged(new MapStatusChangedArgs() { IsMapOpen = LastMapState });
-                }
-                Thread.Sleep(100);
-            }
-        }
-
-        protected virtual void OnMapStatusChanged(MapStatusChangedArgs e)
-        {
-            EventHandler<MapStatusChangedArgs> handler = MapStatusChanged;
-            handler?.Invoke(this, e);
-        }
-    }
-
-    public class MapStatusChangedArgs : EventArgs
-    {
-        public bool IsMapOpen { get; set; }
     }
 }
