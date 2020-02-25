@@ -127,12 +127,16 @@ namespace Chat_Client
             {
                 case GameState.NotRunning:
                     //Stop Mumble Watcher
+                    mumble.StopMumbleRefresh();
                     break;
                 case GameState.Launcher:
                     //IDK?
+                    //Stop the mumble update also I guess
+                    mumble.StopMumbleRefresh();
                     break;
                 case GameState.InGame:
                     //Start Mumble Watcher
+                    mumble.StartMumbleRefresh();
                     break;
             }
         }
@@ -185,87 +189,87 @@ namespace Chat_Client
             }
         }
 
-        private void UpdateCharacter()
-        {
-            var debugMumble = new
-            {
-                MumbleData = new
-                {
-                    CharacterName = "Test Client " + DateTime.Now.ToString("hhmmss"),
-                    IsCommander = false,
-                    Race = "Asura",
-                    Profession = "test Profession",
-                    Specialization = 34,
-                    MapId = 18,
-                    AvatarPosition = new
-                    {
-                        X = 0,
-                        Y = 0,
-                        Z = 0
-                    },
-                    ServerAddress = "0.0.0.0"
+        //private void UpdateCharacter()
+        //{
+        //    var debugMumble = new
+        //    {
+        //        MumbleData = new
+        //        {
+        //            CharacterName = "Test Client " + DateTime.Now.ToString("hhmmss"),
+        //            IsCommander = false,
+        //            Race = "Asura",
+        //            Profession = "test Profession",
+        //            Specialization = 34,
+        //            MapId = 18,
+        //            AvatarPosition = new
+        //            {
+        //                X = 0,
+        //                Y = 0,
+        //                Z = 0
+        //            },
+        //            ServerAddress = "0.0.0.0"
 
-                }
-            };
+        //        }
+        //    };
 
             
-            while (true)
-            {
+        //    while (true)
+        //    {
 
-                object packet;
+        //        object packet;
 
-                if (_debugMode)
-                {
-                    packet = new
-                    {
-                        type = PacketType.UPDATE,
-                        name = debugMumble.MumbleData.CharacterName,
-                        commander = debugMumble.MumbleData.IsCommander,
-                        race = debugMumble.MumbleData.Race,
-                        prof = debugMumble.MumbleData.Profession,
-                        spec = EliteSpec.GetElite(debugMumble.MumbleData.Specialization),
-                        //map = maps[debugMumble.MumbleData.MapId].MapName,
-                        map = debugMumble.MumbleData.MapId,
-                        position = new
-                        {
-                            X = $"{debugMumble.MumbleData.AvatarPosition.X:N6}",
-                            Y = $"{debugMumble.MumbleData.AvatarPosition.Y:N6}",
-                            Z = $"{debugMumble.MumbleData.AvatarPosition.Z:N6}"
-                        },
-                        server_address = debugMumble.MumbleData.ServerAddress
-                    };
-                }
-                else
-                {
-                    packet = new
-                    {
-                        type = PacketType.UPDATE,
-                        name = mumble.MumbleData.CharacterName,
-                        commander = mumble.MumbleData.IsCommander,
-                        race = mumble.MumbleData.Race,
-                        prof = mumble.MumbleData.Profession,
-                        spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
-                        //map = maps[mumble.MumbleData.MapId].MapName,
-                        map = mumble.MumbleData.MapId,
-                        position = new
-                        {
-                            X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
-                            Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
-                            Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
-                        },
-                        server_address = mumble.MumbleData.ServerAddress
-                    };
-                }
-                if (client.IsConnected)
-                {
-                    client.Send(JsonConvert.SerializeObject(packet));
-                    Thread.Sleep(500);
-                } else
-                {
-                    return;
-                }
-            }
-        }
+        //        if (_debugMode)
+        //        {
+        //            packet = new
+        //            {
+        //                type = PacketType.UPDATE,
+        //                name = debugMumble.MumbleData.CharacterName,
+        //                commander = debugMumble.MumbleData.IsCommander,
+        //                race = debugMumble.MumbleData.Race,
+        //                prof = debugMumble.MumbleData.Profession,
+        //                spec = EliteSpec.GetElite(debugMumble.MumbleData.Specialization),
+        //                //map = maps[debugMumble.MumbleData.MapId].MapName,
+        //                map = debugMumble.MumbleData.MapId,
+        //                position = new
+        //                {
+        //                    X = $"{debugMumble.MumbleData.AvatarPosition.X:N6}",
+        //                    Y = $"{debugMumble.MumbleData.AvatarPosition.Y:N6}",
+        //                    Z = $"{debugMumble.MumbleData.AvatarPosition.Z:N6}"
+        //                },
+        //                server_address = debugMumble.MumbleData.ServerAddress
+        //            };
+        //        }
+        //        else
+        //        {
+        //            packet = new
+        //            {
+        //                type = PacketType.UPDATE,
+        //                name = mumble.MumbleData.CharacterName,
+        //                commander = mumble.MumbleData.IsCommander,
+        //                race = mumble.MumbleData.Race,
+        //                prof = mumble.MumbleData.Profession,
+        //                spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
+        //                //map = maps[mumble.MumbleData.MapId].MapName,
+        //                map = mumble.MumbleData.MapId,
+        //                position = new
+        //                {
+        //                    X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
+        //                    Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
+        //                    Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
+        //                },
+        //                server_address = mumble.MumbleData.ServerAddress
+        //            };
+        //        }
+        //        if (client.IsConnected)
+        //        {
+        //            client.Send(JsonConvert.SerializeObject(packet));
+        //            Thread.Sleep(500);
+        //        } else
+        //        {
+        //            return;
+        //        }
+        //    }
+        //}
 
         async void MessageReceived(object sender, DataReceivedFromServerEventArgs e)
         {
@@ -314,10 +318,10 @@ namespace Chat_Client
         {
             WriteToChat("Server connected");
 
-            await Task.Run(() => UpdateCharacter());
+            //await Task.Run(() => UpdateCharacter());
         }
 
-        void ServerDisconnected(object sender, EventArgs e)
+        private void ServerDisconnected(object sender, EventArgs e)
         {
             WriteToChat("Server disconnected, Retrying in 5 seconds -- But in reality I wont, need to fix this.");
             while (client.IsConnected == false)
@@ -325,16 +329,6 @@ namespace Chat_Client
                 Thread.Sleep(5000);
                 client.Connect();
             }
-        }
-
-        async Task UpdateMumble()
-        {
-            //check if game is running 
-            
-
-            //check if Mumble is running
-
-            //update
         }
 
         private void WriteToChat(string time, string from, string message)
@@ -439,6 +433,10 @@ namespace Chat_Client
                 e.Cancel = true;
                 Hide();
             }
+
+            //Really quitting stop the watchers
+            mumble.StopMumbleRefresh();
+            game.StopWatch();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -450,16 +448,19 @@ namespace Chat_Client
             game.GameStateChanged += GameStateChanged;
             game.StartWatch();
 
-            //Load Mumble
-            if (!_debugMode)
-            {
-                mumble = new Mumble();
-                mumble.MapStatusChanged += IsMapShowing;
-                mumble.Init();
-                mumble.HookGame();
+            mumble = new Mumble();
+            mumble.MapStatusChanged += IsMapShowing;
+            mumble.MumbleUpdated += OnMumbleUpdated;
 
-                Task.Run(() => mumble.UpdateMumble());
-            }
+            //Load Mumble
+            //if (!_debugMode)
+            //{
+                
+            //    mumble.Init();
+            //    mumble.HookGame();
+
+            //    Task.Run(() => mumble.UpdateMumble());
+            //}
 
             _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
             client = new TcpClient(serverAddr, serverPort, false, null, null);
@@ -472,8 +473,8 @@ namespace Chat_Client
             WriteToChat("==          Version Beta 1         ==");
             WriteToChat("");
 
-            if (_debugMode || mumble.MumbleData.CharacterName != "")
-            {
+            //if (_debugMode || mumble.MumbleData.CharacterName != "")
+            //{
                 try
                 {
                     client.Connect();
@@ -483,6 +484,35 @@ namespace Chat_Client
                     WriteToChat("Can not connect to server, retrying in 5 seconds");
                 }
 
+            //}
+        }
+
+        private void OnMumbleUpdated(object sender, MumbleUpdatedArgs mumble)
+        {
+            //If connected to the server
+            if (client.IsConnected)
+            {
+                //Send update packet
+                var packet = new
+                {
+                    type = PacketType.UPDATE,
+                    name = mumble.MumbleData.CharacterName,
+                    commander = mumble.MumbleData.IsCommander,
+                    race = mumble.MumbleData.Race,
+                    prof = mumble.MumbleData.Profession,
+                    spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
+                    //map = maps[mumble.MumbleData.MapId].MapName,
+                    map = mumble.MumbleData.MapId,
+                    position = new
+                    {
+                        X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
+                        Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
+                        Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
+                    },
+                    server_address = mumble.MumbleData.ServerAddress
+                };
+
+                client.Send(JsonConvert.SerializeObject(packet));
             }
         }
     }
