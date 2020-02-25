@@ -13,10 +13,13 @@
     MaxWidth="512"
     MaxHeight="512"
     AllowsTransparency="True"
+    Closing="Window_Closing"
+    Cursor="Assets/mouse.cur"
+    Loaded="Window_Loaded"
+    ResizeMode="CanResizeWithGrip"
     Topmost="True"
     WindowStyle="None"
-    mc:Ignorable="d"
-    ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
+    mc:Ignorable="d">
 
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
@@ -95,9 +98,10 @@
         <DockPanel
             x:Name="TitleBar"
             Height="20"
+            VerticalAlignment="Top"
             Background="Black"
             DockPanel.Dock="Top"
-            MouseDown="DragWindow" VerticalAlignment="Top">
+            MouseDown="DragWindow">
 
             <TextBlock
                 Margin="4,0,0,0"
@@ -120,9 +124,7 @@
                 Stretch="UniformToFill" />
 
         </DockPanel>
-        <Grid
-            DockPanel.Dock="Top"
-            FocusManager.FocusedElement="{Binding ElementName=message}">
+        <Grid DockPanel.Dock="Top" FocusManager.FocusedElement="{Binding ElementName=message}">
             <ScrollViewer
                 x:Name="ScrollViewer"
                 Margin="0,0,0,23"

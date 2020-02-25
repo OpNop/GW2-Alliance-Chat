@@ -37,107 +37,48 @@ namespace Chat_Client
         private int serverPort = 8888;
 #endif
 
-        private readonly TcpClient client;
+        private TcpClient client;
         private bool _autoScroll = true;
         private bool _debugMode = false;
 
         private System.Windows.Forms.NotifyIcon _notifyIcon;
         private bool _isExit;
 
-        public readonly Game game;
-        public readonly Mumble mumble;
-        public readonly Dictionary<int, Map> maps;
+        public readonly Game game = new Game();
+        public Mumble mumble;
+        public Dictionary<int, Map> maps;
+        public string APIKey;
         private static readonly Logger _log = Logger.getInstance();
 
         public MainWindow()
         {
+            InitializeComponent();
+
             //Init logger class
             _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 
-            InitializeComponent();
-
+            //Setup Tray Icon
             SetupNotifyIcon();
+        }
 
-            //Check for running Game
-            game = new Game();
-            game.GameStateChanged += GameStateChanged;
-            game.StartWatch();
+        private void CheckForAPIKey()
+        {
+            APIKey = Properties.Settings.Default.apiKey;
+            if (APIKey == "")
+            {
+                ShowKeyDialog();
+            }
             
-            Console.ReadLine();
-            //game.Load();
-            
-            //Exit if game is not running 
-            //Temporary untill we can watch for game
-            //if (!game.IsRunning)
-            {
-                var startDebugMode = MessageBox.Show("Game not detected, do you want to load in test client mode?", "Game not running", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if(startDebugMode == MessageBoxResult.Yes)
-                {
-                    _debugMode = true;
-                } else
-                {
-                    Environment.Exit(0);
-                }
-            }
+        }
 
-            //Load Map service
-            maps = Map.Load();
+        private void ShowKeyDialog()
+        {
+            var keyWindow = new APIKey();
+            keyWindow.Owner = this;
+            keyWindow.ShowDialog();
 
-            //Load Mumble
-            if (!_debugMode)
-            {
-                mumble = new Mumble();
-                mumble.MapStatusChanged += isMapShowing;
-                mumble.Init();
-                mumble.HookGame();
-
-                Task.Run(() => mumble.UpdateMumble());
-            }
-
-            string[] args = Environment.GetCommandLineArgs();
-
-            //Setup Client
-            if (args.Length >= 2)
-            {
-                serverAddr = args[1];
-                Console.WriteLine($"Using Server IP: {serverAddr}");
-            }
-
-            if (args.Length == 3)
-            {
-                serverPort = int.Parse(args[2]);
-                Console.WriteLine($"Using Server Port: {serverPort}");
-            }
-
-            if (!IPAddress.TryParse(serverAddr, out IPAddress ipAddress))
-            {
-                ipAddress = Dns.GetHostEntry(serverAddr).AddressList[0];
-            }
-            _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
-            client = new TcpClient(ipAddress.ToString(), serverPort, false, null, null)
-            {
-                Connected = ServerConnected,
-                Disconnected = ServerDisconnected,
-                DataReceived = MessageReceived
-            };
-
-            //Send default messages
-            WriteToChat("==TINY Alliance Chat System==");
-            WriteToChat("==          Version Beta 1         ==");
-            WriteToChat("");
-            
-            if (_debugMode || mumble.MumbleData.CharacterName != "")
-            {
-                try
-                {
-                    client.Connect();
-                }
-                catch (Exception)
-                {
-                    WriteToChat("Can not connect to server, retrying in 5 seconds");
-                }
-                
-            }
+            //Reload Key
+            APIKey = Properties.Settings.Default.apiKey;
         }
 
         private void GameStateChanged(object sender, GameStateChangedArgs e)
@@ -146,10 +87,13 @@ namespace Chat_Client
             switch (e.GameState)
             {
                 case GameState.NotRunning:
+                    //Stop Mumble Watcher
                     break;
                 case GameState.Launcher:
+                    //IDK?
                     break;
                 case GameState.InGame:
+                    //Start Mumble Watcher
                     break;
             }
         }
@@ -393,13 +337,20 @@ namespace Chat_Client
         {
             if (e.Key == Key.Return && message.Text != "")
             {
-                //send packet as nomral
-                var packet = new
+                if (message.Text == "/setkey")
                 {
-                    type = PacketType.MESSAGE,
-                    message = message.Text
-                };
-                client.Send(JsonConvert.SerializeObject(packet));
+                    ShowKeyDialog();
+                }
+                else
+                {
+                    //send packet as nomral
+                    var packet = new
+                    {
+                        type = PacketType.MESSAGE,
+                        message = message.Text
+                    };
+                    client.Send(JsonConvert.SerializeObject(packet));
+                }
 
                 message.Text = "";
             }
@@ -425,12 +376,110 @@ namespace Chat_Client
             Close();
         }
 
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            this.Top = Properties.Settings.Default.Top;
+            this.Left = Properties.Settings.Default.Left;
+            this.Height = Properties.Settings.Default.Height;
+            this.Width = Properties.Settings.Default.Width;
+
+            base.OnSourceInitialized(e);
+        }
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            //Save window location and size
+            Properties.Settings.Default.Top = this.Top;
+            Properties.Settings.Default.Left = this.Left;
+            Properties.Settings.Default.Height = this.Height;
+            Properties.Settings.Default.Width = this.Width;
+            Properties.Settings.Default.Save();
             if (!_isExit)
             {
                 e.Cancel = true;
-                Hide(); // A hidden window can be shown again, a closed one not
+                Hide();
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //Check For API key
+            CheckForAPIKey();
+
+            //Start watching for game
+            game.GameStateChanged += GameStateChanged;
+            game.StartWatch();
+
+            if (game.GameState != GameState.InGame)
+            {
+                var startDebugMode = MessageBox.Show("Game not detected, do you want to load in test client mode?", "Game not running", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (startDebugMode == MessageBoxResult.Yes)
+                {
+                    _debugMode = true;
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
+            }
+
+            //Load Map service
+            maps = Map.Load();
+
+            //Load Mumble
+            if (!_debugMode)
+            {
+                mumble = new Mumble();
+                mumble.MapStatusChanged += isMapShowing;
+                mumble.Init();
+                mumble.HookGame();
+
+                Task.Run(() => mumble.UpdateMumble());
+            }
+
+            string[] args = Environment.GetCommandLineArgs();
+
+            //Setup Client
+            if (args.Length >= 2)
+            {
+                serverAddr = args[1];
+                Console.WriteLine($"Using Server IP: {serverAddr}");
+            }
+
+            if (args.Length == 3)
+            {
+                serverPort = int.Parse(args[2]);
+                Console.WriteLine($"Using Server Port: {serverPort}");
+            }
+
+            if (!IPAddress.TryParse(serverAddr, out IPAddress ipAddress))
+            {
+                ipAddress = Dns.GetHostEntry(serverAddr).AddressList[0];
+            }
+            _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
+            client = new TcpClient(ipAddress.ToString(), serverPort, false, null, null)
+            {
+                Connected = ServerConnected,
+                Disconnected = ServerDisconnected,
+                DataReceived = MessageReceived
+            };
+
+            //Send default messages
+            WriteToChat("==TINY Alliance Chat System==");
+            WriteToChat("==          Version Beta 1         ==");
+            WriteToChat("");
+
+            if (_debugMode || mumble.MumbleData.CharacterName != "")
+            {
+                try
+                {
+                    client.Connect();
+                }
+                catch (Exception)
+                {
+                    WriteToChat("Can not connect to server, retrying in 5 seconds");
+                }
+
             }
         }
     }
