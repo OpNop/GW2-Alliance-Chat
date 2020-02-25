@@ -24,7 +24,8 @@ namespace Chat_Client
 
         public GameState GameState
         {
-            get => _gameState; private set
+            get => _gameState;
+            private set
             {
                 if (_gameState == value)
                     return;
