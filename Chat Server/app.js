@@ -13,6 +13,7 @@ const TINYPacket = require('./src/ParsePacket.js');
 const tcolors = require('./src/tinyColor.js').colors;
 const tinyPrompt = require('serverline');
 const chatCommand = require('./src/chatCommand.js');
+const chatUser = require('./src/user.js');
 
 
 tinyPrompt.init();
@@ -30,7 +31,7 @@ tinyPrompt.on('line', line => {
             console.log("INSPECT\t\t Show the mumble data on a user");
             break;
         case 'list':
-            console.log(clients.map(q => `${q.info.name} [${q.info.map}]` || ('Unknown user')).join(', '));
+            console.log(clients.filter(client => client.isAuthenticated).map(client => client.getListName()).join(', '));
             break;
         case 'say':
             broadcast("Server", data.args);
@@ -42,13 +43,13 @@ tinyPrompt.on('line', line => {
             if (!character) {
                 console.log(tcolors.fg.Red, "Missing Argument: Character Name", tcolors.Reset);
             }
-            let characterSocket = clients.find((client => {
-                return client.info.name === character
+            let user = clients.find((client => {
+                return client.mumbleData.name === character
             }));
-            if (!characterSocket) {
+            if (!user) {
                 console.log(tcolors.fg.Red, "Character not found", tcolors.Reset);
             } else {
-                console.dir(characterSocket.info);
+                console.dir(user.mumbleData);
             }
             break;
         default:
@@ -300,20 +301,20 @@ const chatCommands = [{
     },
     {
         names: 'list',
-        func: (socket) => {
-            sendSystemMessage(socket, clients.map(q => `${q.info.name} [${q.info.map}]` || ('Unknown user')).join(', '));
+        func: (user) => {
+            user.sendSystemMessage(clients.filter(client => client.isAuthenticated).map(client => client.getListName()).join(', '));
         }
     },
     {
         names: 'help',
-        func: (socket) => {
-            sendSystemMessage(socket, `The following commands are available: ${commandHandler.allCommands}`);
+        func: (user) => {
+            user.sendSystemMessage(`The following commands are available: ${commandHandler.allCommands}`);
         }
     },
     {
         names: 'name',
-        func: (socket) => {
-            sendSystemMessage(socket, '/name is deprecated, so, umm, stop using it.');
+        func: (user) => {
+            user.sendSystemMessage('/name is deprecated, so, umm, stop using it.');
         }
     }
 ]
@@ -322,22 +323,27 @@ const chatCommands = [{
 // Start the TCP server
 const server = net.createServer(socket => {
 
-    // Create internal name
-    socket.name = `${socket.remoteAddress}:${socket.remotePort}`;
+    // Create ID
+    //socket.id = crypto.randomBytes(8).toString('base64');
+
+    //Create user
+    const user = new chatUser(socket);
 
     // Add client to the list
-    clients.push(socket);
+    clients.push(user);
 
     // Send welcome message
-    sendSystemMessage(socket, `Welcome to the ${serverInfo.name} version ${serverInfo.version}!`)
-    sendSystemMessage(socket, `There is currently ${clients.length} users connected`)
+    user.sendSystemMessage(`Welcome to the ${serverInfo.name} version ${serverInfo.version}!`);
+    user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+    //sendSystemMessage(socket, `Welcome to the ${serverInfo.name} version ${serverInfo.version}!`)
+    //sendSystemMessage(socket, `There is currently ${clients.length} users connected`)
 
     // Handle incoming messages from clients.
     //packet format
-    samplePacket = {
-        "type": "message",
-        "args": []
-    }
+    // samplePacket = {
+    //     "type": "message",
+    //     "args": []
+    // }
     socket.on('data', function (data) {
 
         let packet = TINYPacket.Parse(data);
@@ -356,9 +362,9 @@ const server = net.createServer(socket => {
             case TINYPacket.MESSAGE:
                 //send to message handler
                 if (!packet.message.indexOf('/')) {
-                    handleCommand(socket, packet);
+                    handleCommand(user, packet);
                 } else {
-                    broadcast(socket.info.name, packet.message);
+                    broadcast(user.getName(), packet.message);
                 }
                 break;
             case TINYPacket.LEAVE:
@@ -372,7 +378,8 @@ const server = net.createServer(socket => {
                 break;
             case TINYPacket.UPDATE:
                 //handle location update
-                socket.info = packet;
+                user.updateMumbleData(packet);
+                //socket.info = packet;
                 //console.dir(packet);
                 break;
             default:
@@ -389,7 +396,7 @@ const server = net.createServer(socket => {
     //});
 
     socket.once('close', function () {
-        clients.splice(clients.indexOf(socket), 1);
+        clients.splice(clients.indexOf(user), 1);
         //Rando bots
         if(typeof socket.info !== 'undefined')
             broadcast(socket.info.name, `Leaving the chat.`);
@@ -418,11 +425,11 @@ const broadcast = (user, message) => {
         "name": user,
         "message": message
     };
-    clients.forEach(client => sendMessage(client, packet));
+    clients.forEach(client => sendMessage(client.socket, packet));
 }
 
 const broadcastSystemMessage = (message) => {
-    clients.forEach(client => sendSystemMessage(client, message));
+    clients.forEach(client => client.sendSystemMessage(message));
 }
 
 const sendMessage = (socket, packet) => {
@@ -437,17 +444,17 @@ const sendSystemMessage = (to, message) => {
     to.write(JSON.stringify(packet) + '\r');
 }
 
-const handleCommand = (socket, packet) => {
+const handleCommand = (user, packet) => {
 
     let matches = packet.message.toString().match(/(\w+)(.*)/);
     let command = matches[1].toLowerCase();
     let args = matches[2].trim();
 
     try {
-        commandHandler.run(socket, command, args);
+        commandHandler.run(user, command, args);
     } catch (error) {
         console.log(tcolors.fg.Red, `${error}: ${command}`, tcolors.Reset);
-        sendSystemMessage(socket, error);
+        user.sendSystemMessage(error);
     }
 }
 
