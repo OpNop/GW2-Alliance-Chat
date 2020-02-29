@@ -43,19 +43,21 @@ namespace Chat_Client
 
         public void StartWatch()
         {
-            _log.AddDebug("Starting Game Watcher Thread");
+            _log.AddNotice("Starting Game Watcher Thread");
             _gameWatcher = new Thread(GameWatchLoop);
             _gameWatcher.Start();
         }
 
         public void StopWatch()
         {
-            _log.AddDebug("Stopping Game Watcher Thread");
+            _log.AddNotice("Stopping Game Watcher Thread");
             _requestStop = true;
         }
 
         private void GameWatchLoop()
         {
+            _log.AddInfo("Waiting for GW2 Process");
+
             while (!_requestStop)
             {
                 if (_gw2Process == null)
@@ -94,7 +96,7 @@ namespace Chat_Client
             
             if (Processes.Length >= 1 )
             {
-                _log.AddDebug($"Found {Processes.Length} Processes");
+                _log.AddInfo($"Found {Processes.Length} Processes");
                 _gw2Process = Processes[0];
                 _gw2Process.EnableRaisingEvents = true;
                 _gw2Process.Exited += GameExited;
@@ -103,7 +105,7 @@ namespace Chat_Client
 
         private void GameExited(object sender, EventArgs e)
         {
-            _log.AddInfo("Game exited");
+            _log.AddNotice("Game exited");
             GameState = GameState.NotRunning;
             _gw2Process = null;
             _requestStop = false;
