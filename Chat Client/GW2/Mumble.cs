@@ -26,6 +26,7 @@ namespace Chat_Client
         public void StartMumbleRefresh()
         {
             _log.AddDebug("Starting Mumble Refresh Thread");
+            _requestStop = false;
             _mumbleRefresher = new Thread(MumbleRefreshLoop);
             _mumbleRefresher.Start();
         }
@@ -38,6 +39,8 @@ namespace Chat_Client
 
         private void MumbleRefreshLoop()
         {
+            bool firstUpdate = true;
+            
             while (!_requestStop)
             {
                 bool shouldRun = true;
@@ -58,9 +61,11 @@ namespace Chat_Client
                         _lastMapState = _mumbleClient.IsMapOpen;
                         MapStatusChanged?.Invoke(this, new MapStatusChangedArgs(_lastMapState));
                     }
-                    //Only update the server every 5000 ticks
-                    if ((_mumbleClient.Tick % 500) == 0)
+                    //Only update the server every 500 ticks
+                    if (firstUpdate || (_mumbleClient.Tick % 500) == 0)
                     {
+                        if (firstUpdate) firstUpdate = false;
+
                         _log.AddDebug("Sending Update");
                         MumbleUpdated?.Invoke(this, new MumbleUpdatedArgs(_mumbleClient));
                     }
