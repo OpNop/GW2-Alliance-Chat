@@ -16,6 +16,7 @@ const chatCommand = require('./src/chatCommand.js');
 const chatUser = require('./src/user.js');
 
 
+
 tinyPrompt.init();
 tinyPrompt.setCompletion(['help', 'list', 'say', 'announce', 'inspect']);
 tinyPrompt.setPrompt('TINY> ');
@@ -31,7 +32,11 @@ tinyPrompt.on('line', line => {
             console.log("INSPECT\t\t Show the mumble data on a user");
             break;
         case 'list':
-            console.log(clients.filter(client => client.isAuthenticated).map(client => client.getListName()).join(', '));
+            //Thanks @once#6585, @Throne3d#2479 
+            async () => {
+                let players = clients.filter(client => client.isAuthenticated).map(client => client.getListName())
+                console.log(await Promise.all(players).join(', '));
+            }
             break;
         case 'say':
             broadcast("Server", data.args);
@@ -350,7 +355,7 @@ const server = net.createServer(socket => {
         if (!packet) {
             console.log(`Recieved invalid packet from ${socket.remoteAddress}`);
             console.log(data);
-            //socket.end();
+            socket.end();
             return;
         }
 
