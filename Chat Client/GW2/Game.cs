@@ -41,14 +41,14 @@ namespace Chat_Client
             _requestStop = false;
         }
 
-        public void StartWatch()
+        public void Start()
         {
             _log.AddNotice("Starting Game Watcher Thread");
             _gameWatcher = new Thread(GameWatchLoop);
             _gameWatcher.Start();
         }
 
-        public void StopWatch()
+        public void Stop()
         {
             _log.AddNotice("Stopping Game Watcher Thread");
             _requestStop = true;
@@ -111,7 +111,7 @@ namespace Chat_Client
             _requestStop = false;
 
             //Start the watcher again
-            StartWatch();
+            Start();
         }
 
         private string GetWindowClassName(IntPtr handle)

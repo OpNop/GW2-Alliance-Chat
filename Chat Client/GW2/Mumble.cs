@@ -23,7 +23,7 @@ namespace Chat_Client
             _requestStop = false;
         }
 
-        public void StartMumbleRefresh()
+        public void Start()
         {
             _log.AddDebug("Starting Mumble Refresh Thread");
             _requestStop = false;
@@ -31,7 +31,7 @@ namespace Chat_Client
             _mumbleRefresher.Start();
         }
 
-        public void StopMumbleRefresh()
+        public void Stop()
         {
             _log.AddDebug("Stopping Mumble Refresh Thread");
             _requestStop = true;

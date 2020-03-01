@@ -127,16 +127,16 @@ namespace Chat_Client
             {
                 case GameState.NotRunning:
                     //Stop Mumble Watcher
-                    mumble.StopMumbleRefresh();
+                    mumble.Stop();
                     break;
                 case GameState.Launcher:
                     //IDK?
                     //Stop the mumble update also I guess
-                    mumble.StopMumbleRefresh();
+                    mumble.Stop();
                     break;
                 case GameState.InGame:
                     //Start Mumble Watcher
-                    mumble.StartMumbleRefresh();
+                    mumble.Start();
                     break;
             }
         }
@@ -330,10 +330,16 @@ namespace Chat_Client
         private void ServerDisconnected(object sender, EventArgs e)
         {
             WriteToChat("Server disconnected, Retrying in 5 seconds -- But in reality I wont, need to fix this.");
-            while (client.IsConnected == false)
+            //new Thread(TryReconnect).Start();
+        }
+
+        private void TryReconnect()
+        {
+            Thread.Sleep(5000);
+            while (!client.IsConnected)
             {
-                Thread.Sleep(5000);
                 client.Connect();
+                Thread.Sleep(5000);
             }
         }
 
@@ -434,6 +440,7 @@ namespace Chat_Client
             Properties.Settings.Default.Height = this.Height;
             Properties.Settings.Default.Width = this.Width;
             Properties.Settings.Default.Save();
+            
             if (!_isExit)
             {
                 e.Cancel = true;
@@ -443,8 +450,8 @@ namespace Chat_Client
             //Really quitting stop the watchers
             if (_isExit)
             {
-                mumble.StopMumbleRefresh();
-                game.StopWatch();
+                mumble.Stop();
+                game.Stop();
             }
         }
 
@@ -455,7 +462,7 @@ namespace Chat_Client
 
             //Start watching for game
             game.GameStateChanged += GameStateChanged;
-            game.StartWatch();
+            game.Start();
 
             mumble = new Mumble();
             mumble.MapStatusChanged += IsMapShowing;
