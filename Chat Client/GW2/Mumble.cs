@@ -40,6 +40,7 @@ namespace Chat_Client
         private void MumbleRefreshLoop()
         {
             bool firstUpdate = true;
+            int lastTick = -1;
             
             while (!_requestStop)
             {
@@ -54,6 +55,11 @@ namespace Chat_Client
                 if (_mumbleClient.MapId == 0)
                     shouldRun = false;
 
+                //Dont update if tick hasnt changed
+                if (_mumbleClient.Tick == lastTick)
+                    shouldRun = false;
+
+                //React to new mumble info
                 if (shouldRun)
                 {
                     if (_lastMapState != _mumbleClient.IsMapOpen)
@@ -69,7 +75,11 @@ namespace Chat_Client
                         _log.AddDebug("Sending Update");
                         MumbleUpdated?.Invoke(this, new MumbleUpdatedArgs(_mumbleClient));
                     }
+
+                    //Update lastTick
+                    lastTick = _mumbleClient.Tick;
                 }
+                //Take a nap
                 Thread.Sleep(1000 / 60);
             }
         }
