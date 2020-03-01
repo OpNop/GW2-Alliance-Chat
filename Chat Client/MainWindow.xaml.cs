@@ -441,8 +441,11 @@ namespace Chat_Client
             }
 
             //Really quitting stop the watchers
-            mumble.StopMumbleRefresh();
-            game.StopWatch();
+            if (_isExit)
+            {
+                mumble.StopMumbleRefresh();
+                game.StopWatch();
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
