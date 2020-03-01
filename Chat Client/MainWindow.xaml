@@ -17,6 +17,7 @@
     Cursor="Assets/mouse.cur"
     Loaded="Window_Loaded"
     ResizeMode="CanResizeWithGrip"
+    ShowActivated="False"
     Topmost="True"
     WindowStyle="None"
     mc:Ignorable="d">
