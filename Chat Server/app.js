@@ -367,6 +367,7 @@ const server = net.createServer(socket => {
         if (!packet) {
             console.log(`Recieved invalid packet from ${socket.remoteAddress}`);
             console.log(data);
+            socket.write("Bye Bookah!!");
             socket.end();
             return;
         }
