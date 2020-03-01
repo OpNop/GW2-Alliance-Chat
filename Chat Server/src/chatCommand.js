@@ -20,9 +20,9 @@ module.exports = class chatCommand {
         this.commands[command] = {runner: callback, permission: permission}
     }
 
-    run(socket, command, args) {
+    async run(user, command, args) {
         if(typeof this.commands[command].runner === 'function'){
-            this.commands[command].runner(socket, args);
+            await this.commands[command].runner(user, args);
         } else{
             throw this.unknownCommand;
         }

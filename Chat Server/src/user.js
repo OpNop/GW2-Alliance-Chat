@@ -21,17 +21,18 @@ module.exports = class User {
         this.accountName = "";
         this.hasAPIData = false;
         this.permission = "user";
+        this.isMuted = false;
     }
 
-    async getName() {
+    getName() {
+        let name = this.id;
         if(this.isAuthenticated){
             if(this.isOnline)
-                return `${this.characterName}`;
+                name = this.characterName;
             else if(this.hasAPIData)
-                return `${this.accountName}`;
+                name = this.accountName;
         }
-        else
-            return this.id;
+        return name;
     }
 
     async getLocation() {
@@ -45,7 +46,7 @@ module.exports = class User {
 
     async getListName() {
         if(this.isAuthenticated){
-            let name = await this.getName();
+            let name = this.getName();
             let location = await this.getLocation()
             return `${name} ${location}`;
         }
@@ -73,5 +74,9 @@ module.exports = class User {
             "message": message
         };
         this.socket.write(JSON.stringify(systemMessage) + '\r');
+    }
+
+    sendMessage(packet){
+        this.socket.write(JSON.stringify(packet) + '\r');
     }
 }

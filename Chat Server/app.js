@@ -32,11 +32,9 @@ tinyPrompt.on('line', line => {
             console.log("INSPECT\t\t Show the mumble data on a user");
             break;
         case 'list':
-            //Thanks @once#6585, @Throne3d#2479 
-            async () => {
-                let players = clients.filter(client => client.isAuthenticated).map(client => client.getListName())
-                console.log(await Promise.all(players).join(', '));
-            }
+            (async () => {
+                console.log(await listUsers());
+            })();
             break;
         case 'say':
             broadcast("Server", data.args);
@@ -69,245 +67,246 @@ let clients = [];
 //#region Chat Commands (dear lord I want to put these someplace else)
 const chatCommands = [{
         names: 'beckon',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} beckons to ${args}.`);
+                broadcastSystemMessage(`${user.getName()} beckons to ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} beckons.`);
+                broadcastSystemMessage(`${user.getName()} beckons.`);
         }
     },
     {
         names: 'bow',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} bows for ${args}.`);
+                broadcastSystemMessage(`${user.getName()} bows for ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} bows.`);
+                broadcastSystemMessage(`${user.getName()} bows.`);
         }
     },
     {
         names: 'cheer',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} cheers for ${args}.`);
+                broadcastSystemMessage(`${user.getName()} cheers for ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} cheers.`);
+                broadcastSystemMessage(`${user.getName()} cheers.`);
         }
     },
     {
         names: 'cower',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} cowers in fear from ${args}.`);
+                broadcastSystemMessage(`${user.getName()} cowers in fear from ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} cowers.`);
+                broadcastSystemMessage(`${user.getName()} cowers.`);
         }
     },
     {
         names: 'crossarms',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} crosses their arms.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} crosses their arms.`);
         }
     },
     {
         names: 'cry',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} is crying.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} is crying.`);
         }
     },
     {
         names: 'dance',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} is busting out some moves, some sweet dance moves.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} is busting out some moves, some sweet dance moves.`);
         }
     },
     {
         names: ['facepalm', 'upset'],
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} is upset.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} is upset.`);
         }
     },
     {
         names: 'geargrind',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} does the Gear Grind.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} does the Gear Grind.`);
         }
     },
     {
         names: 'kneel',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} kneels.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} kneels.`);
         }
     },
     {
         names: 'laugh',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} laughs at ${args}.`);
+                broadcastSystemMessage(`${user.getName()} laughs at ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} laughs.`);
+                broadcastSystemMessage(`${user.getName()} laughs.`);
         }
     },
     {
         names: 'no',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} disagrees with ${args}.`);
+                broadcastSystemMessage(`${user.getName()} disagrees with ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} disagrees.`);
+                broadcastSystemMessage(`${user.getName()} disagrees.`);
         }
     },
     {
         names: 'point',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} points at ${args}.`);
+                broadcastSystemMessage(`${user.getName()} points at ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} points.`);
+                broadcastSystemMessage(`${user.getName()} points.`);
         }
     },
     {
         names: 'ponder',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} ponders.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} ponders.`);
         }
     },
     {
         names: 'rockout',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} is rocking out!.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} is rocking out!.`);
         }
     },
     {
         names: 'sad',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} is sad.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} is sad.`);
         }
     },
     {
         names: 'salute',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} salutes ${args}.`);
+                broadcastSystemMessage(`${user.getName()} salutes ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} salutes.`);
+                broadcastSystemMessage(`${user.getName()} salutes.`);
         }
     },
     {
         names: 'shiver',
-        func: (socket, ) => {
-            broadcastSystemMessage(`${socket.info.name} shivers.`);
+        func: (user, ) => {
+            broadcastSystemMessage(`${user.getName()} shivers.`);
         }
     },
     {
         names: 'shrug',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} shrugs at ${args}.`);
+                broadcastSystemMessage(`${user.getName()} shrugs at ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} shrugs.`);
+                broadcastSystemMessage(`${user.getName()} shrugs.`);
         }
     },
     {
         names: 'shuffle',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} does the Inventory Shuffle.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} does the Inventory Shuffle.`);
         }
     },
     {
         names: 'sit',
-        func: (socket) => {
-            broadcastSystemMessage(`${socket.info.name} sits.`);
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} sits.`);
         }
     },
     {
         names: 'sleep',
-        func: (socket, args) => {
-            broadcastSystemMessage(`${socket.info.name} goes to sleep.`);
+        func: (user, args) => {
+            broadcastSystemMessage(`${user.getName()} goes to sleep.`);
         }
     },
     {
         names: 'step',
-        func: (socket, args) => {
-            broadcastSystemMessage(`${socket.info.name} does the Dodge Step.`);
+        func: (user, args) => {
+            broadcastSystemMessage(`${user.getName()} does the Dodge Step.`);
         }
     },
     {
         names: 'surprised',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} is surprised by ${args}.`);
+                broadcastSystemMessage(`${user.getName()} is surprised by ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} is surprised.`);
+                broadcastSystemMessage(`${user.getName()} is surprised.`);
         }
     },
     {
         names: 'talk',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} is talking to ${args}.`);
+                broadcastSystemMessage(`${user.getName()} is talking to ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} is talking.`);
+                broadcastSystemMessage(`${user.getName()} is talking.`);
         }
     },
     {
         names: ['thanks', 'thank', 'thk', 'ty'],
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} thanks ${args}.`);
+                broadcastSystemMessage(`${user.getName()} thanks ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} is grateful.`);
+                broadcastSystemMessage(`${user.getName()} is grateful.`);
         }
     },
     {
         names: 'threaten',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} threatens ${args}.`);
+                broadcastSystemMessage(`${user.getName()} threatens ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} is threatening.`);
+                broadcastSystemMessage(`${user.getName()} is threatening.`);
         }
     },
     {
         names: 'wave',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} waves at ${args}.`);
+                broadcastSystemMessage(`${user.getName()} waves at ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} waves.`);
+                broadcastSystemMessage(`${user.getName()} waves.`);
         }
     },
     {
         names: 'yes',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} agrees with ${args}.`);
+                broadcastSystemMessage(`${user.getName()} agrees with ${args}.`);
             else
-                broadcastSystemMessage(`${socket.info.name} agrees.`);
+                broadcastSystemMessage(`${user.getName()} agrees.`);
         }
     },
     {
         names: 'me',
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} ${args}`);
+                broadcastSystemMessage(`${user.getName()} ${args}`);
             else
-                sendSystemMessage(socket, 'Usage: /me <whatever you like>');
+                user.sendSystemMessage('Usage: /me <whatever you like>');
         }
     },
     {
         names: ['bite', 'biteankle'],
-        func: (socket, args) => {
+        func: (user, args) => {
             if (args)
-                broadcastSystemMessage(`${socket.info.name} bites ${args}'s ankles.`);
+                broadcastSystemMessage(`${user.getName()} bites ${args}'s ankles.`);
             else
-                broadcastSystemMessage(`Watch out! ${socket.info.name} is going to start biting the nearest ankle.`);
+                broadcastSystemMessage(`Watch out! ${user.getName()} is going to start biting the nearest ankle.`);
         }
     },
     {
         names: 'list',
-        func: (user) => {
-            user.sendSystemMessage(clients.filter(client => client.isAuthenticated).map(client => client.getListName()).join(', '));
+        func: async (user) => {
+            let memberList = await listUsers();
+            user.sendSystemMessage(`Current online members: ${memberList}`);
         }
     },
     {
@@ -320,6 +319,19 @@ const chatCommands = [{
         names: 'name',
         func: (user) => {
             user.sendSystemMessage('/name is deprecated, so, umm, stop using it.');
+        }
+    },
+    //Admin commands
+    {
+        names: 'mute',
+        permission: 'admin',
+        func: (user, target) => {
+            //find player
+
+            //set mute status
+
+            //broadcast to admins
+            broadcastToAdmins(`${target} was muted by ${user.getName()}`);
         }
     }
 ]
@@ -403,7 +415,7 @@ const server = net.createServer(socket => {
     socket.once('close', function () {
         clients.splice(clients.indexOf(user), 1);
         //Rando bots
-        if(typeof socket.info !== 'undefined')
+        if (typeof socket.info !== 'undefined')
             broadcast(socket.info.name, `Leaving the chat.`);
     })
 
@@ -430,23 +442,21 @@ const broadcast = (user, message) => {
         "name": user,
         "message": message
     };
-    clients.forEach(client => sendMessage(client.socket, packet));
+    clients.forEach(client => client.sendMessage(packet));
 }
 
 const broadcastSystemMessage = (message) => {
     clients.forEach(client => client.sendSystemMessage(message));
 }
 
-const sendMessage = (socket, packet) => {
-    socket.write(JSON.stringify(packet) + '\r');
+const broadcastToAdmins = (message) => {
+    clients.forEach(client => client.sendSystemMessage(message));
 }
 
-const sendSystemMessage = (to, message) => {
-    let packet = {
-        "type": TINYPacket.SYSTEM,
-        "message": message
-    };
-    to.write(JSON.stringify(packet) + '\r');
+//Thanks @once#6585, @Throne3d#2479 
+const listUsers = async () => {
+    let players = clients.filter(client => client.isAuthenticated).map(client => client.getListName());
+    return (await Promise.all(players)).join(', ');
 }
 
 const handleCommand = (user, packet) => {
