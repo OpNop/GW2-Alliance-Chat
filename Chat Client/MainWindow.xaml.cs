@@ -317,8 +317,14 @@ namespace Chat_Client
         async void ServerConnected(object sender, EventArgs e)
         {
             WriteToChat("Server connected");
-
-            //await Task.Run(() => UpdateCharacter());
+            if (Properties.Settings.Default.apiKey.Length > 0)
+            {
+                client.Send(JsonConvert.SerializeObject(new
+                {
+                    type = PacketType.ENTER,
+                    key = Properties.Settings.Default.apiKey
+                }));
+            }
         }
 
         private void ServerDisconnected(object sender, EventArgs e)
@@ -452,16 +458,6 @@ namespace Chat_Client
             mumble.MapStatusChanged += IsMapShowing;
             mumble.MumbleUpdated += OnMumbleUpdated;
 
-            //Load Mumble
-            //if (!_debugMode)
-            //{
-                
-            //    mumble.Init();
-            //    mumble.HookGame();
-
-            //    Task.Run(() => mumble.UpdateMumble());
-            //}
-
             _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
             client = new TcpClient(serverAddr, serverPort, false, null, null);
             client.Connected += ServerConnected;
@@ -501,7 +497,6 @@ namespace Chat_Client
                     race = mumble.MumbleData.Race,
                     prof = mumble.MumbleData.Profession,
                     spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
-                    //map = maps[mumble.MumbleData.MapId].MapName,
                     map = mumble.MumbleData.MapId,
                     position = new
                     {
