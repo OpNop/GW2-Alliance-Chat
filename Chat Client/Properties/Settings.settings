@@ -17,5 +17,8 @@
     <Setting Name="Width" Type="System.Double" Scope="User">
       <Value Profile="(Default)">512</Value>
     </Setting>
+    <Setting Name="stayOpenOnMap" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

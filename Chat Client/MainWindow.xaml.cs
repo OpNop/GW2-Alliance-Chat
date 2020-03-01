@@ -50,6 +50,9 @@ namespace Chat_Client
         public string APIKey;
         private static readonly Logger _log = Logger.getInstance();
 
+        //toogle Stay Open
+        private bool _stayOpenOnMap = Properties.Settings.Default.stayOpenOnMap;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -174,6 +177,9 @@ namespace Chat_Client
 
         private void IsMapShowing(object sender, MapStatusChangedArgs e)
         {
+            //Dont do anything it map is set to stay open
+            if (_stayOpenOnMap) return;
+
             if (e.IsMapOpen)
             {
                 Dispatcher.Invoke(() =>
@@ -383,21 +389,27 @@ namespace Chat_Client
         {
             if (e.Key == Key.Return && message.Text != "")
             {
-                if (message.Text == "/setkey")
+                switch (message.Text)
                 {
-                    ShowKeyDialog();
+                    case "/setkey":
+                        ShowKeyDialog();
+                        break;
+                    case "/togglestayopen":
+                        _stayOpenOnMap = !_stayOpenOnMap;
+                        Properties.Settings.Default.stayOpenOnMap = _stayOpenOnMap;
+                        Properties.Settings.Default.Save();
+                        WriteToChat($"StayOpenOnMap changed to {_stayOpenOnMap.ToString()}");
+                        break;
+                    default:
+                        //send packet as nomral
+                        var packet = new
+                        {
+                            type = PacketType.MESSAGE,
+                            message = message.Text
+                        };
+                        client.Send(JsonConvert.SerializeObject(packet));
+                        break;
                 }
-                else
-                {
-                    //send packet as nomral
-                    var packet = new
-                    {
-                        type = PacketType.MESSAGE,
-                        message = message.Text
-                    };
-                    client.Send(JsonConvert.SerializeObject(packet));
-                }
-
                 message.Text = "";
             }
         }

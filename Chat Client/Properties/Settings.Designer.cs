@@ -82,5 +82,17 @@ namespace Chat_Client.Properties {
                 this["Width"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool stayOpenOnMap {
+            get {
+                return ((bool)(this["stayOpenOnMap"]));
+            }
+            set {
+                this["stayOpenOnMap"] = value;
+            }
+        }
     }
 }
