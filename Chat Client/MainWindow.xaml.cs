@@ -329,17 +329,16 @@ namespace Chat_Client
 
         private void ServerDisconnected(object sender, EventArgs e)
         {
-            WriteToChat("Server disconnected, Retrying in 5 seconds -- But in reality I wont, need to fix this.");
-            //new Thread(TryReconnect).Start();
+            WriteToChat("Server disconnected, Retrying in 5 seconds.");
+            new Thread(TryReconnect).Start();
         }
 
         private void TryReconnect()
         {
-            Thread.Sleep(5000);
             while (!client.IsConnected)
             {
-                client.Connect();
                 Thread.Sleep(5000);
+                ConnectToServer(true);
             }
         }
 
@@ -468,29 +467,35 @@ namespace Chat_Client
             mumble.MapStatusChanged += IsMapShowing;
             mumble.MumbleUpdated += OnMumbleUpdated;
 
-            _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
-            client = new TcpClient(serverAddr, serverPort, false, null, null);
-            client.Connected += ServerConnected;
-            client.Disconnected += ServerDisconnected;
-            client.DataReceived += MessageReceived;
-
             //Send default messages
             WriteToChat("==TINY Alliance Chat System==");
             WriteToChat("==          Version Beta 1         ==");
             WriteToChat("");
 
             //if (_debugMode || mumble.MumbleData.CharacterName != "")
-            //{
-                try
-                {
-                    client.Connect();
-                }
-                catch (Exception)
-                {
-                    WriteToChat("Can not connect to server, retrying in 5 seconds");
-                }
+            ConnectToServer();
+        }
 
-            //}
+        private void ConnectToServer(bool reconnect = false)
+        {
+            //Dispose of old connection if reconnecting
+            if (reconnect)
+                client.Dispose();
+
+            _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
+            client = new TcpClient(serverAddr, serverPort, false, null, null);
+            client.Connected += ServerConnected;
+            client.Disconnected += ServerDisconnected;
+            client.DataReceived += MessageReceived;
+            try
+            {
+                client.Connect();
+            }
+            catch (Exception)
+            {
+                WriteToChat("Can not connect to server, retrying in 5 seconds");
+                if(!reconnect) new Thread(TryReconnect).Start();
+            }
         }
 
         private void OnMumbleUpdated(object sender, MumbleUpdatedArgs mumble)
