@@ -1,5 +1,5 @@
 const serverInfo = {
-    "version": "1.0.0",
+    "version": "0.0.1",
     "name": "TINY Alliance Chat Server (TACS)",
     "address": "0.0.0.0",
     "port": "8888"
@@ -377,6 +377,12 @@ const server = net.createServer(socket => {
                 console.log("Missing packet type");
                 socket.end();
                 return;
+            case TINYPacket.CONNECT:
+                if(packet.key)
+                    user.apiKey = packet.key;
+                    user.clientVersion = packet.version;
+                console.log(`New user connected key = ${user.key}`);
+                break;
             case TINYPacket.MESSAGE:
                 //send to message handler
                 if (!packet.message.indexOf('/')) {
@@ -390,6 +396,7 @@ const server = net.createServer(socket => {
                 break;
             case TINYPacket.ENTER:
                 //broadcast enter
+                console.dir(packet);
                 break;
             case TINYPacket.SYSTEM:
                 //handle command

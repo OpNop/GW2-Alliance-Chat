@@ -22,6 +22,8 @@ module.exports = class User {
         this.hasAPIData = false;
         this.permission = "user";
         this.isMuted = false;
+        this.apiKey = "";
+        this.clientVersion = "Unknown";
     }
 
     getName() {
