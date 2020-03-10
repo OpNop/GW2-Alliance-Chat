@@ -16,6 +16,7 @@ namespace Chat_Client
 
         public event EventHandler<MapStatusChangedArgs> MapStatusChanged;
         public event EventHandler<MumbleUpdatedArgs> MumbleUpdated;
+        public event EventHandler HasSelectedCharacter;
 
         public Mumble()
         {
@@ -39,8 +40,12 @@ namespace Chat_Client
 
         private void MumbleRefreshLoop()
         {
+            //Update the mumble to detect stale data
+            _mumbleClient.Update();
+
             bool firstUpdate = true;
-            int lastTick = -1;
+            int? lastTick = null;
+            lastTick ??= _mumbleClient?.Tick ?? 0;
             
             while (!_requestStop)
             {
@@ -62,6 +67,10 @@ namespace Chat_Client
                 //React to new mumble info
                 if (shouldRun)
                 {
+                    //Trigger the ShowUI when a character is selected
+                    if (firstUpdate)
+                        HasSelectedCharacter?.Invoke(this, EventArgs.Empty);
+
                     if (_lastMapState != _mumbleClient.IsMapOpen)
                     {
                         _lastMapState = _mumbleClient.IsMapOpen;

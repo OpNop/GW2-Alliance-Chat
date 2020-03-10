@@ -132,6 +132,8 @@ namespace Chat_Client
                 case GameState.NotRunning:
                     //Stop Mumble Watcher
                     mumble.Stop();
+                    //Hide the UI
+                    HideUI();
                     break;
                 case GameState.Launcher:
                     //IDK?
@@ -174,26 +176,6 @@ namespace Chat_Client
         private void ShowMainWindow()
         {
             this.Show();
-        }
-
-        private void IsMapShowing(object sender, MapStatusChangedArgs e)
-        {
-            //Dont do anything it map is set to stay open
-            if (_stayOpenOnMap) return;
-
-            if (e.IsMapOpen)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Hide();
-                });
-            } else
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Show();
-                });
-            }
         }
 
         //private void UpdateCharacter()
@@ -473,13 +455,18 @@ namespace Chat_Client
             //Check For API key
             CheckForAPIKey();
 
+            //Start Hidden
+            HideUI();
+
             //Start watching for game
             game.GameStateChanged += GameStateChanged;
             game.Start();
 
+            //Setup Mumble Updater
             mumble = new Mumble();
             mumble.MapStatusChanged += IsMapShowing;
             mumble.MumbleUpdated += OnMumbleUpdated;
+            mumble.HasSelectedCharacter += OnFirstCharacteSelected;
 
             //Hook Shift+Enter hotkey
             hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
@@ -521,6 +508,37 @@ namespace Chat_Client
             }
         }
 
+        public void ShowUI()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Show();
+            });
+        }
+
+        public void HideUI()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Hide();
+            });
+        }
+
+        private void IsMapShowing(object sender, MapStatusChangedArgs e)
+        {
+            //Dont do anything it map is set to stay open
+            if (_stayOpenOnMap) return;
+
+            if (e.IsMapOpen)
+            {
+                HideUI();
+            }
+            else
+            {
+                ShowUI();
+            }
+        }
+
         private void OnMumbleUpdated(object sender, MumbleUpdatedArgs mumble)
         {
             //If connected to the server
@@ -548,5 +566,11 @@ namespace Chat_Client
                 client.Send(JsonConvert.SerializeObject(packet));
             }
         }
+
+        private void OnFirstCharacteSelected(Object sender, EventArgs e)
+        {
+            ShowUI();
+        }
+
     }
 }
