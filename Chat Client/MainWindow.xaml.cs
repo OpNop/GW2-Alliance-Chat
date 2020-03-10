@@ -14,11 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SimpleTcp;
 using Newtonsoft.Json;
-using Gw2Sharp.Mumble;
 using System.Threading;
 using DLG.ToolBox.Log;
-using System.Net;
-using System.IO;
 using Chat_Client.utils;
 using Chat_Client.Packets;
 

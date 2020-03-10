@@ -1,22 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+  
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <!--<TargetFramework>netcoreapp3.1</TargetFramework> -->
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>Chat_Client</RootNamespace>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>tiny_icon.ico</ApplicationIcon>
     <StartupObject />
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+    <OutputType>WinExe</OutputType>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,6 +53,7 @@
 
   <ItemGroup>
     <PackageReference Include="gw2sharp" Version="0.8.2" />
+    <PackageReference Include="ilmerge" Version="3.0.29" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SuperSimpleTcp" Version="2.0.2" />
   </ItemGroup>
@@ -81,8 +85,17 @@
   <PropertyGroup>
     <DateFormat>$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</DateFormat>
   </PropertyGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (powershell Compress-Archive -Path '$(TargetDir)*' -DestinationPath '$(TargetDir)\..\..\ChatClient-$(ConfigurationName)-$(DateFormat).zip' -Force)" />
+
+  <ItemGroup>
+    <PackageReference Include="ILMerge" Version="3.0.29" />
+  </ItemGroup>
+
+  <Target Name="ILMerge">
+    <!-- the ILMergePath property points to the location of ILMerge.exe console application -->
+    <Exec Command="$(ILMergeConsolePath) &quot;bin\Release\net472\Chat Client.exe&quot;  /out:&quot;bin\merged\Chat Client.exe&quot; bin\Release\net472\DLG.ToolBox.dll bin\Release\net472\Gw2Sharp.dll bin\Release\net472\Newtonsoft.Json.dll bin\Release\net472\SimpleTcp.dll " />
   </Target>
+  
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release (powershell Compress-Archive -Path '$(TargetDir)*' -DestinationPath '$(TargetDir)\..\..\ChatClient-$(ConfigurationName)-$(DateFormat).zip' -Force)" />
+  </Target>-->
 </Project>
