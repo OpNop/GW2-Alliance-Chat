@@ -52,6 +52,7 @@ namespace Chat_Client
 
         //toogle Stay Open
         private bool _stayOpenOnMap = Properties.Settings.Default.stayOpenOnMap;
+        private int hookId;
 
         public MainWindow()
         {
@@ -461,6 +462,7 @@ namespace Chat_Client
             //Really quitting stop the watchers
             if (_isExit)
             {
+                GlobalKeyboardHook.Instance.UnHook(hookId);
                 mumble.Stop();
                 game.Stop();
             }
@@ -479,6 +481,9 @@ namespace Chat_Client
             mumble.MapStatusChanged += IsMapShowing;
             mumble.MumbleUpdated += OnMumbleUpdated;
 
+            //Hook Shift+Enter hotkey
+            hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
+
             //Send default messages
             WriteToChat("==TINY Alliance Chat System==");
             WriteToChat("==          Version Beta 1         ==");
@@ -486,6 +491,12 @@ namespace Chat_Client
 
             //if (_debugMode || mumble.MumbleData.CharacterName != "")
             ConnectToServer();
+
+        private void FocusChat()
+        {
+            this.Activate();
+            this.Focus();
+            message.Focus();
         }
 
         private void ConnectToServer(bool reconnect = false)
