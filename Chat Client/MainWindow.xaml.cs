@@ -130,6 +130,8 @@ namespace Chat_Client
                 case GameState.NotRunning:
                     //Stop Mumble Watcher
                     mumble.Stop();
+                    //Disconnect from the chat server
+                    client.Dispose();
                     //Hide the UI
                     HideUI();
                     break;
@@ -141,6 +143,10 @@ namespace Chat_Client
                 case GameState.InGame:
                     //Start Mumble Watcher
                     mumble.Start();
+                    //Connect to the chat server (if needed)
+                    ConnectToServer();
+                    //Show the UI
+                    //ShowUI();
                     break;
             }
         }
@@ -310,6 +316,9 @@ namespace Chat_Client
 
         private void ServerDisconnected(object sender, EventArgs e)
         {
+            //Dont reconnect if the game is closed
+            if (game.GameState == GameState.NotRunning) return;
+
             WriteToChat("Server disconnected, Retrying in 5 seconds.");
             new Thread(TryReconnect).Start();
         }
@@ -438,6 +447,9 @@ namespace Chat_Client
             //Check For API key
             CheckForAPIKey();
 
+            //Clear the chat log
+            ChatBox.Document.Blocks.Clear();
+
             //Start Hidden
             HideUI();
 
@@ -455,12 +467,13 @@ namespace Chat_Client
             hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
 
             //Send default messages
-            WriteToChat("==TINY Alliance Chat System==");
-            WriteToChat("==          Version Beta 1         ==");
-            WriteToChat("");
+            //WriteToChat("==TINY Alliance Chat System==");
+            //WriteToChat("==          Version Beta 1         ==");
+            //WriteToChat("");
 
             //if (_debugMode || mumble.MumbleData.CharacterName != "")
-            ConnectToServer();
+            //ConnectToServer();
+        }
 
         private void FocusChat()
         {
@@ -471,9 +484,11 @@ namespace Chat_Client
 
         private void ConnectToServer(bool reconnect = false)
         {
+            //Do nothing if we are already connected
+            if (!(client is null) && client.IsConnected) return;
+
             //Dispose of old connection if reconnecting
-            if (reconnect)
-                client.Dispose();
+            if (reconnect) client.Dispose();
 
             _log.AddInfo($"Connecting to {serverAddr}:{serverPort}");
             client = new TcpClient(serverAddr, serverPort, false, null, null);
@@ -525,7 +540,7 @@ namespace Chat_Client
         private void OnMumbleUpdated(object sender, MumbleUpdatedArgs mumble)
         {
             //If connected to the server
-            if (client.IsConnected)
+            if (!(client is null) && client.IsConnected)
             {
                 //Send update packet
                 var packet = new
