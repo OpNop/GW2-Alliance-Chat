@@ -20,6 +20,7 @@ using DLG.ToolBox.Log;
 using System.Net;
 using System.IO;
 using Chat_Client.utils;
+using Chat_Client.Packets;
 
 delegate void Message(string time, string from, string message);
 
@@ -306,14 +307,8 @@ namespace Chat_Client
         async void ServerConnected(object sender, EventArgs e)
         {
             WriteToChat("Server connected");
-            if (Properties.Settings.Default.apiKey.Length > 0)
-            {
-                client.Send(JsonConvert.SerializeObject(new
-                {
-                    type = PacketType.ENTER,
-                    key = Properties.Settings.Default.apiKey
-                }));
-            }
+            //Send Connect Packet
+            client.Send(new Connect(Properties.Settings.Default.apiKey).Send());
         }
 
         private void ServerDisconnected(object sender, EventArgs e)
@@ -395,15 +390,6 @@ namespace Chat_Client
                 }
                 message.Text = "";
             }
-        }
-
-        private enum PacketType
-        {
-            MESSAGE,
-            ENTER,
-            LEAVE,
-            SYSTEM,
-            UPDATE
         }
 
         private void DragWindow(object sender, MouseButtonEventArgs e)
