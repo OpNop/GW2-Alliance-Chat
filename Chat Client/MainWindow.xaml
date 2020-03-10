@@ -20,7 +20,7 @@
     ShowActivated="False"
     Topmost="True"
     WindowStyle="None"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Activated="Window_Activated">
 
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
@@ -44,7 +44,7 @@
                             <Storyboard>
                                 <DoubleAnimation
                                     Storyboard.TargetProperty="Opacity"
-                                    To=".7"
+                                    To=".8"
                                     Duration="0:0:0.3" />
                             </Storyboard>
                         </BeginStoryboard>

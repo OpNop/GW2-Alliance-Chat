@@ -537,6 +537,23 @@ namespace Chat_Client
             }
         }
 
+        private void OnGameActiveChange(object sender, GameWindowActiveArgs e)
+        {
+            if (e.IsGW2Active)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Topmost = true;
+                });
+            } else
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Topmost = false;
+                });
+            }
+        }
+
         private void OnMumbleUpdated(object sender, MumbleUpdatedArgs mumble)
         {
             //If connected to the server
@@ -570,5 +587,9 @@ namespace Chat_Client
             ShowUI();
         }
 
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            //Topmost = true;
+        }
     }
 }

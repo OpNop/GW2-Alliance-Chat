@@ -13,9 +13,11 @@ namespace Chat_Client
         private bool _requestStop;
         private Thread _mumbleRefresher;
         private bool _lastMapState;
+        private bool _lastActiveState;
 
         public event EventHandler<MapStatusChangedArgs> MapStatusChanged;
         public event EventHandler<MumbleUpdatedArgs> MumbleUpdated;
+        public event EventHandler<GameWindowActiveArgs> GameActiveStatusChanged;
         public event EventHandler HasSelectedCharacter;
 
         public Mumble()
@@ -76,6 +78,13 @@ namespace Chat_Client
                         _lastMapState = _mumbleClient.IsMapOpen;
                         MapStatusChanged?.Invoke(this, new MapStatusChangedArgs(_lastMapState));
                     }
+
+                    if(_lastActiveState != _mumbleClient.DoesGameHaveFocus)
+                    {
+                        _lastActiveState = _mumbleClient.DoesGameHaveFocus;
+                        GameActiveStatusChanged?.Invoke(this, new GameWindowActiveArgs(_lastActiveState));
+                    }
+
                     //Only update the server every 500 ticks
                     if (firstUpdate || (_mumbleClient.Tick % 500) == 0)
                     {
