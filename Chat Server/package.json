@@ -2,6 +2,9 @@
   "name": "chat-server",
   "version": "0.0.0",
   "description": "Chat Server",
+  "scripts": {
+    "start": "node app.js"
+  },
   "main": "app.js",
   "author": {
     "name": ""
