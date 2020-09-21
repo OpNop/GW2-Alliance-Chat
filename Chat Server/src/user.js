@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const packet = require('./ParsePacket.js');
+const packet = require('./packets/Packet.js').packets;
 const gw2api = require('gw2api-client');
 const cacheMemory = require('gw2api-client/src/cache/memory')
 
@@ -12,7 +12,7 @@ module.exports = class User {
 
         this.socket = socket;
         this.id = crypto.randomBytes(8).toString('base64');
-        
+
         //set default attributes
         this.characterName = this.id;
         this.isAuthenticated = false;
@@ -28,17 +28,17 @@ module.exports = class User {
 
     getName() {
         let name = this.id;
-        if(this.isAuthenticated){
-            if(this.isOnline)
+        if (this.isAuthenticated) {
+            if (this.isOnline)
                 name = this.characterName;
-            else if(this.hasAPIData)
+            else if (this.hasAPIData)
                 name = this.accountName;
         }
         return name;
     }
 
     async getLocation() {
-        if(this.isOnline){
+        if (this.isOnline) {
             let map = await this.api.maps().get(this.mumbleData.map);
             return `[${map.name}]`;
         } else {
@@ -47,7 +47,7 @@ module.exports = class User {
     }
 
     async getListName() {
-        if(this.isAuthenticated){
+        if (this.isAuthenticated) {
             let name = this.getName();
             let location = await this.getLocation()
             return `${name} ${location}`;
@@ -63,14 +63,14 @@ module.exports = class User {
         this.isOnline = true;
     }
 
-    updateMumbleData(mumbleData){
+    updateMumbleData(mumbleData) {
         this.isAuthenticated = true;
         this.isOnline = true;
         this.mumbleData = mumbleData;
         this.characterName = this.mumbleData.name;
     }
 
-    sendSystemMessage(message){
+    sendSystemMessage(message) {
         let systemMessage = {
             "type": packet.SYSTEM,
             "message": message
@@ -78,7 +78,11 @@ module.exports = class User {
         this.socket.write(JSON.stringify(systemMessage) + '\r');
     }
 
-    sendMessage(packet){
+    sendMessage(packet) {
         this.socket.write(JSON.stringify(packet) + '\r');
+    }
+
+    disconnect(packet) {
+        this.socket.end(JSON.stringify(packet));
     }
 }

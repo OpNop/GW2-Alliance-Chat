@@ -9,7 +9,15 @@ String.prototype.firstWord = function () {
 }
 
 const net = require('net');
-const TINYPacket = require('./src/ParsePacket.js');
+const TINYPacket = require('./src/packets/Packet.js');
+const packets = require("./src/packets/Packet").packets;
+const connectPacket = require("./src/packets/Connect.js");
+const messagePacket = require("./src/packets/Message.js");
+const enterPacket = require("./src/packets/Enter.js");
+const leavePacket = require("./src/packets/Leave.js");
+const systemPacket = require("./src/packets/System.js");
+const updatePacket = require("./src/packets/Update.js");
+
 const tcolors = require('./src/tinyColor.js').colors;
 const tinyPrompt = require('serverline');
 const chatCommand = require('./src/chatCommand.js');
@@ -337,11 +345,11 @@ const chatCommands = [{
 ]
 //#endregion
 
+// Init packet class?
+const packet = new TINYPacket();
+
 // Start the TCP server
 const server = net.createServer(socket => {
-
-    // Create ID
-    //socket.id = crypto.randomBytes(8).toString('base64');
 
     //Create user
     const user = new chatUser(socket);
@@ -349,69 +357,110 @@ const server = net.createServer(socket => {
     // Add client to the list
     clients.push(user);
 
-    // Send welcome message
-    user.sendSystemMessage(`Welcome to the ${serverInfo.name} version ${serverInfo.version}!`);
-    user.sendSystemMessage(`There is currently ${clients.length} users connected`);
-    //sendSystemMessage(socket, `Welcome to the ${serverInfo.name} version ${serverInfo.version}!`)
-    //sendSystemMessage(socket, `There is currently ${clients.length} users connected`)
+    // Define packet handlers
+    packet.on('connect', (user, packet) => {
+        if (packet.key) {
+            user.apiKey = packet.key;
+            user.clientVersion = packet.version;
+            user.isAuthenticated = true;
+            user.sendMessage({
+                type: packets.AUTH,
+                valid: true
+            });
+            // Send welcome message
+            user.sendSystemMessage(`Welcome to the ${serverInfo.name} version ${serverInfo.version}!`);
+            user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+        } else {
+            user.disconnect({
+                type: packets.AUTH,
+                valid: false
+            });
 
-    // Handle incoming messages from clients.
-    //packet format
-    // samplePacket = {
-    //     "type": "message",
-    //     "args": []
-    // }
+        }
+        //console.log(`New user connected - Key: ${user.apiKey}, Version: ${user.clientVersion}`);
+    });
+    packet.on('message', (user, packet) => {
+        //send to message handler
+        if (!packet.message.indexOf('/')) {
+            handleCommand(user, packet);
+        } else {
+            broadcast(user.getName(), packet.message);
+        }
+    });
+    packet.on('enter', enterPacket);
+    packet.on('leave', leavePacket);
+    packet.on('system', systemPacket);
+    packet.on('update', (user, packet) => {
+        console.log(`RESV: update from ${packet.name} X:${packet.position.X} Y:${packet.position.Y} Z:${packet.position.Z}`);
+        user.updateMumbleData(packet);
+    });
+
     socket.on('data', function (data) {
 
-        let packet = TINYPacket.Parse(data);
-        if (!packet) {
-            console.log(`Recieved invalid packet from ${socket.remoteAddress}`);
-            console.log(data);
-            socket.write("Bye Bookah!!");
-            socket.end();
-            return;
-        }
+        packet.handle(data, user);
 
-        switch (packet.type) {
-            case undefined:
-                console.log("Missing packet type");
-                socket.end();
-                return;
-            case TINYPacket.CONNECT:
-                if(packet.key)
-                    user.apiKey = packet.key;
-                    user.clientVersion = packet.version;
-                console.log(`New user connected key = ${user.key}`);
-                break;
-            case TINYPacket.MESSAGE:
-                //send to message handler
-                if (!packet.message.indexOf('/')) {
-                    handleCommand(user, packet);
-                } else {
-                    broadcast(user.getName(), packet.message);
-                }
-                break;
-            case TINYPacket.LEAVE:
-                //broadcast leave
-                break;
-            case TINYPacket.ENTER:
-                //broadcast enter
-                console.dir(packet);
-                break;
-            case TINYPacket.SYSTEM:
-                //handle command
-                break;
-            case TINYPacket.UPDATE:
-                //handle location update
-                user.updateMumbleData(packet);
-                //socket.info = packet;
-                //console.dir(packet);
-                break;
-            default:
-                console.log("Unknown packet %j", packet);
-                socket.end();
-                return;
-        }
+        //let packet = tPacket.handle(data);
+        // if (!packet) {
+        //     console.log(`Recieved invalid packet from ${socket.remoteAddress}`);
+        //     console.log(data);
+        //     socket.write("Bye Bookah!!");
+        //     socket.end();
+
+        //     return;
+        // }
+
+
+
+        // if (user.isAuthenticated == false) {
+        //     //non loggedin user
+        //     if(packet.type == TINYPacket.CONNECT) {
+        //         //handle connection
+        //         if (packet.key)
+        //             user.apiKey = packet.key;
+        //         user.clientVersion = packet.version;
+        //         user.isAuthenticated = true;
+        //         console.log(`New user connected - Key: ${user.apiKey}, Version: ${user.clientVersion}`);
+        //     } else {
+        //         socket.write("Bye Bookah!!");
+        //         socket.end();
+        //     }
+        // } else {
+        //     //Authenticated User
+        //     switch (packet.type) {
+        //         case undefined:
+        //             console.log("Missing packet type");
+        //             socket.end();
+        //             return;
+        //         case TINYPacket.MESSAGE:
+        //             //send to message handler
+        //             if (!packet.message.indexOf('/')) {
+        //                 handleCommand(user, packet);
+        //             } else {
+        //                 broadcast(user.getName(), packet.message);
+        //             }
+        //             break;
+        //         case TINYPacket.LEAVE:
+        //             //broadcast leave
+        //             break;
+        //         case TINYPacket.ENTER:
+        //             //broadcast enter
+        //             console.dir(packet);
+        //             break;
+        //         case TINYPacket.SYSTEM:
+        //             //handle command
+        //             break;
+        //         case TINYPacket.UPDATE:
+        //             //handle location update
+        //             user.updateMumbleData(packet);
+        //             //socket.info = packet;
+        //             //console.dir(packet);
+        //             break;
+        //         default:
+        //             console.log("Unknown packet %j", packet);
+        //             socket.end();
+        //             return;
+        //     }
+        // }
 
     });
 
@@ -421,7 +470,9 @@ const server = net.createServer(socket => {
     //});
 
     socket.once('close', function () {
+        console.log(`removing user (${user.characterName})`);
         clients.splice(clients.indexOf(user), 1);
+        console.log(`Clients = ${clients.length}`);
         //Rando bots
         if (typeof socket.info !== 'undefined')
             broadcast(socket.info.name, `Leaving the chat.`);
@@ -450,7 +501,7 @@ const broadcast = (user, message) => {
         "name": user,
         "message": message
     };
-    clients.forEach(client => client.sendMessage(packet));
+    //clients.forEach(client => client.sendMessage(packet));
 }
 
 const broadcastSystemMessage = (message) => {
