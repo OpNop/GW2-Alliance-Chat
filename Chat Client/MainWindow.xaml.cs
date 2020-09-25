@@ -29,7 +29,7 @@ namespace Chat_Client
     public partial class MainWindow : Window
     {
 #if DEBUG
-        private string serverAddr = "chat.noobnetwork.net";
+        private string serverAddr = "127.0.0.1";
         private int serverPort = 8888;
 #else
         private string serverAddr = "chat.jumpsfor.science";
