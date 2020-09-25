@@ -86,7 +86,7 @@ namespace Chat_Client
                     }
 
                     //Only update the server every 500 ticks
-                    if (firstUpdate || (_mumbleClient.Tick % 500) == 0)
+                    if (firstUpdate || (_mumbleClient.Tick % 100) == 0)
                     {
                         if (firstUpdate) firstUpdate = false;
 

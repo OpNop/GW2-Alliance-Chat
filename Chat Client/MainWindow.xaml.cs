@@ -62,7 +62,7 @@ namespace Chat_Client
             ParseArguments();
 
             //Init logger class
-            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
+            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.N, true, true, true);
 
             //Setup Tray Icon
             SetupNotifyIcon();
