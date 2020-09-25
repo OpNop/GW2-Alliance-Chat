@@ -71,11 +71,6 @@ namespace Chat_Client
             DragMove();
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
         private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             if (ValidKey)
@@ -83,7 +78,7 @@ namespace Chat_Client
                 //Save key
                 Properties.Settings.Default.apiKey = txtApiKey.Text;
                 Properties.Settings.Default.Save();
-                Close();
+                DialogResult = true;
             }
             else
             {
