@@ -11,6 +11,7 @@ namespace Chat_Client
     {
         [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
         private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
         private const string GW2_GAMEWINDOW_NAME = "ArenaNet_Dx_Window_Class";
 
@@ -31,6 +32,7 @@ namespace Chat_Client
                     return;
 
                 _gameState = value;
+
                 GameStateChanged?.Invoke(this, new GameStateChangedArgs(GameState));
             }
         }
@@ -45,6 +47,7 @@ namespace Chat_Client
         {
             _log.AddNotice("Starting Game Watcher Thread");
             _gameWatcher = new Thread(GameWatchLoop);
+            _gameWatcher.SetApartmentState(ApartmentState.STA);
             _gameWatcher.Start();
         }
 
