@@ -103,23 +103,35 @@ namespace Chat_Client
             }
         }
 
-        private void CheckForAPIKey()
+        /// <summary>
+        /// Checks for APIKey user setting on Appdata.
+        /// </summary>
+        /// <returns>0 if the APIKey setting was found or user succesfully stored it using the dialog.</returns>
+        private int CheckForAPIKey()
         {
             APIKey = Properties.Settings.Default.apiKey;
             if (APIKey.Length == 0)
             {
-                ShowKeyDialog();
+                return ShowKeyDialog();
             }
+            return 0;
         }
 
-        private void ShowKeyDialog()
+        private int ShowKeyDialog()
         {
             var keyWindow = new APIKey();
             keyWindow.Owner = this;
-            keyWindow.ShowDialog();
+            bool? dialogResult = keyWindow.ShowDialog();
+
+            if (dialogResult.HasValue && !dialogResult.Value)
+            {
+                // User canceled, stop everything
+                return 1;
+            }
 
             //Reload Key
             APIKey = Properties.Settings.Default.apiKey;
+            return 0;
         }
 
         private void GameStateChanged(object sender, GameStateChangedArgs e)
@@ -445,7 +457,13 @@ namespace Chat_Client
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //Check For API key
-            CheckForAPIKey();
+            int apiCheckResult = CheckForAPIKey();
+            if (apiCheckResult != 0)
+            {
+                Close();
+                Application.Current.Shutdown(0);
+                return;
+            }
 
             //Clear the chat log
             ChatBox.Document.Blocks.Clear();
