@@ -2,6 +2,8 @@ const crypto = require("crypto");
 const packet = require('./packets/Packet.js').packets;
 const gw2api = require('gw2api-client');
 const cacheMemory = require('gw2api-client/src/cache/memory')
+const config = require('../config.json')
+const packets = require('./packets/Packet').packets
 
 module.exports = class User {
 
@@ -52,6 +54,29 @@ module.exports = class User {
             let location = await this.getLocation()
             return `${name} ${location}`;
         }
+    }
+
+    async authenticate() {
+        this.api.authenticate(this.apiKey);
+        let account = await this.api.account().get();
+        let guilds = account.guilds;
+        
+        //check for valid guild
+        for (let i = 0; i < config.guilds.length; i++) {
+            if (guilds.includes(config.guilds[i])) {
+                this.isAuthenticated = true;
+                this.sendMessage({
+                    type: packets.AUTH,
+                    valid: true
+                });
+                return;
+            }
+        }
+        //not found, kick them
+        this.disconnect({
+            type: packets.AUTH,
+            valid: false
+        });
     }
 
     setOffline() {

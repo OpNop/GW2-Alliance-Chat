@@ -340,11 +340,13 @@ const chatCommands = [{
 ]
 //#endregion
 
-// Init packet class?
-const packet = new TINYPacket();
-
 // Start the TCP server
 const server = net.createServer(socket => {
+
+    // Init packet class?
+    const packet = new TINYPacket();
+
+    console.log("User connecting");
 
     //Create user
     const user = new chatUser(socket);
@@ -353,18 +355,16 @@ const server = net.createServer(socket => {
     clients.push(user);
 
     // Define packet handlers
-    packet.on('connect', (user, packet) => {
+    packet.on('connect', async (user, packet) => {
         if (packet.key) {
             user.apiKey = packet.key;
             user.clientVersion = packet.version;
-            user.isAuthenticated = true;
-            user.sendMessage({
-                type: packets.AUTH,
-                valid: true
-            });
-            // Send welcome message
-            user.sendSystemMessage(`Welcome to the ${serverInfo.name} version ${serverInfo.version}!`);
-            user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+            await user.authenticate();
+            if(user.isAuthenticated){
+                // Send welcome message
+                user.sendSystemMessage(`Welcome to the ${config.name} version ${config.version}!`);
+                user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+            }
         } else {
             user.disconnect({
                 type: packets.AUTH,
@@ -492,11 +492,11 @@ const server = net.createServer(socket => {
 const broadcast = (user, message) => {
     console.log(`${user}> ${message}`);
     let packet = {
-        "type": TINYPacket.MESSAGE,
+        "type": packets.MESSAGE,
         "name": user,
         "message": message
     };
-    //clients.forEach(client => client.sendMessage(packet));
+    clients.forEach(client => client.sendMessage(packet));
 }
 
 const broadcastSystemMessage = (message) => {
