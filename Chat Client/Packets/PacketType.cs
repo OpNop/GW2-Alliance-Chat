@@ -7,6 +7,7 @@
         LEAVE,
         SYSTEM,
         UPDATE,
-        CONNECT
+        CONNECT,
+        AUTH
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace Chat_Client.Packets
 {
@@ -6,7 +7,9 @@ namespace Chat_Client.Packets
     {
         public string Send()
         {
-            return JsonConvert.SerializeObject(this);
+            var packet = JsonConvert.SerializeObject(this);
+            Console.WriteLine($"SEND> {packet}");
+            return packet;
         }
     }
 }

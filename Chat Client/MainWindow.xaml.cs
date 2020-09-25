@@ -38,6 +38,7 @@ namespace Chat_Client
 #endif
 
         private TcpClient client;
+        private State clientState = State.Disconnected;
         private bool _autoScroll = true;
         private bool _debugMode = false;
 
@@ -307,6 +308,16 @@ namespace Chat_Client
                         case PacketType.UPDATE:
                             //Handle location update
                             break;
+                        case PacketType.AUTH:
+                            if ((bool)packet.valid)
+                            {
+                                clientState = State.Authed;
+                            } else {
+                                clientState = State.BadAuth;
+                                WriteToChat("Auth failed!");
+                            }
+
+                            break;
                         default:
                             throw new Exception("Missing packet type");
                     }
@@ -322,6 +333,8 @@ namespace Chat_Client
 
         async void ServerConnected(object sender, EventArgs e)
         {
+            clientState = State.Connected;
+
             WriteToChat("Server connected");
             //Send Connect Packet
             client.Send(new Connect(Properties.Settings.Default.apiKey).Send());
@@ -329,9 +342,11 @@ namespace Chat_Client
 
         private void ServerDisconnected(object sender, EventArgs e)
         {
-            //Dont reconnect if the game is closed
-            if (game.GameState == GameState.NotRunning) return;
-
+            //Dont reconnect if the game is closed or bad auth
+            if (game.GameState == GameState.NotRunning || clientState == State.BadAuth)
+                return;
+            
+            clientState = State.Disconnected;
             WriteToChat("Server disconnected, Retrying in 5 seconds.");
             new Thread(TryReconnect).Start();
         }
@@ -577,8 +592,8 @@ namespace Chat_Client
 
         private void OnMumbleUpdated(object sender, MumbleUpdatedArgs mumble)
         {
-            //If connected to the server
-            if (!(client is null) && client.IsConnected)
+            //If connected to the server and Authed
+            if (clientState == State.Authed && !(client is null) && client.IsConnected)
             {
                 //Send update packet
                 var packet = new
@@ -598,8 +613,9 @@ namespace Chat_Client
                     },
                     server_address = mumble.MumbleData.ServerAddress
                 };
-
-                client.Send(JsonConvert.SerializeObject(packet));
+                var mPacket = JsonConvert.SerializeObject(packet);
+                Console.WriteLine($"SEND> {mPacket}");
+                client.Send(mPacket);
             }
         }
 
@@ -629,5 +645,13 @@ namespace Chat_Client
         {
             //Topmost = true;
         }
+    }
+
+    enum State
+    {
+        Disconnected,
+        Connected,
+        Authed,
+        BadAuth
     }
 }
