@@ -1,9 +1,3 @@
-const serverInfo = {
-    "version": "0.0.1",
-    "name": "TINY Alliance Chat Server (TACS)",
-    "address": "0.0.0.0",
-    "port": "8888"
-}
 String.prototype.firstWord = function () {
     return this.replace(/\s.*/, '')
 }
@@ -18,6 +12,7 @@ const leavePacket = require("./src/packets/Leave.js");
 const systemPacket = require("./src/packets/System.js");
 const updatePacket = require("./src/packets/Update.js");
 
+const config = require('./config.json');
 const tcolors = require('./src/tinyColor.js').colors;
 const tinyPrompt = require('serverline');
 const chatCommand = require('./src/chatCommand.js');
@@ -547,7 +542,7 @@ console.log(`Loading ${chatCommands.length} chat commands.`);
 const commandHandler = new chatCommand(chatCommands);
 
 //Start the server
-server.listen(serverInfo.port, serverInfo.address);
+server.listen(config.port, config.address);
 
 // Put a friendly message on the terminal of the server.
-console.log(`Chat server running at port ${serverInfo.port} \n`);
+console.log(`Chat server running at port ${config.port} \n`);
