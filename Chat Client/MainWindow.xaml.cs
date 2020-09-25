@@ -18,6 +18,7 @@ using System.Threading;
 using DLG.ToolBox.Log;
 using Chat_Client.utils;
 using Chat_Client.Packets;
+using System.Windows.Interop;
 
 delegate void Message(string time, string from, string message);
 
@@ -43,7 +44,7 @@ namespace Chat_Client
         private System.Windows.Forms.NotifyIcon _notifyIcon;
         private bool _isExit;
 
-        public readonly Game game = new Game();
+        public Game game;
         public Mumble mumble;
         public string APIKey;
         private static readonly Logger _log = Logger.getInstance();
@@ -472,12 +473,14 @@ namespace Chat_Client
             HideUI();
 
             //Start watching for game
+            game = new Game();
             game.GameStateChanged += GameStateChanged;
             game.Start();
 
             //Setup Mumble Updater
             mumble = new Mumble();
             mumble.MapStatusChanged += IsMapShowing;
+            //mumble.GameActiveStatusChanged += OnGameActiveChange;
             mumble.MumbleUpdated += OnMumbleUpdated;
             mumble.HasSelectedCharacter += OnFirstCharacteSelected;
 
@@ -603,6 +606,23 @@ namespace Chat_Client
         private void OnFirstCharacteSelected(Object sender, EventArgs e)
         {
             ShowUI();
+        }
+
+        private void AttachToGame(IntPtr hWnd)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                new WindowInteropHelper(this) { Owner = hWnd };
+                ShowInTaskbar = false;
+            });
+        }
+
+        private void DetachFromGame()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ShowInTaskbar = true;
+            });
         }
 
         private void Window_Activated(object sender, EventArgs e)
