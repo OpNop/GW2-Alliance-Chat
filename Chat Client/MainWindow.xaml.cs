@@ -607,9 +607,8 @@ namespace Chat_Client
                     map = mumble.MumbleData.MapId,
                     position = new
                     {
-                        X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
-                        Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
-                        Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
+                        X = $"{mumble.MumbleData.PlayerLocationMap.X}",
+                        Y = $"{mumble.MumbleData.PlayerLocationMap.Y}"
                     },
                     server_address = mumble.MumbleData.ServerAddress
                 };
