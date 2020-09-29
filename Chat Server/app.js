@@ -3,6 +3,9 @@ String.prototype.firstWord = function () {
 }
 
 const net = require('net');
+const express = require('express');
+const cors = require('cors');
+const apiserver = express();
 const TINYPacket = require('./src/packets/Packet.js');
 const packets = require("./src/packets/Packet").packets;
 const connectPacket = require("./src/packets/Connect.js");
@@ -537,12 +540,44 @@ const parseCommad = (line) => {
     };
 }
 
+apiserver.use(cors());
+
+apiserver.use(express.static('public'));
+
+apiserver.get('/update', (req, res) => {
+    let geoJSON = clients.filter(client => client.mumbleData).map(client => {
+        let result =  {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    parseFloat(client.mumbleData.position.X), 
+                    parseFloat(client.mumbleData.position.Y)
+                ]
+            },
+            properties: {
+                name: client.characterName,
+                class: client.mumbleData.spec,
+                ip: client.mumbleData.server_address, 
+                id: client.id
+              }
+        };
+        return result;
+    })
+    res.json(geoJSON);
+})
+
 // Load chat commands
 console.log(`Loading ${chatCommands.length} chat commands.`);
 const commandHandler = new chatCommand(chatCommands);
 
 //Start the server
 server.listen(config.port, config.address);
+
+//Start the API server
+apiserver.listen(config.apiport, () =>{
+    console.log(`API server running on port ${config.apiport} \n`);
+})
 
 // Put a friendly message on the terminal of the server.
 console.log(`Chat server running at port ${config.port} \n`);

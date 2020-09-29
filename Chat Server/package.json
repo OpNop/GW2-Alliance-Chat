@@ -10,7 +10,9 @@
     "name": ""
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "gw2api-client": "^7.4.1",
-    "serverline": "^1.4.2"
+    "serverline": "^1.5.0"
   }
 }

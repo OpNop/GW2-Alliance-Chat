@@ -3,6 +3,7 @@
     "name": "TINY Alliance Chat Server (TACS)",
     "address": "0.0.0.0",
     "port": "8888",
+    "apiport": 8889,
     "guilds": [
         "7D0DB7CC-02FE-E911-81AA-A77AA130EAB8",
         "0A9D5AFD-9709-E911-81A8-A25FC8B1A2FE",

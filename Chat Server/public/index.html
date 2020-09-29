@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>TINY Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        .leaflet-container {
+            background: #000;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .leaflet-popup-content-wrapper {
+            background-color: rgba(0, 0, 0, .9);
+            color: #ffffff;
+            border-radius: 0;
+            border-color: #000000;
+        }
+
+        .leaflet-popup-content-wrapper h3 {
+            color: #ffcc77;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="leaflet-realtime.js"></script>
+    <script>
+        var map, tinyIcon;
+
+        // Helper function to convert GW2 coordinates into Leaflet coordinates
+        //  GW2 coordinates: Northwest = [0,0], Southeast = [continent_xmax,continent_ymax];
+        //  Leaflet: Northwest = [0,0], Southeast = [-256, 256]
+        function unproject(coord) {
+            return map.unproject(coord, map.getMaxZoom());
+        }
+
+        // Main map function
+        function createMap() {
+
+            // Create TINY Icon
+            tinyIcon = L.icon({
+                iconUrl: 'https://s.tinyarmy.org/wp-content/uploads/2018/12/fav_57.png',
+                iconSize: [32, 32]
+            });
+
+            // Adds the leaflet map within the specified element, in this case a div with id="mapdiv"
+            //  Additionally we set the zoom levels to match the tilelayers, and set the coordinate reference system (simple)
+            //  In this case we're using the maximum zoom from Tyria as 7. It would be 6 for The Mists.
+            map = L.map("map", {
+                minZoom: 2,
+                maxZoom: 7,
+                crs: L.CRS.Simple,
+                attributionControl: false
+            });
+
+            L.control.attribution({
+                prefix: `Tiles by <a href="https://blog.thatshaman.com/" target="_blank">that_shaman</a>`
+            }).addTo(map);
+
+            var realtime = L.realtime({
+                url: 'http://67.61.134.200:8889/update',
+                crossOrigin: true,
+                type: 'json'
+            }, {
+                interval: 1 * 1000,
+                coordsToLatLng: unproject,
+            }).addTo(map);
+
+            realtime.on('update', function (event) {
+                function popupContent(fid) {
+                    let user = event.features[fid];
+                    return `<h3>${user.properties.name}</h3>
+                        <strong>Class:</strong> ${user.properties.class}<br />
+                        <strong>Server:</strong> ${user.properties.ip}`;
+                }
+
+                function bindPopup(fid) {
+                    realtime.getLayer(fid).bindPopup(popupContent(fid));
+
+                    realtime.getLayer(fid).on('mouseover', e => {
+                        realtime.getLayer(fid).openPopup();
+                    });
+
+                    realtime.getLayer(fid).on('mouseout', e => {
+                        realtime.getLayer(fid).closePopup();
+                    });
+
+                }
+
+                function updatePopup(fid) {
+                    realtime.getLayer(fid).getPopup().setContent(popupContent(fid));
+                }
+
+                Object.keys(event.enter).forEach(bindPopup);
+                Object.keys(event.update).forEach(updatePopup);
+            });
+
+            L.tileLayer("https://tiles.tinyarmy.org/1/1/{z}/{x}/{y}.jpg").addTo(map);
+
+            // Restrict the area which can be panned to
+            //  In this case we're using the coordinates for the continent of tyria from "https://api.guildwars2.com/v2/continents/1"
+            var continent_dims = [49152, 49152];
+            var mapbounds = new L.LatLngBounds(unproject([0, 0]), unproject(continent_dims)); // northwest, southeast
+            map.setMaxBounds(mapbounds);
+
+            // Set the default viewport position (in this case the midpoint) and zoom (in this case zoom level 1)
+            map.setView(unproject([(continent_dims[0] / 2), (continent_dims[1] / 2)]), 1);
+
+            // Add a tile layer
+            map.addLayer(L.tileLayer("https://tiles.tinyarmy.org/1/1/{z}/{x}/{y}.jpg", {
+                minZoom: 0,
+                maxZoom: 7,
+                continuousWorld: true,
+                subdomains: [1, 2, 3, 4],
+                bounds: mapbounds
+            }));
+        }
+        createMap();
+    </script>
+</body>
+
+</html>
