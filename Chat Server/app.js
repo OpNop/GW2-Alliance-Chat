@@ -359,23 +359,43 @@ const server = net.createServer(socket => {
 
     // Define packet handlers
     packet.on('connect', async (user, packet) => {
-        if (packet.key) {
-            user.apiKey = packet.key;
-            user.clientVersion = packet.version;
-            await user.authenticate();
-            if(user.isAuthenticated){
-                // Send welcome message
-                user.sendSystemMessage(`Welcome to the ${config.name} version ${config.version}!`);
-                user.sendSystemMessage(`There is currently ${clients.length} users connected`);
-            }
-        } else {
+        //Version check
+        if (packet.version != config.version) {
             user.disconnect({
                 type: packets.AUTH,
-                valid: false
+                valid: false,
+                reason: "Old version, please update."
             });
-
+            return;
         }
-        //console.log(`New user connected - Key: ${user.apiKey}, Version: ${user.clientVersion}`);
+
+        //API check
+        if (!packet.key) {
+            user.disconnect({
+                type: packets.AUTH,
+                valid: false,
+                reason: "Missing API key"
+            });
+            return;
+        }
+
+        // Guild check
+        user.apiKey = packet.key;
+        user.clientVersion = packet.version;
+        await user.authenticate();
+        if (!user.isAuthenticated) {
+            user.disconnect({
+                type: packets.AUTH,
+                valid: false,
+                reason: "Bookah!!! you are not a TINY, what are you doing here!"
+            });
+            return;
+        }
+
+        // Everything passed Send welcome message
+        user.sendSystemMessage(`Welcome to the ${config.name} version ${config.version}!`);
+        user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+
     });
     packet.on('message', (user, packet) => {
         //send to message handler
@@ -546,21 +566,21 @@ apiserver.use(express.static('public'));
 
 apiserver.get('/update', (req, res) => {
     let geoJSON = clients.filter(client => client.mumbleData).map(client => {
-        let result =  {
+        let result = {
             type: "Feature",
             geometry: {
                 type: "Point",
                 coordinates: [
-                    parseFloat(client.mumbleData.position.X), 
+                    parseFloat(client.mumbleData.position.X),
                     parseFloat(client.mumbleData.position.Y)
                 ]
             },
             properties: {
                 name: client.characterName,
                 class: client.mumbleData.spec,
-                ip: client.mumbleData.server_address, 
+                ip: client.mumbleData.server_address,
                 id: client.id
-              }
+            }
         };
         return result;
     })
@@ -575,7 +595,7 @@ const commandHandler = new chatCommand(chatCommands);
 server.listen(config.port, config.address);
 
 //Start the API server
-apiserver.listen(config.apiport, () =>{
+apiserver.listen(config.apiport, () => {
     console.log(`API server running on port ${config.apiport} \n`);
 })
 

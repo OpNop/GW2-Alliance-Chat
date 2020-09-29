@@ -62,7 +62,11 @@ namespace Chat_Client
             ParseArguments();
 
             //Init logger class
+#if DEBUG
             _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.N, true, true, true);
+#else
+            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.I, true, true, true);
+#endif
 
             //Setup Tray Icon
             SetupNotifyIcon();
@@ -315,6 +319,8 @@ namespace Chat_Client
                             } else {
                                 clientState = State.BadAuth;
                                 WriteToChat("Auth failed!");
+                                WriteToChat((string)packet.reason);
+                                client.Dispose();
                             }
 
                             break;
@@ -502,13 +508,6 @@ namespace Chat_Client
             //Hook Shift+Enter hotkey
             hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
 
-            //Send default messages
-            //WriteToChat("==TINY Alliance Chat System==");
-            //WriteToChat("==          Version Beta 1         ==");
-            //WriteToChat("");
-
-            //if (_debugMode || mumble.MumbleData.CharacterName != "")
-            //ConnectToServer();
         }
 
         private void FocusChat()

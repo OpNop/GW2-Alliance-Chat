@@ -84,6 +84,7 @@
 
   <PropertyGroup>
     <DateFormat>$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</DateFormat>
+    <Version>1.0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
