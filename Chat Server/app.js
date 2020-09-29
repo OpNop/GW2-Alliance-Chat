@@ -386,7 +386,7 @@ const server = net.createServer(socket => {
     packet.on('leave', leavePacket);
     packet.on('system', systemPacket);
     packet.on('update', (user, packet) => {
-        console.log(`RESV: update from ${packet.name} X:${packet.position.X} Y:${packet.position.Y} Z:${packet.position.Z}`);
+        //console.log(`RESV: update from ${packet.name} X:${packet.position.X} Y:${packet.position.Y} Z:${packet.position.Z}`);
         user.updateMumbleData(packet);
     });
 

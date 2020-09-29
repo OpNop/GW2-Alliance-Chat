@@ -10,7 +10,7 @@ module.exports = class Packet extends EventEmitter {
     handle(packet, user) {
         try {
             let parsedPacket = JSON.parse(packet);
-            console.log(`Handeling packet ${parsedPacket.type}`);
+            //console.log(`Handeling packet ${parsedPacket.type}`);
             switch (parsedPacket.type){
                 case module.exports.packets.MESSAGE:
                     this.emit('message', user, parsedPacket);
