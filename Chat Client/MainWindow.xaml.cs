@@ -425,12 +425,7 @@ namespace Chat_Client
                         break;
                     default:
                         //send packet as nomral
-                        var packet = new
-                        {
-                            type = PacketType.MESSAGE,
-                            message = message.Text
-                        };
-                        client.Send(JsonConvert.SerializeObject(packet));
+                        client.Send(new Message(message.Text).Send());
                         break;
                 }
                 message.Text = "";
@@ -600,25 +595,7 @@ namespace Chat_Client
             if (clientState == State.Authed && !(client is null) && client.IsConnected)
             {
                 //Send update packet
-                var packet = new
-                {
-                    type = PacketType.UPDATE,
-                    name = mumble.MumbleData.CharacterName,
-                    commander = mumble.MumbleData.IsCommander,
-                    race = mumble.MumbleData.Race,
-                    prof = mumble.MumbleData.Profession,
-                    spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
-                    map = mumble.MumbleData.MapId,
-                    position = new
-                    {
-                        X = $"{mumble.MumbleData.PlayerLocationMap.X}",
-                        Y = $"{mumble.MumbleData.PlayerLocationMap.Y}"
-                    },
-                    server_address = mumble.MumbleData.ServerAddress
-                };
-                var mPacket = JsonConvert.SerializeObject(packet);
-                Console.WriteLine($"SEND> {mPacket}");
-                client.Send(mPacket);
+                client.Send(new Update(mumble.MumbleData).Send());
             }
         }
 
