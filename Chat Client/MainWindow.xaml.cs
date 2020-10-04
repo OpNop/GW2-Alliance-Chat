@@ -63,7 +63,7 @@ namespace Chat_Client
 
             //Init logger class
 #if DEBUG
-            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.N, true, true, true);
+            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 #else
             _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.I, true, true, true);
 #endif
@@ -289,7 +289,7 @@ namespace Chat_Client
             var rawPackets = rawData.Split(new char[] { '\r' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var rawPacket in rawPackets)
             {
-                Console.WriteLine($"RECV> {rawPacket}");
+                _log.AddDebug($"RECV> {rawPacket}");
                 dynamic packet;
                 //Try and parse JSON
                 try

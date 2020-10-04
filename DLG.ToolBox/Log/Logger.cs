@@ -95,8 +95,17 @@ namespace DLG.ToolBox.Log
         {
             //Drop out if log is below minimum log level
             if (logLevel > _mLogLevel) return;
+            
+            string logMessage;
 
-            var logMessage = string.Format(logFormat, list);
+            if (list.Length > 0)
+            {
+                logMessage = string.Format(logFormat, list);
+            } else
+            {
+                //treat the format as the message
+                logMessage = logFormat;
+            }
             var now = DateTime.Now;
 
             if (_logMethod)

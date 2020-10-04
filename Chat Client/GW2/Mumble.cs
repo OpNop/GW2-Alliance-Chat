@@ -28,7 +28,7 @@ namespace Chat_Client
 
         public void Start()
         {
-            _log.AddDebug("Starting Mumble Refresh Thread");
+            _log.AddInfo("Starting Mumble Refresh Thread");
             _requestStop = false;
             _mumbleRefresher = new Thread(MumbleRefreshLoop);
             _mumbleRefresher.Start();
@@ -36,7 +36,7 @@ namespace Chat_Client
 
         public void Stop()
         {
-            _log.AddDebug("Stopping Mumble Refresh Thread");
+            _log.AddInfo("Stopping Mumble Refresh Thread");
             _requestStop = true;
         }
 
@@ -90,7 +90,7 @@ namespace Chat_Client
                     {
                         if (firstUpdate) firstUpdate = false;
 
-                        _log.AddDebug("Sending Update");
+                        _log.AddDebug($"Sending Update (Tick = {_mumbleClient.Tick})");
                         MumbleUpdated?.Invoke(this, new MumbleUpdatedArgs(_mumbleClient));
                     }
 
