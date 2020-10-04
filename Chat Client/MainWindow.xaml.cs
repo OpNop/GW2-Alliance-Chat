@@ -20,7 +20,7 @@ using Chat_Client.utils;
 using Chat_Client.Packets;
 using System.Windows.Interop;
 
-delegate void Message(string time, string from, string message);
+delegate void ChatMessage(string time, string from, string message);
 
 namespace Chat_Client
 {
@@ -47,11 +47,11 @@ namespace Chat_Client
 
         public Game game;
         public Mumble mumble;
-        public string APIKey;
+        public string apiKey;
         private static readonly Logger _log = Logger.getInstance();
 
         //toogle Stay Open
-        private bool _stayOpenOnMap = Properties.Settings.Default.stayOpenOnMap;
+        private bool stayOpenOnMap;
         private int hookId;
 
         public MainWindow()
@@ -115,8 +115,7 @@ namespace Chat_Client
         /// <returns>0 if the APIKey setting was found or user succesfully stored it using the dialog.</returns>
         private int CheckForAPIKey()
         {
-            APIKey = Properties.Settings.Default.apiKey;
-            if (APIKey.Length == 0)
+            if (apiKey.Length == 0)
             {
                 return ShowKeyDialog();
             }
@@ -136,7 +135,7 @@ namespace Chat_Client
             }
 
             //Reload Key
-            APIKey = Properties.Settings.Default.apiKey;
+            apiKey = Properties.Settings.Default.apiKey;
             return 0;
         }
 
@@ -177,11 +176,7 @@ namespace Chat_Client
             _notifyIcon.Visible = true;
             _notifyIcon.Text = "Tiny Alliance Chat Service (TACS)";
 
-            CreateContextMenu();
-        }
-
-        private void CreateContextMenu()
-        {
+            //Menu
             _notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add("Show Chat").Click += (s, e) => ShowMainWindow();
             _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, e) => ExitApplication();
@@ -197,7 +192,7 @@ namespace Chat_Client
 
         private void ShowMainWindow()
         {
-            this.Show();
+            Show();
         }
 
         //private void UpdateCharacter()
@@ -343,7 +338,7 @@ namespace Chat_Client
 
             WriteToChat("Server connected");
             //Send Connect Packet
-            client.Send(new Connect(Properties.Settings.Default.apiKey).Send());
+            client.Send(new Connect(apiKey).Send());
         }
 
         private void ServerDisconnected(object sender, EventArgs e)
@@ -413,10 +408,10 @@ namespace Chat_Client
                         ShowKeyDialog();
                         break;
                     case "/togglestayopen":
-                        _stayOpenOnMap = !_stayOpenOnMap;
-                        Properties.Settings.Default.stayOpenOnMap = _stayOpenOnMap;
+                        stayOpenOnMap = !stayOpenOnMap;
+                        Properties.Settings.Default.stayOpenOnMap = stayOpenOnMap;
                         Properties.Settings.Default.Save();
-                        WriteToChat($"StayOpenOnMap changed to {_stayOpenOnMap.ToString()}");
+                        WriteToChat($"StayOpenOnMap changed to {stayOpenOnMap.ToString()}");
                         break;
                     default:
                         //send packet as nomral
@@ -560,7 +555,7 @@ namespace Chat_Client
         private void IsMapShowing(object sender, MapStatusChangedArgs e)
         {
             //Dont do anything it map is set to stay open
-            if (_stayOpenOnMap) return;
+            if (stayOpenOnMap) return;
 
             if (e.IsMapOpen)
             {
