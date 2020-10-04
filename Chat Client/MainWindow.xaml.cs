@@ -58,6 +58,16 @@ namespace Chat_Client
         {
             InitializeComponent();
 
+            //Load Settings
+            if (Properties.Settings.Default.needUpgrade)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.needUpgrade = false;
+                Properties.Settings.Default.Save();
+            }
+            stayOpenOnMap = Properties.Settings.Default.stayOpenOnMap;
+            apiKey = Properties.Settings.Default.apiKey;
+
             //Parse Arguments
             ParseArguments();
 
