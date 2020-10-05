@@ -424,8 +424,15 @@ namespace Chat_Client
                         WriteToChat($"StayOpenOnMap changed to {stayOpenOnMap}");
                         break;
                     default:
-                        //send packet as nomral
-                        client.Send(new Message(message.Text).Send());
+                        if (client.IsConnected)
+                        {
+                            //send packet as nomral
+                            client.Send(new Message(message.Text).Send());
+                        } else
+                        {
+                            //Alert the user they are not connected
+                            WriteToChat("You are not currently connected to the chat server.");
+                        }
                         break;
                 }
                 message.Text = "";
