@@ -75,7 +75,7 @@ namespace Chat_Client
 #if DEBUG
             _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 #else
-            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.I, true, true, true);
+            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.E, true, true, true);
 #endif
 
             //Setup Tray Icon
@@ -410,7 +410,7 @@ namespace Chat_Client
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return && message.Text != "")
+            if (e.Key == Key.Return && message.Text.Length != 0)
             {
                 switch (message.Text)
                 {
@@ -421,7 +421,7 @@ namespace Chat_Client
                         stayOpenOnMap = !stayOpenOnMap;
                         Properties.Settings.Default.stayOpenOnMap = stayOpenOnMap;
                         Properties.Settings.Default.Save();
-                        WriteToChat($"StayOpenOnMap changed to {stayOpenOnMap.ToString()}");
+                        WriteToChat($"StayOpenOnMap changed to {stayOpenOnMap}");
                         break;
                     default:
                         //send packet as nomral

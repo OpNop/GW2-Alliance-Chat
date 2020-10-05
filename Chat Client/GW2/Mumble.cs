@@ -9,7 +9,7 @@ namespace Chat_Client
     public class Mumble
     {
         private static readonly Logger _log = Logger.getInstance();
-        private IGw2MumbleClient _mumbleClient;
+        private readonly IGw2MumbleClient _mumbleClient;
         private bool _requestStop;
         private Thread _mumbleRefresher;
         private bool _lastMapState;
