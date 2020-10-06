@@ -39,7 +39,7 @@ namespace Chat_Client.Packets
         {
             name = data.CharacterName;
             commander = data.IsCommander;
-            race = data.Race;
+            race = data.Race.ToString();
             profession = data.Profession.ToString();
             eliteSpec = EliteSpec.GetElite(data.Specialization);
             position = new 
