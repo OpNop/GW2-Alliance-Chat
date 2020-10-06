@@ -8,10 +8,14 @@ namespace Chat_Client
 {
     public class Mumble
     {
+        private const string DEFAULT_MUMBLE_LINK_MAP_NAME = "MumbleLink";
+
         private static readonly Logger _log = Logger.getInstance();
         private readonly IGw2MumbleClient _mumbleClient;
-        private bool _requestStop;
+
         private Thread _mumbleRefresher;
+        private string _mumbleLinkFile;
+        private bool _requestStop;
         private bool _lastMapState;
         private bool _lastActiveState;
 
@@ -20,15 +24,16 @@ namespace Chat_Client
         public event EventHandler<GameWindowActiveArgs> GameActiveStatusChanged;
         public event EventHandler HasSelectedCharacter;
 
-        public Mumble()
+        public Mumble(string mumbleFile = DEFAULT_MUMBLE_LINK_MAP_NAME)
         {
-            _mumbleClient = new Gw2Client().Mumble;
+            _mumbleLinkFile = mumbleFile;
+            _mumbleClient = new Gw2Client().Mumble[_mumbleLinkFile];
             _requestStop = false;
         }
 
         public void Start()
         {
-            _log.AddInfo("Starting Mumble Refresh Thread");
+            _log.AddInfo($"Starting Mumble Refresh Thread (Link: {_mumbleLinkFile})");
             _requestStop = false;
             _mumbleRefresher = new Thread(MumbleRefreshLoop);
             _mumbleRefresher.Start();

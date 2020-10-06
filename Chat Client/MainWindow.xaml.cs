@@ -41,6 +41,7 @@ namespace Chat_Client
         private State clientState = State.Disconnected;
         private bool _autoScroll = true;
         private bool _debugMode = false;
+        private string _mumbleFile = "MumbleLink";
 
         private System.Windows.Forms.NotifyIcon _notifyIcon;
         private bool _isExit;
@@ -94,6 +95,7 @@ namespace Chat_Client
                 Console.WriteLine("  --server\tSets the chat server to connect to");
                 Console.WriteLine("  --port\tSets the port to use for the chat server");
                 Console.WriteLine("  --debug\tStarts the client in debug mode");
+                Console.WriteLine("  --mumble\tSet the mumble file to use");
                 Environment.Exit(0);
             }
                         
@@ -117,6 +119,10 @@ namespace Chat_Client
                 _debugMode = true;
                 _log.AddWarning("Starting in Debug Mode");
             }
+            if(CommandLine["mumble"] != null)
+            {
+                _mumbleFile = CommandLine["mumble"];
+            }    
         }
 
         /// <summary>
@@ -506,7 +512,7 @@ namespace Chat_Client
             game.Start();
 
             //Setup Mumble Updater
-            mumble = new Mumble();
+            mumble = new Mumble(_mumbleFile);
             mumble.MapStatusChanged += IsMapShowing;
             //mumble.GameActiveStatusChanged += OnGameActiveChange;
             mumble.MumbleUpdated += OnMumbleUpdated;
