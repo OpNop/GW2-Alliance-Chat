@@ -60,6 +60,7 @@ module.exports = class User {
         this.api.authenticate(this.apiKey);
         let account = await this.api.account().get();
         let guilds = account.guilds;
+        this.accountName = account.name;
         
         //check for valid guild
         for (let i = 0; i < config.guilds.length; i++) {
