@@ -1,7 +1,6 @@
 module.exports = class chatCommand {
     
     commands = {};
-    unknownCommand = "Unknown Command";
 
     constructor(commands) {
         commands.forEach(command => {
@@ -21,10 +20,10 @@ module.exports = class chatCommand {
     }
 
     async run(user, command, args) {
-        if(typeof this.commands[command].runner === 'function'){
+        if(command in this.commands && typeof this.commands[command].runner === 'function'){
             await this.commands[command].runner(user, args);
         } else{
-            throw this.unknownCommand;
+            user.sendSystemMessage(`Command "${command}" not found.`);
         }
     }
 
