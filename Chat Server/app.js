@@ -394,7 +394,11 @@ const server = net.createServer(socket => {
 
         // Everything passed Send welcome message
         user.sendSystemMessage(`Welcome to the ${config.name} version ${config.version}!`);
-        user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+        if(clients.length == 1){
+            user.sendSystemMessage(`There's no one else here! The lab is all yours... for now. Please keep the explosion's to a minimum.`);
+        } else {
+            user.sendSystemMessage(`There is currently ${clients.length} users connected`);
+        }
 
     });
     packet.on('message', (user, packet) => {
