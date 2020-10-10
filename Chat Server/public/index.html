@@ -6,7 +6,13 @@
     <title>TINY Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/menomonia.css">
     <style>
+        body {
+            font-family: Menomonia;
+            font-size: 17px;
+        }
+
         .leaflet-container {
             background: #000;
         }
@@ -30,11 +36,90 @@
             color: #ffcc77;
             font-weight: normal;
         }
+
+        /* The side navigation menu */
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            right: 0;
+            background-color: #000d;
+            overflow-x: hidden;
+            padding-top: 60px;
+            transition: 0.5s;
+        }
+
+        /* The navigation menu links */
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        /* When you mouse over the navigation links, change their color */
+        .sidenav a:hover {
+            color: #f1f1f1;
+            background-color: #333;
+        }
+
+        /* Position and style the close button (top right corner) */
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+
+        .navicon {
+            position: absolute;
+            padding: 1.5em .75em .5em 2em;
+            right: 0;
+            cursor: pointer;
+            font-size: x-large;
+            z-index: 998;
+        }
+
+        .navicon:before {
+            position: absolute;
+            top: 50%;
+            left: .75em;
+            width: .8em;
+            height: .8em;
+            margin-top: -.4em;
+            content: '';
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAABkCAMAAACCTv/3AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////5ubmueBsSwAAAAJ0Uk5T/wDltzBKAAAAPklEQVR42uzYQQ0AAAgDseHfNC4IyVoD912WAACUm3uampqampqamq+aAAD+IVtTU1NTU1NT0z8EAFBsBRgAX+kR+Qam138AAAAASUVORK5CYII=);
+        }
     </style>
 </head>
 
 <body>
     <div id="map"></div>
+    <div id="tiny-nav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="https://tinyermy.org">The TINY Army</a>
+        <a href="https://tinyermy.org/tacs">Download Client</a>
+    </div>
+    <span class="navicon" onclick="openNav()"></span>
+
     <script src="leaflet-realtime.js"></script>
     <script>
         var map, tinyIcon;
@@ -128,6 +213,17 @@
             }));
         }
         createMap();
+
+        // Navbar Items
+        /* Set the width of the side navigation to 250px */
+        function openNav() {
+            document.getElementById("tiny-nav").style.width = "250px";
+        }
+
+        /* Set the width of the side navigation to 0 */
+        function closeNav() {
+            document.getElementById("tiny-nav").style.width = "0";
+        }
     </script>
 </body>
 
