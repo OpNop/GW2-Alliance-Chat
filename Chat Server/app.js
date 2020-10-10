@@ -138,6 +138,12 @@ const chatCommands = [{
         }
     },
     {
+        names: 'gg',
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} says "Good Game"`);
+        }
+    },
+    {
         names: 'kneel',
         func: (user) => {
             broadcastSystemMessage(`${user.getName()} kneels.`);
@@ -159,6 +165,12 @@ const chatCommands = [{
                 broadcastSystemMessage(`${user.getName()} disagrees with ${args}.`);
             else
                 broadcastSystemMessage(`${user.getName()} disagrees.`);
+        }
+    },
+    {
+        names: 'playdead',
+        func: (user) => {
+            broadcastSystemMessage(`${user.getName()} is probably dead.`);
         }
     },
     {
@@ -225,7 +237,7 @@ const chatCommands = [{
         }
     },
     {
-        names: 'sleep',
+        names: ['sleep', 'nap'],
         func: (user, args) => {
             broadcastSystemMessage(`${user.getName()} goes to sleep.`);
         }
