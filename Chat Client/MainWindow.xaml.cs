@@ -19,6 +19,9 @@ using DLG.ToolBox.Log;
 using Chat_Client.utils;
 using Chat_Client.Packets;
 using System.Windows.Interop;
+using System.Windows.Media.Animation;
+using Gw2Sharp;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 delegate void ChatMessage(string time, string from, string message);
 
@@ -48,6 +51,7 @@ namespace Chat_Client
 
         public Game game;
         public Mumble mumble;
+        public DiscordRichPresence discord;
         public string apiKey;
         private static readonly Logger _log = Logger.getInstance();
 
@@ -165,6 +169,8 @@ namespace Chat_Client
                     mumble.Stop();
                     //Disconnect from the chat server
                     client.Dispose();
+                    //Stop Discord
+                    discord.Stop();
                     //Hide the UI
                     HideUI();
                     break;
@@ -172,10 +178,14 @@ namespace Chat_Client
                     //IDK?
                     //Stop the mumble update also I guess
                     mumble.Stop();
+                    //Stop Discord
+                    discord.Stop();
                     break;
                 case GameState.InGame:
                     //Start Mumble Watcher
                     mumble.Start();
+                    //Start Discord RPC
+                    discord.Start();
                     //Connect to the chat server (if needed)
                     ConnectToServer();
                     //Show the UI
@@ -429,6 +439,9 @@ namespace Chat_Client
                         Properties.Settings.Default.Save();
                         WriteToChat($"StayOpenOnMap changed to {stayOpenOnMap}");
                         break;
+                    case "/map":
+                        debugMap();
+                        break;
                     default:
                         if (client.IsConnected)
                         {
@@ -510,6 +523,9 @@ namespace Chat_Client
             game = new Game();
             game.GameStateChanged += GameStateChanged;
             game.Start();
+
+            //Create Discord RPC
+            discord = new DiscordRichPresence();
 
             //Setup Mumble Updater
             mumble = new Mumble(_mumbleFile);
@@ -607,6 +623,9 @@ namespace Chat_Client
             //If connected to the server and Authed
             if (clientState == State.Authed && !(client is null) && client.IsConnected)
             {
+                //update Discord (this should be optimised)
+                discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
+
                 //Send update packet
                 client.Send(new Update(mumble.MumbleData).Send());
             }
@@ -637,6 +656,21 @@ namespace Chat_Client
         private void Window_Activated(object sender, EventArgs e)
         {
             //Topmost = true;
+        }
+
+        private void debugMap()
+        {
+            using Gw2Client apiclient = new Gw2Client();
+            apiclient.Mumble.Update();
+            var mapData = apiclient.WebApi.V2.Maps.GetAsync(apiclient.Mumble.MapId);
+            mapData.Wait();
+            WriteToChat($"{mapData.Result.RegionName}");
+            WriteToChat($"\"{hashRectangle(mapData.Result.ContinentRect)}\": , //{mapData.Result.Name}");
+        }
+
+        private int hashRectangle (Gw2Sharp.WebApi.V2.Models.Rectangle Rect)
+        {
+            return $"{Rect.TopLeft}.{Rect.TopRight}.{Rect.BottomLeft}.{Rect.BottomRight}".GetHashCode();
         }
     }
 

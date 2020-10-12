@@ -1,0 +1,96 @@
+{
+
+    //hashcodes
+    //Ascalon
+    "1284205660": 218,  //Black Citadel
+    "-244935268": 19,   //Plains of Ashford
+    "642003836": 32,    //Diessa Plateau
+    "2020983868": 21,   //Fields of Ruin
+    "-608695588": 20,   //Blazeridge Steppes
+    "-2086984250": 25,  //Iron Marches
+    "429204724": 22,    //Fireheart Rise
+    //Kryta
+    "-1736827716": 15,  //Queensdale
+    "1588205734": 18,   //Divinity's Reach
+    "617177884": 1185,  //Lake Doric
+    "-1184498524": 17,  //Harathi Hinterlands
+    "-334643428": 24,   //Gendarran Fields
+    "1810176092": 50,   //Lion's Arch
+    "-193983108": 23,   //Kessex Hills
+    "2146318620": 73,   //Bloodtide Coast
+    //Shiverpeak Mountains
+    "-493223428": 326,  //Hoelbrak
+    "1248304828": 28,   //Wayfarer Foothills
+    "953524060": 31,    //Snowden Drifts
+    "2114160636": 27,   //Lornar's Pass
+    "568005404": 26,    //Dredgehaunt Cliffs
+    "1560539932": 29,   //Timberline Falls
+    "1905618204": 30,   //Frostgorge Sound
+    "-277640522": 1178, //Bitterfrost Frontier
+    //Tarnished Coast
+    "-213250994": 139,  //Rata Sum
+    "-653595132": 35,   //Metrica Province
+    "556711022": 54,    //Brisban Wildlands
+    "-2114966564": 91,  //Thr Grove
+    "-935593036": 34,   //Caledon Forest
+    "-1418046276": 53,  //Sparkfly Fen
+    //Ruins of Orr
+    "1851987484": 51,   //Straits of Devastation
+    "208148572": 65,    //Malchor's Leap
+    "1762424380": 62,   //Cursed Shore
+    "-494061828": 1203, //Siren's Landing
+    //Sea of Sorrows
+
+    //Super Adventure Box
+
+    //Fractals of the Mists
+
+    //World vs. World
+
+    //Maguuma Wastes
+    "1522243982": 988, //Dry Top
+    "-50416020": 1015, //The Silverwastes
+    //Heart of Maguuma
+    "2102781332": 1052, //Verdant Brink
+    "1566882958": 1043, //Auric Basin
+    "348122052": 1045, //Tangled Depths
+    "370646364": 1041, //Dragon's Stand
+    //Crystal Desert
+
+    //Kryta
+    //15 = Queensdale
+    //17 = Harathi Hinterlands
+    //18 = Divinity's Reach
+    //23 = Kessex Hills
+    //24 = Gendarran Fields
+    //73 = Bloodtide Coast
+
+
+
+    //Bookah Personal Story
+    "138": 15, //Defense of Shaemoor
+    //Commoner
+    "226": 15, //On the Mend
+    "113": 15, //Desperate Medicine (Bandithaunt Caverns)
+    "327": 18, //Desperate Medicine (Salma District?)
+    "61" : 15, //Infiltration
+    "97" : 18, //Infiltration
+    "37" : 15, //Arson at the Orphanage
+    "55" : 15, //The Hospital in Jeopardy
+    "120": 15, //The Commander
+    //Noble
+    "212": 15, //Welcome Home
+    "89" : 15, //Chasing the Culprits
+    "796": 15, //The Informant
+    "77" : 15, //Search the Premises
+    "80" : 15, //A Society Function
+    "92" : 15, //The Trial of Julius Zamon
+    //Seet Rat (One trick ahead of disaster)
+    "110": 15, //The Perils of Friendship
+    "140": 15, //The Apothecary
+    "142": 15, //Going Undercover
+    "143": 15, //Going Undercover
+    "145": 15, //The Rescue
+    "144": 15, //The Greater Good
+    "147": 15  //Breaking the Blade
+}
