@@ -36,7 +36,6 @@
   "bd0631ee": 1362, //Forging Steel (Public)
   "c6a9cf12": 1370, //Eye of the North
   "907c50dd": 1371, //Drizzlewood Coast
-  "136d4773": 1376, //Strike Mission: Cold War (Public)
   //Tarnished Coast
   "44a6827e": 34, //Caledon Forest
   "9cf20a95": 35, //Metrica Province
@@ -51,14 +50,6 @@
   "c78e6a1f": 62, //Cursed Shore
   "000e92f9": 65, //Malchor's Leap
   "37d0a661": 1203, //Siren's Landing
-  //Player vs. Player
-  "b05aecba": 350, //Heart of the Mists
-  //Mad King's Realm
-  "03661893": 866, //Mad King's Labyrinth
-  "4eefd7a4": 1304, //Mad King's Raceway
-  "19fba78d": 1316, //Mists Rift
-  //Super Adventure Box
-  "fd0c8873": 935, //Super Adventure Box
   //Maguuma Wastes
   "f34342be": 988, //Dry Top
   "adb0f607": 1015, //The Silverwastes
@@ -67,18 +58,14 @@
   "bbdada04": 1042, //Verdant Brink
   "fdcf69e6": 1043, //Auric Basin
   "8c5191ae": 1045, //Tangled Depths
-  "a74d1e9c": 1052, //Verdant Brink
-  "439acbb3": 1147, //Spirit Vale
+  "a74d1e9c": 1042, //Verdant Brink (unknown, using 1042)
   "f59c3070": 1165, //Bloodstone Fen
   "3a7a51e1": 1175, //Ember Bay
   //Ring of Fire
   "608a3705": 1195, //Draconis Mons
-  //Fractals of the Mists
-  "71bf90c9": 1206, //Mistlock Sanctuary
   //Crystal Desert
   "2dae34ee": 1210, //Crystal Oasis
   "667043d9": 1211, //Desert Highlands
-  "75542fcf": 1215, //Windswept Haven
   "7081e5bc": 1226, //The Desolation
   "a5100bb8": 1228, //Elon Riverlands
   "054d1ca6": 1248, //Domain of Vabbi
@@ -87,6 +74,32 @@
   "0ab70801": 1288, //Domain of Kourna
   "b3b8c4f3": 1301, //Jahai Bluffs
   "f36c130e": 1317, //Dragonfall
-  //
-  "5d5aed2a": 1352 //Secret Lair of the Snowmen (Public)
+  //Guild Halls
+  "f160587f": 1124, //Lost Precipice
+  "af783e31": 1121, //Gilded Hollow
+  "75542fcf": 1232, //Windswept Haven
+  //Mad King's Realm
+  "03661893": 866, //Mad King's Labyrinth
+  "4eefd7a4": 866, //Mad King's Raceway (really 1304 but same loading screen as 866)
+  "19fba78d": 1316, //Mists Rift
+  //Super Adventure Box
+  "fd0c8873": 935, //Super Adventure Box
+  //Fractals of the Mists
+  "71bf90c9": 872, //Mistlock Sanctuary (really 1206 but same loading screen as 872)
+  //Player vs. Player
+  "b05aecba": 350, //Heart of the Mists
+  //Dungeons
+  "21d02783": 33, //Ascalonian Catacombs
+  "fac8f4f3": 75, //Caudecus's Manor
+  "8a186047": 67, //Twilight Arbor
+  "b5202ee6": 63, //Sorrow's Embrace
+  "b0a0b417": 66, //Citadel of Flame
+  "8a1000b0": 70, //Honor of the Waves
+  "c5fa01da": 81, //Crucible of Eternity
+  "74b17472": 112, //The Ruined City of Arah
+  //Raids
+  "439acbb3": 1147, //Spirit Vale (public Spirit Vale?)
+  //Strikes
+  "5d5aed2a": 1352, //Secret Lair of the Snowmen (Public)
+  "136d4773": 1376 //Strike Mission: Cold War (Public)
 }
