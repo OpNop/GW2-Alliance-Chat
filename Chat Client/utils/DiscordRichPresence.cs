@@ -118,7 +118,7 @@ namespace Chat_Client.utils
 
         private string HashMap(Map map)
         {
-            var mapString = $"{map.RegionId}{map.MapRect.BottomLeft.X}{map.MapRect.BottomLeft.Y}{map.MapRect.TopRight.X}{map.MapRect.TopRight.X}";
+            var mapString = $"{map.ContinentId}{map.ContinentRect.TopLeft.X}{map.ContinentRect.TopLeft.Y}{map.ContinentRect.BottomRight.X}{map.ContinentRect.BottomRight.Y}";
             return BitConverter.ToString(new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(mapString))).Replace("-", "").Substring(0, 8).ToLower();
         }
     }
