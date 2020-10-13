@@ -8,6 +8,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Chat_Client.utils
 {
@@ -17,7 +19,7 @@ namespace Chat_Client.utils
         private DiscordRpcClient _discordClient;
         private DateTime _start;
         private readonly Gw2Client _api;
-        private readonly Dictionary<int, int> _maps;
+        private readonly Dictionary<string, int> _maps;
         private static readonly Logger _log = Logger.getInstance();
 
         public DiscordRichPresence()
@@ -27,7 +29,7 @@ namespace Chat_Client.utils
             //Load the json
             using StreamReader file = System.IO.File.OpenText(@"maps.jsonc");
             using JsonTextReader reader = new JsonTextReader(file);
-            _maps = JsonConvert.DeserializeObject<Dictionary<int, int>>(JToken.ReadFrom(reader).ToString());
+            _maps = JsonConvert.DeserializeObject<Dictionary<string, int>>(JToken.ReadFrom(reader).ToString());
         }
         public void Start()
         {
@@ -100,7 +102,7 @@ namespace Chat_Client.utils
                 return map.Id;
             }
 
-            var mapHash = HashMap(map.ContinentRect);
+            var mapHash = HashMap(map);
 
             if (_maps.ContainsKey(mapHash))
             {
@@ -109,14 +111,15 @@ namespace Chat_Client.utils
             else
             {
                 _log.AddError($"Missing lookup. Map: {map.Name}, ID: {map.Id}");
-                return map.Id;
+                return map.Id; //yolo, it doesnt crash Discord
             }
 
         }
 
-        private int HashMap(Rectangle map_rect)
+        private string HashMap(Map map)
         {
-            return $"{map_rect.TopLeft}.{map_rect.TopRight}.{map_rect.BottomLeft}.{map_rect.BottomRight}".GetHashCode();
+            var mapString = $"{map.RegionId}{map.MapRect.BottomLeft.X}{map.MapRect.BottomLeft.Y}{map.MapRect.TopRight.X}{map.MapRect.TopRight.X}";
+            return BitConverter.ToString(new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(mapString))).Replace("-", "").Substring(0, 8).ToLower();
         }
     }
 }

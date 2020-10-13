@@ -1,96 +1,92 @@
 {
-
-    //hashcodes
-    //Ascalon
-    "1284205660": 218,  //Black Citadel
-    "-244935268": 19,   //Plains of Ashford
-    "642003836": 32,    //Diessa Plateau
-    "2020983868": 21,   //Fields of Ruin
-    "-608695588": 20,   //Blazeridge Steppes
-    "-2086984250": 25,  //Iron Marches
-    "429204724": 22,    //Fireheart Rise
-    //Kryta
-    "-1736827716": 15,  //Queensdale
-    "1588205734": 18,   //Divinity's Reach
-    "617177884": 1185,  //Lake Doric
-    "-1184498524": 17,  //Harathi Hinterlands
-    "-334643428": 24,   //Gendarran Fields
-    "1810176092": 50,   //Lion's Arch
-    "-193983108": 23,   //Kessex Hills
-    "2146318620": 73,   //Bloodtide Coast
-    //Shiverpeak Mountains
-    "-493223428": 326,  //Hoelbrak
-    "1248304828": 28,   //Wayfarer Foothills
-    "953524060": 31,    //Snowden Drifts
-    "2114160636": 27,   //Lornar's Pass
-    "568005404": 26,    //Dredgehaunt Cliffs
-    "1560539932": 29,   //Timberline Falls
-    "1905618204": 30,   //Frostgorge Sound
-    "-277640522": 1178, //Bitterfrost Frontier
-    //Tarnished Coast
-    "-213250994": 139,  //Rata Sum
-    "-653595132": 35,   //Metrica Province
-    "556711022": 54,    //Brisban Wildlands
-    "-2114966564": 91,  //Thr Grove
-    "-935593036": 34,   //Caledon Forest
-    "-1418046276": 53,  //Sparkfly Fen
-    //Ruins of Orr
-    "1851987484": 51,   //Straits of Devastation
-    "208148572": 65,    //Malchor's Leap
-    "1762424380": 62,   //Cursed Shore
-    "-494061828": 1203, //Siren's Landing
-    //Sea of Sorrows
-
-    //Super Adventure Box
-
-    //Fractals of the Mists
-
-    //World vs. World
-
-    //Maguuma Wastes
-    "1522243982": 988, //Dry Top
-    "-50416020": 1015, //The Silverwastes
-    //Heart of Maguuma
-    "2102781332": 1052, //Verdant Brink
-    "1566882958": 1043, //Auric Basin
-    "348122052": 1045, //Tangled Depths
-    "370646364": 1041, //Dragon's Stand
-    //Crystal Desert
-
-    //Kryta
-    //15 = Queensdale
-    //17 = Harathi Hinterlands
-    //18 = Divinity's Reach
-    //23 = Kessex Hills
-    //24 = Gendarran Fields
-    //73 = Bloodtide Coast
-
-
-
-    //Bookah Personal Story
-    "138": 15, //Defense of Shaemoor
-    //Commoner
-    "226": 15, //On the Mend
-    "113": 15, //Desperate Medicine (Bandithaunt Caverns)
-    "327": 18, //Desperate Medicine (Salma District?)
-    "61" : 15, //Infiltration
-    "97" : 18, //Infiltration
-    "37" : 15, //Arson at the Orphanage
-    "55" : 15, //The Hospital in Jeopardy
-    "120": 15, //The Commander
-    //Noble
-    "212": 15, //Welcome Home
-    "89" : 15, //Chasing the Culprits
-    "796": 15, //The Informant
-    "77" : 15, //Search the Premises
-    "80" : 15, //A Society Function
-    "92" : 15, //The Trial of Julius Zamon
-    //Seet Rat (One trick ahead of disaster)
-    "110": 15, //The Perils of Friendship
-    "140": 15, //The Apothecary
-    "142": 15, //Going Undercover
-    "143": 15, //Going Undercover
-    "145": 15, //The Rescue
-    "144": 15, //The Greater Good
-    "147": 15  //Breaking the Blade
+  //Kryta
+  "f3cf237c": 15, //Queensdale
+  "b0c8f43a": 17, //Harathi Hinterlands
+  "3006d2ac": 18, //Divinity's Reach
+  "2c525337": 23, //Kessex Hills
+  "0438d50a": 24, //Gendarran Fields
+  "597a1fb2": 50, //Lion's Arch
+  "f1d934cd": 73, //Bloodtide Coast
+  "32ac5465": 335, //Claw Island
+  "63648a76": 873, //Southsun Cove
+  "ddde4878": 929, //The Crown Pavilion
+  "f2cb530b": 943, //Tower of Nightmares
+  "ce7b46d9": 1155, //Lion's Arch Aerodrome
+  "69c587a6": 1185, //Lake Doric
+  //Ascalon
+  "c262d26a": 19, //Plains of Ashford
+  "9e26759a": 20, //Blazeridge Steppes
+  "0b95efb9": 21, //Fields of Ruin
+  "a6a812bf": 22, //Fireheart Rise
+  "bc04a13b": 25, //Iron Marches
+  "ff3ad1bc": 32, //Diessa Plateau
+  "79a96795": 218, //Black Citadel
+  "16f019cd": 1330, //Grothmar Valley
+  //Shiverpeak Mountains
+  "d49a0212": 26, //Dredgehaunt Cliffs
+  "236150ca": 27, //Lornar's Pass
+  "1b0b6992": 28, //Wayfarer Foothills
+  "28991569": 29, //Timberline Falls
+  "e85dd195": 30, //Frostgorge Sound
+  "898d5cf1": 31, //Snowden Drifts
+  "3de4ac7b": 326, //Hoelbrak
+  "fd8d753c": 1178, //Bitterfrost Frontier
+  "30decb1e": 1310, //Thunderhead Peaks
+  "d2a9a1bc": 1343, //Bjora Marches
+  "bd0631ee": 1362, //Forging Steel (Public)
+  "c6a9cf12": 1370, //Eye of the North
+  "907c50dd": 1371, //Drizzlewood Coast
+  "136d4773": 1376, //Strike Mission: Cold War (Public)
+  //Tarnished Coast
+  "44a6827e": 34, //Caledon Forest
+  "9cf20a95": 35, //Metrica Province
+  "45c33f30": 39, //Mount Maelstrom
+  "462ea683": 53, //Sparkfly Fen
+  "757f4190": 54, //Brisban Wildlands
+  "5d8af7a2": 91, //The Grove
+  "19d9c8fe": 139, //Rata Sum
+  "fd5205b1": 922, //Labyrinthine Cliffs
+  //Ruins of Orr
+  "689ed9f4": 51, //Straits of Devastation
+  "c78e6a1f": 62, //Cursed Shore
+  "000e92f9": 65, //Malchor's Leap
+  "37d0a661": 1203, //Siren's Landing
+  //Player vs. Player
+  "b05aecba": 350, //Heart of the Mists
+  //Mad King's Realm
+  "03661893": 866, //Mad King's Labyrinth
+  "4eefd7a4": 1304, //Mad King's Raceway
+  "19fba78d": 1316, //Mists Rift
+  //Super Adventure Box
+  "fd0c8873": 935, //Super Adventure Box
+  //Maguuma Wastes
+  "f34342be": 988, //Dry Top
+  "adb0f607": 1015, //The Silverwastes
+  //Heart of Maguuma
+  "3a1464c0": 1041, //Dragon's Stand
+  "bbdada04": 1042, //Verdant Brink
+  "fdcf69e6": 1043, //Auric Basin
+  "8c5191ae": 1045, //Tangled Depths
+  "a74d1e9c": 1052, //Verdant Brink
+  "439acbb3": 1147, //Spirit Vale
+  "f59c3070": 1165, //Bloodstone Fen
+  "3a7a51e1": 1175, //Ember Bay
+  //Ring of Fire
+  "608a3705": 1195, //Draconis Mons
+  //Fractals of the Mists
+  "71bf90c9": 1206, //Mistlock Sanctuary
+  //Crystal Desert
+  "2dae34ee": 1210, //Crystal Oasis
+  "667043d9": 1211, //Desert Highlands
+  "75542fcf": 1215, //Windswept Haven
+  "7081e5bc": 1226, //The Desolation
+  "a5100bb8": 1228, //Elon Riverlands
+  "054d1ca6": 1248, //Domain of Vabbi
+  "da8f33f0": 1263, //Domain of Istan
+  "b9f04ef5": 1271, //Sandswept Isles
+  "0ab70801": 1288, //Domain of Kourna
+  "b3b8c4f3": 1301, //Jahai Bluffs
+  "f36c130e": 1317, //Dragonfall
+  //
+  "5d5aed2a": 1352 //Secret Lair of the Snowmen (Public)
 }
