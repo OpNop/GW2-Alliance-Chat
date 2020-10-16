@@ -54,7 +54,6 @@
   <ItemGroup>
     <PackageReference Include="DiscordRichPresence" Version="1.0.150" />
     <PackageReference Include="gw2sharp" Version="0.11.1" />
-    <PackageReference Include="ilmerge" Version="3.0.29" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SuperSimpleTcp" Version="2.0.2" />
   </ItemGroup>
@@ -90,17 +89,4 @@
     <DateFormat>$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</DateFormat>
     <Version>1.0.1.0</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ILMerge" Version="3.0.29" />
-  </ItemGroup>
-
-  <Target Name="ILMerge">
-    <!-- the ILMergePath property points to the location of ILMerge.exe console application -->
-    <Exec Command="$(ILMergeConsolePath) &quot;bin\Release\net472\Chat Client.exe&quot;  /out:&quot;bin\merged\Chat Client.exe&quot; bin\Release\net472\DLG.ToolBox.dll bin\Release\net472\Gw2Sharp.dll bin\Release\net472\Newtonsoft.Json.dll bin\Release\net472\SimpleTcp.dll " />
-  </Target>
-  
-  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (powershell Compress-Archive -Path '$(TargetDir)*' -DestinationPath '$(TargetDir)\..\..\ChatClient-$(ConfigurationName)-$(DateFormat).zip' -Force)" />
-  </Target>-->
 </Project>
