@@ -96,8 +96,8 @@ namespace Chat_Client.utils
 
         private int GetMapIcon(Map map)
         {
-            //if its a normal map, no need to lookup
-            if (map.Type == "public")
+            //if its not an Instance map, no need to lookup
+            if (map.Type != "Instance")
             {
                 return map.Id;
             }
@@ -110,7 +110,7 @@ namespace Chat_Client.utils
             }
             else
             {
-                _log.AddError($"Missing lookup. Map: {map.Name}, ID: {map.Id}");
+                _log.AddError($"Missing lookup. Map: {map.Name}, ID: {map.Id}, Hash: {mapHash}");
                 return map.Id; //yolo, it doesnt crash Discord
             }
 
