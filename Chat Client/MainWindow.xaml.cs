@@ -190,6 +190,7 @@ namespace Chat_Client
                     ConnectToServer();
                     //Show the UI
                     //ShowUI();
+                    AttachToGame(game.GameProcess.MainWindowHandle);
                     break;
             }
         }
