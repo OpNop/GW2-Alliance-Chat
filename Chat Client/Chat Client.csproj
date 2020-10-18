@@ -27,22 +27,42 @@
     <None Remove="Assets\1444524.png" />
     <None Remove="Assets\155139.png" />
     <None Remove="Assets\156106.png" />
+    <None Remove="Assets\157109.png" />
+    <None Remove="Assets\157110.png" />
+    <None Remove="Assets\157111.png" />
     <None Remove="Assets\APIBackground.png" />
+    <None Remove="Assets\checkbox-checked-hover.png" />
+    <None Remove="Assets\checkbox-checked-normal.png" />
+    <None Remove="Assets\checkbox-checked.png" />
+    <None Remove="Assets\checkbox-unchecked-hover.png" />
+    <None Remove="Assets\checkbox-unchecked-normal.png" />
+    <None Remove="Assets\checkbox-unchecked.png" />
+    <None Remove="Assets\checked.png" />
     <None Remove="Assets\close.png" />
     <None Remove="Assets\menomonia.ttf" />
     <None Remove="Assets\mouse.cur" />
+    <None Remove="Assets\SettingsBackground.png" />
     <None Remove="Assets\tiny_icon.ico" />
     <None Remove="Assets\tiny_icon.png" />
+    <None Remove="Assets\unchecked.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\1444520.png" />
     <Resource Include="Assets\1444524.png" />
     <Resource Include="Assets\155139.png" />
+    <Resource Include="Assets\157109.png" />
+    <Resource Include="Assets\157110.png" />
+    <Resource Include="Assets\157111.png" />
     <Resource Include="Assets\APIBackground.png" />
+    <Resource Include="Assets\checkbox-checked-hover.png" />
+    <Resource Include="Assets\checkbox-checked-normal.png" />
+    <Resource Include="Assets\checkbox-unchecked-hover.png" />
+    <Resource Include="Assets\checkbox-unchecked-normal.png" />
     <Resource Include="Assets\close.png" />
     <Resource Include="Assets\menomonia.ttf" />
     <Resource Include="Assets\mouse.cur" />
+    <Resource Include="Assets\SettingsBackground.png" />
     <Resource Include="Assets\tiny_icon.ico" />
     <Resource Include="Assets\tiny_icon.png" />
   </ItemGroup>
@@ -97,5 +117,10 @@
   <PropertyGroup>
     <DateFormat>$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</DateFormat>
     <Version>1.0.1.0</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Authors>Tiny Taimi</Authors>
+    <Company>New Novus Krewe</Company>
+    <Copyright>©2020 New Novus Krewe</Copyright>
   </PropertyGroup>
 </Project>

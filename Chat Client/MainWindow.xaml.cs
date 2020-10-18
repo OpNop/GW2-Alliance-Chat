@@ -686,6 +686,23 @@ namespace Chat_Client
         {
             return $"{Rect.TopLeft}.{Rect.TopRight}.{Rect.BottomLeft}.{Rect.BottomRight}".GetHashCode();
         }
+
+        private void Settings_Click(object sender, MouseButtonEventArgs e)
+        {
+            var settingsWindow = new Settings();
+            settingsWindow.Owner = this;
+            bool? dialogResult = settingsWindow.ShowDialog();
+
+            if (dialogResult.HasValue && !dialogResult.Value)
+            {
+                // User canceled, stop everything
+                //return 1;
+            }
+
+            //Reload Key
+            //apiKey = Properties.Settings.Default.apiKey;
+            //return 0;
+        }
     }
 
     enum State

@@ -5,13 +5,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Chat_Client"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
+    Title="Tiny Alliance Chat Service"
     Width="512"
     Height="450"
     MinWidth="245"
     MinHeight="180"
     MaxWidth="512"
     MaxHeight="512"
+    Activated="Window_Activated"
     AllowsTransparency="True"
     Closing="Window_Closing"
     Cursor="Assets/mouse.cur"
@@ -19,7 +20,7 @@
     ResizeMode="CanResizeWithGrip"
     ShowActivated="False"
     WindowStyle="None"
-    mc:Ignorable="d" Activated="Window_Activated">
+    mc:Ignorable="d">
 
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
@@ -95,17 +96,21 @@
         </Style>
     </Window.Resources>
     <DockPanel>
-        <DockPanel
-            x:Name="TitleBar"
+
+        <Grid
+            x:Name="HeaderGrid"
             Height="20"
             VerticalAlignment="Top"
-            Background="Black"
-            DockPanel.Dock="Top"
-            MouseDown="DragWindow">
-
+            DockPanel.Dock="Top">
+            <Grid
+                x:Name="DragableArea"
+                Background="Black"
+                MouseDown="DragWindow" />
             <TextBlock
+                Height="20"
                 Margin="4,0,0,0"
-                VerticalAlignment="Center"
+                Padding="0,3,0,0"
+                HorizontalAlignment="Left"
                 Background="Transparent"
                 FontFamily="Assets/#menomonia"
                 FontStyle="Italic"
@@ -113,24 +118,60 @@
                 TextDecorations="{x:Null}">
                 Tiny Alliance Chat Service (TACS)
             </TextBlock>
-            <Image
-                x:Name="btnExit"
-                Width="20"
-                Height="20"
+            <StackPanel
+                Margin="0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                MouseDown="btnExit_Click"
-                Source="Assets/close.png"
-                Stretch="UniformToFill" />
+                Orientation="Horizontal">
 
-        </DockPanel>
+                <Image
+                    x:Name="btnSettings"
+                    Width="20"
+                    Height="20"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    DockPanel.Dock="Right"
+                    MouseDown="Settings_Click"
+                    Stretch="UniformToFill">
+
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Assets/157109.png" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Source" Value="Assets/157111.png" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+
+                <Image
+                    x:Name="btnExit"
+                    Width="20"
+                    Height="20"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    DockPanel.Dock="Right"
+                    MouseDown="btnExit_Click"
+                    Source="Assets/close.png"
+                    Stretch="UniformToFill" />
+            </StackPanel>
+        </Grid>
+
         <Grid DockPanel.Dock="Top" FocusManager.FocusedElement="{Binding ElementName=message}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="501*" />
+                <ColumnDefinition Width="11*" />
+            </Grid.ColumnDefinitions>
             <ScrollViewer
                 x:Name="ScrollViewer"
+                Grid.ColumnSpan="2"
                 Margin="0,0,0,23"
                 VerticalAlignment="Stretch"
                 VerticalContentAlignment="Top"
                 ScrollChanged="ScrollViewer_OnScrollChanged">
+
                 <RichTextBox
                     x:Name="ChatBox"
                     AllowDrop="False"
@@ -151,11 +192,11 @@
                     </RichTextBox.Resources>
                 </RichTextBox>
 
-
             </ScrollViewer>
-            <!-- <Border BorderBrush="Black" BorderThickness="2" Height="22" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" FocusManager.FocusedElement="{Binding ElementName=message}"> -->
+
             <TextBox
                 x:Name="message"
+                Grid.ColumnSpan="2"
                 Height="23"
                 Margin="61,0,0,0"
                 VerticalAlignment="Bottom"
@@ -188,12 +229,8 @@
                 FontWeight="Normal"
                 Foreground="DarkTurquoise" />
 
-
-
-
         </Grid>
     </DockPanel>
-
 
 </Window>
 
