@@ -22,6 +22,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using Gw2Sharp;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.InteropServices;
 
 delegate void ChatMessage(string time, string from, string message);
 
@@ -39,6 +40,9 @@ namespace Chat_Client
         private string serverAddr = "chat.jumpsfor.science";
         private int serverPort = 8888;
 #endif
+
+        [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool SwitchToThisWindow(IntPtr hWnd, Boolean fAltTab);
 
         private TcpClient client;
         private State clientState = State.Disconnected;
@@ -427,35 +431,44 @@ namespace Chat_Client
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return && message.Text.Length != 0)
+            if(Keyboard.IsKeyDown(Key.RightShift) && e.Key == Key.Return)
+                return;
+
+            if (e.Key == Key.Return)
             {
-                switch (message.Text)
+                if (message.Text.Length != 0)
                 {
-                    case "/setkey":
-                        ShowKeyDialog();
-                        break;
-                    case "/togglestayopen":
-                        stayOpenOnMap = !stayOpenOnMap;
-                        Properties.Settings.Default.stayOpenOnMap = stayOpenOnMap;
-                        Properties.Settings.Default.Save();
-                        WriteToChat($"StayOpenOnMap changed to {stayOpenOnMap}");
-                        break;
-                    case "/map":
-                        debugMap();
-                        break;
-                    default:
-                        if (client.IsConnected)
-                        {
-                            //send packet as nomral
-                            client.Send(new Message(message.Text).Send());
-                        } else
-                        {
-                            //Alert the user they are not connected
-                            WriteToChat("You are not currently connected to the chat server.");
-                        }
-                        break;
+                    switch (message.Text)
+                    {
+                        case "/setkey":
+                            ShowKeyDialog();
+                            break;
+                        case "/togglestayopen":
+                            showOnMap = !showOnMap;
+                            Properties.Settings.Default.showOnMap = showOnMap;
+                            Properties.Settings.Default.Save();
+                            WriteToChat($"StayOpenOnMap changed to {showOnMap}");
+                            break;
+                        case "/map":
+                            debugMap();
+                            break;
+                        default:
+                            if (client.IsConnected)
+                            {
+                                //send packet as nomral
+                                client.Send(new Message(message.Text).Send());
+                            }
+                            else
+                            {
+                                //Alert the user they are not connected
+                                WriteToChat("You are not currently connected to the chat server.");
+                            }
+                            break;
+                    }
+                    message.Text = "";
                 }
-                message.Text = "";
+                //set focus back to the game
+                SwitchToThisWindow(game.GameProcess.MainWindowHandle, true);
             }
         }
 
