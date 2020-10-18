@@ -60,7 +60,7 @@ namespace Chat_Client
         private static readonly Logger _log = Logger.getInstance();
 
         //toogle Stay Open
-        private bool stayOpenOnMap;
+        private bool showOnMap;
         private int hookId;
 
         public MainWindow()
@@ -74,7 +74,7 @@ namespace Chat_Client
                 Properties.Settings.Default.needUpgrade = false;
                 Properties.Settings.Default.Save();
             }
-            stayOpenOnMap = Properties.Settings.Default.stayOpenOnMap;
+            showOnMap = Properties.Settings.Default.showOnMap;
             apiKey = Properties.Settings.Default.apiKey;
 
             //Parse Arguments
@@ -484,10 +484,10 @@ namespace Chat_Client
 
         protected override void OnSourceInitialized(EventArgs e)
         {
-            this.Top = Properties.Settings.Default.Top;
-            this.Left = Properties.Settings.Default.Left;
-            this.Height = Properties.Settings.Default.Height;
-            this.Width = Properties.Settings.Default.Width;
+            Top = Properties.Settings.Default.chatTop;
+            Left = Properties.Settings.Default.chatLeft;
+            Height = Properties.Settings.Default.chatHeight;
+            Width = Properties.Settings.Default.chatWidth;
 
             base.OnSourceInitialized(e);
         }
@@ -495,10 +495,10 @@ namespace Chat_Client
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //Save window location and size
-            Properties.Settings.Default.Top = this.Top;
-            Properties.Settings.Default.Left = this.Left;
-            Properties.Settings.Default.Height = this.Height;
-            Properties.Settings.Default.Width = this.Width;
+            Properties.Settings.Default.chatTop = this.Top;
+            Properties.Settings.Default.chatLeft = this.Left;
+            Properties.Settings.Default.chatHeight = this.Height;
+            Properties.Settings.Default.chatWidth = this.Width;
             Properties.Settings.Default.Save();
             
             if (!_isExit)
@@ -603,7 +603,7 @@ namespace Chat_Client
         private void IsMapShowing(object sender, MapStatusChangedArgs e)
         {
             //Dont do anything it map is set to stay open
-            if (stayOpenOnMap) return;
+            if (showOnMap) return;
 
             if (e.IsMapOpen)
             {
