@@ -6,34 +6,32 @@ namespace Chat_Client.Packets
 {
     class Update : Packet
     {
-#pragma warning disable IDE0051, IDE0052 // Remove unused private members
         [JsonProperty]
-        private readonly PacketType type = PacketType.UPDATE;
+        protected private readonly PacketType type = PacketType.UPDATE;
 
         [JsonProperty]
-        private readonly string name;
+        protected private readonly string name;
 
         [JsonProperty]
-        private readonly bool commander;
+        protected private readonly bool commander;
 
         [JsonProperty]
-        private readonly string race;
+        protected private readonly string race;
 
         [JsonProperty]
-        private readonly string profession;
+        protected private readonly string profession;
 
         [JsonProperty]
-        private readonly string eliteSpec;
+        protected private readonly string eliteSpec;
 
         [JsonProperty]
-        private readonly int map;
+        protected private readonly int map;
 
         [JsonProperty]
-        private readonly object position;
+        protected private readonly object position;
 
         [JsonProperty]
-        private readonly string serverAddress;
-#pragma warning restore IDE0051, IDE0052 // Remove unused private members
+        protected private readonly string serverAddress;
 
         public Update(IGw2MumbleClient data)
         {
