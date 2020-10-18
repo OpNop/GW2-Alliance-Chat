@@ -23,6 +23,11 @@ namespace Chat_Client
 
         public event EventHandler<GameStateChangedArgs> GameStateChanged;
 
+        public Process GameProcess
+        {
+            get => _gw2Process;
+        }
+
         public GameState GameState
         {
             get => _gameState;
