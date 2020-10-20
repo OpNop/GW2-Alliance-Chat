@@ -108,3 +108,85 @@ namespace Chat_Client
         }
     }
 }
+
+//private void UpdateCharacter()
+//{
+//    var debugMumble = new
+//    {
+//        MumbleData = new
+//        {
+//            CharacterName = "Test Client " + DateTime.Now.ToString("hhmmss"),
+//            IsCommander = false,
+//            Race = "Asura",
+//            Profession = "test Profession",
+//            Specialization = 34,
+//            MapId = 18,
+//            AvatarPosition = new
+//            {
+//                X = 0,
+//                Y = 0,
+//                Z = 0
+//            },
+//            ServerAddress = "0.0.0.0"
+
+//        }
+//    };
+
+
+//    while (true)
+//    {
+
+//        object packet;
+
+//        if (_debugMode)
+//        {
+//            packet = new
+//            {
+//                type = PacketType.UPDATE,
+//                name = debugMumble.MumbleData.CharacterName,
+//                commander = debugMumble.MumbleData.IsCommander,
+//                race = debugMumble.MumbleData.Race,
+//                prof = debugMumble.MumbleData.Profession,
+//                spec = EliteSpec.GetElite(debugMumble.MumbleData.Specialization),
+//                //map = maps[debugMumble.MumbleData.MapId].MapName,
+//                map = debugMumble.MumbleData.MapId,
+//                position = new
+//                {
+//                    X = $"{debugMumble.MumbleData.AvatarPosition.X:N6}",
+//                    Y = $"{debugMumble.MumbleData.AvatarPosition.Y:N6}",
+//                    Z = $"{debugMumble.MumbleData.AvatarPosition.Z:N6}"
+//                },
+//                server_address = debugMumble.MumbleData.ServerAddress
+//            };
+//        }
+//        else
+//        {
+//            packet = new
+//            {
+//                type = PacketType.UPDATE,
+//                name = mumble.MumbleData.CharacterName,
+//                commander = mumble.MumbleData.IsCommander,
+//                race = mumble.MumbleData.Race,
+//                prof = mumble.MumbleData.Profession,
+//                spec = EliteSpec.GetElite(mumble.MumbleData.Specialization),
+//                //map = maps[mumble.MumbleData.MapId].MapName,
+//                map = mumble.MumbleData.MapId,
+//                position = new
+//                {
+//                    X = $"{mumble.MumbleData.AvatarPosition.X:N6}",
+//                    Y = $"{mumble.MumbleData.AvatarPosition.Y:N6}",
+//                    Z = $"{mumble.MumbleData.AvatarPosition.Z:N6}"
+//                },
+//                server_address = mumble.MumbleData.ServerAddress
+//            };
+//        }
+//        if (client.IsConnected)
+//        {
+//            client.Send(JsonConvert.SerializeObject(packet));
+//            Thread.Sleep(500);
+//        } else
+//        {
+//            return;
+//        }
+//    }
+//}
