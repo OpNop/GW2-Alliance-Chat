@@ -142,5 +142,17 @@ namespace Chat_Client.Properties {
                 this["chatWidth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enableDiscord {
+            get {
+                return ((bool)(this["enableDiscord"]));
+            }
+            set {
+                this["enableDiscord"] = value;
+            }
+        }
     }
 }

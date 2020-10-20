@@ -94,6 +94,55 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="gw2Checkbox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image
+                                x:Name="checkboxImage"
+                                Width="20"
+                                Height="20"
+                                Source="assets/checkbox-unchecked-normal.png"
+                                Stretch="None"
+                                UseLayoutRounding="False" />
+                            <ContentPresenter Margin="5,1,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="checkboxImage" Property="Source" Value="assets/checkbox-checked-normal.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="gw2Button" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#FFC8C0B0" />
+            <Setter Property="FontFamily" Value="Assets/#menomonia" />
+            <Setter Property="Cursor" Value="Assets/mouse.cur" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Name="border"
+                            Padding="4,2"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#FF222222"
+                            BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF222222" />
+                                <Setter Property="Background" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <DockPanel>
 
@@ -131,9 +180,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     DockPanel.Dock="Right"
-                    MouseDown="Settings_Click"
+                    MouseUp="btnSettings_MouseUp"
                     Stretch="UniformToFill">
-
                     <Image.Style>
                         <Style TargetType="{x:Type Image}">
                             <Setter Property="Source" Value="Assets/157109.png" />
@@ -145,6 +193,64 @@
                         </Style>
                     </Image.Style>
                 </Image>
+                <Popup
+                    Name="SettingsPopup"
+                    Width="240"
+                    Height="110"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Focusable="True"
+                    HorizontalOffset="-220"
+                    PopupAnimation="Fade"
+                    StaysOpen="False">
+                    <Border BorderBrush="#AAFFFFFF" BorderThickness="1">
+                        <StackPanel Background="#FF212021">
+                            <CheckBox
+                                Margin="5,5,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="Black"
+                                Content="Show Timestamps"
+                                FontFamily="Assets/#menomonia"
+                                FontSize="14"
+                                Foreground="#FFDDDDDD"
+                                IsChecked="{Binding showTimestamp}"
+                                Style="{DynamicResource gw2Checkbox}" />
+                            <CheckBox
+                                Margin="5,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="Black"
+                                Content="Stay open on Map"
+                                FontFamily="Assets/#menomonia"
+                                FontSize="14"
+                                Foreground="#FFDDDDDD"
+                                IsChecked="{Binding showOnMap}"
+                                Style="{DynamicResource gw2Checkbox}" />
+                            <CheckBox
+                                Margin="5,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="Black"
+                                Content="Enable Discord Rich Presence"
+                                FontFamily="Assets/#menomonia"
+                                FontSize="14"
+                                Foreground="#FFDDDDDD"
+                                IsChecked="{Binding enableDiscord}"
+                                Style="{DynamicResource gw2Checkbox}" />
+                            <Button
+                                Margin="5,5,0,0"
+                                Padding="10,1"
+                                HorizontalAlignment="Left"
+                                Click="ChangeKey_Click"
+                                Style="{DynamicResource gw2Button}">
+                                Change API Key
+                            </Button>
+
+                        </StackPanel>
+                    </Border>
+                </Popup>
+
 
                 <Image
                     x:Name="btnExit"
@@ -161,16 +267,18 @@
 
         <Grid DockPanel.Dock="Top" FocusManager.FocusedElement="{Binding ElementName=message}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="501*" />
+                <ColumnDefinition Width="481*" />
+                <ColumnDefinition Width="20*" />
                 <ColumnDefinition Width="11*" />
             </Grid.ColumnDefinitions>
             <ScrollViewer
                 x:Name="ScrollViewer"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Margin="0,0,0,23"
                 VerticalAlignment="Stretch"
                 VerticalContentAlignment="Top"
                 ScrollChanged="ScrollViewer_OnScrollChanged">
+
 
                 <RichTextBox
                     x:Name="ChatBox"
@@ -196,7 +304,7 @@
 
             <TextBox
                 x:Name="message"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Height="23"
                 Margin="61,0,0,0"
                 VerticalAlignment="Bottom"

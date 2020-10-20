@@ -23,6 +23,9 @@ using System.Windows.Media.Animation;
 using Gw2Sharp;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.InteropServices;
+using System.Windows.Controls.Primitives;
+using System.Runtime.CompilerServices;
+using Chat_Client.Properties;
 
 delegate void ChatMessage(string time, string from, string message);
 
@@ -56,26 +59,64 @@ namespace Chat_Client
         public Game game;
         public Mumble mumble;
         public DiscordRichPresence discord;
-        public string apiKey;
         private static readonly Logger _log = Logger.getInstance();
 
-        //toogle Stay Open
-        private bool showOnMap;
+        //Settings
+        public string apiKey
+        {
+            get => GetSetting<string>();
+            set => SetSetting(value);
+        }
+        public bool showOnMap
+        {
+            get => GetSetting<bool>();
+            set => SetSetting(value);
+        }
+        public bool enableDiscord
+        {
+            get => GetSetting<bool>();
+            set
+            {
+                SetSetting(value);
+                UpdateDiscord(value);
+            }
+        }
+
+        public bool showTimestamp
+        {
+            get => GetSetting<bool>();
+            set => SetSetting(value);
+        }
+
+
         private int hookId;
+
+        public static T GetSetting<T>([CallerMemberName] string settingName = "")
+        {
+            var value = (T)Settings.Default[settingName];
+            _log.AddNotice($"Getting value of {settingName} = {value}");
+            return value;
+        }
+
+        public static void SetSetting(object value, [CallerMemberName] string settingName = "")
+        {
+            _log.AddNotice($"Setting {settingName} to {value}");
+            Settings.Default[settingName] = value;
+            Settings.Default.Save();
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
 
             //Load Settings
-            if (Properties.Settings.Default.needUpgrade)
+            if (Settings.Default.needUpgrade)
             {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.needUpgrade = false;
-                Properties.Settings.Default.Save();
+                Settings.Default.Upgrade();
+                Settings.Default.needUpgrade = false;
+                Settings.Default.Save();
             }
-            showOnMap = Properties.Settings.Default.showOnMap;
-            apiKey = Properties.Settings.Default.apiKey;
 
             //Parse Arguments
             ParseArguments();
@@ -484,10 +525,10 @@ namespace Chat_Client
 
         protected override void OnSourceInitialized(EventArgs e)
         {
-            Top = Properties.Settings.Default.chatTop;
-            Left = Properties.Settings.Default.chatLeft;
-            Height = Properties.Settings.Default.chatHeight;
-            Width = Properties.Settings.Default.chatWidth;
+            Top = Settings.Default.chatTop;
+            Left = Settings.Default.chatLeft;
+            Height = Settings.Default.chatHeight;
+            Width = Settings.Default.chatWidth;
 
             base.OnSourceInitialized(e);
         }
@@ -495,11 +536,11 @@ namespace Chat_Client
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //Save window location and size
-            Properties.Settings.Default.chatTop = this.Top;
-            Properties.Settings.Default.chatLeft = this.Left;
-            Properties.Settings.Default.chatHeight = this.Height;
-            Properties.Settings.Default.chatWidth = this.Width;
-            Properties.Settings.Default.Save();
+            Settings.Default.chatTop = this.Top;
+            Settings.Default.chatLeft = this.Left;
+            Settings.Default.chatHeight = this.Height;
+            Settings.Default.chatWidth = this.Width;
+            Settings.Default.Save();
             
             if (!_isExit)
             {
@@ -687,21 +728,15 @@ namespace Chat_Client
             return $"{Rect.TopLeft}.{Rect.TopRight}.{Rect.BottomLeft}.{Rect.BottomRight}".GetHashCode();
         }
 
-        private void Settings_Click(object sender, MouseButtonEventArgs e)
+        private void btnSettings_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var settingsWindow = new Settings();
-            settingsWindow.Owner = this;
-            bool? dialogResult = settingsWindow.ShowDialog();
+            SettingsPopup.IsOpen = true;
+            SettingsPopup.Focus();
+        }
 
-            if (dialogResult.HasValue && !dialogResult.Value)
-            {
-                // User canceled, stop everything
-                //return 1;
-            }
-
-            //Reload Key
-            //apiKey = Properties.Settings.Default.apiKey;
-            //return 0;
+        private void ChangeKey_Click(object sender, RoutedEventArgs e)
+        {
+            ShowKeyDialog();
         }
     }
 
