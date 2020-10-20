@@ -229,8 +229,8 @@ namespace Chat_Client
                 case GameState.InGame:
                     //Start Mumble Watcher
                     mumble.Start();
-                    //Start Discord RPC
-                    discord.Start();
+                    //Start Discord RPC (if enabled)
+                    if(enableDiscord) discord.Start();
                     //Connect to the chat server (if needed)
                     ConnectToServer();
                     //Show the UI
@@ -437,7 +437,7 @@ namespace Chat_Client
         {
             ChatBox.Dispatcher.Invoke(() =>
             {
-                ChatBox.AppendText($"[{time}] ", Brushes.Gray);
+                if(showTimestamp) ChatBox.AppendText($"[{time}] ", Brushes.Gray);
                 ChatBox.AppendText($"{from}: ", Brushes.DarkTurquoise);
                 ChatBox.AppendText(message, Brushes.PowderBlue);
                 ChatBox.AppendText(Environment.NewLine);
@@ -449,8 +449,11 @@ namespace Chat_Client
         {
             ChatBox.Dispatcher.Invoke(() =>
             {
-                var time = DateTime.Now.ToString("h:mm tt");
-                ChatBox.AppendText($"[{time}] ", Brushes.Gray);
+                if (showTimestamp)
+                {
+                    var time = DateTime.Now.ToString("h:mm tt");
+                    ChatBox.AppendText($"[{time}] ", Brushes.Gray);
+                }
                 ChatBox.AppendText(message, Brushes.DarkGray);
                 ChatBox.AppendText(Environment.NewLine);
                 ChatBox.ScrollToEnd();
@@ -623,6 +626,14 @@ namespace Chat_Client
                 WriteToChat("Can not connect to server, retrying in 5 seconds");
                 if(!reconnect) new Thread(TryReconnect).Start();
             }
+        }
+
+        private void UpdateDiscord(bool enabled)
+        {
+            if (enabled)
+                discord.Start();
+            else
+                discord.Stop();
         }
 
         public void ShowUI()
