@@ -1,5 +1,9 @@
-module.exports = function (user, packet) {
+const packet = require('./Packet.js').packets;
 
-    console.log("RESV> System packet");
-
+module.exports = class System {
+    
+    constructor(message){
+        this.type = packet.SYSTEM;
+        this.message = message;
+    }
 }

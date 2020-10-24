@@ -4,6 +4,7 @@ const gw2api = require('gw2api-client');
 const cacheMemory = require('gw2api-client/src/cache/memory')
 const config = require('../config.json')
 const packets = require('./packets/Packet').packets
+const AuthPacket = require('./packets/Auth.js');
 
 module.exports = class User {
 
@@ -61,23 +62,20 @@ module.exports = class User {
         let account = await this.api.account().get();
         let guilds = account.guilds;
         this.accountName = account.name;
+
+        console.dir(guilds);
         
         //check for valid guild
         for (let i = 0; i < config.guilds.length; i++) {
+            console.log(`checking for guild ${config.guilds[i]}`);
             if (guilds.includes(config.guilds[i])) {
                 this.isAuthenticated = true;
-                this.sendMessage({
-                    type: packets.AUTH,
-                    valid: true
-                });
+                this.sendMessage(new AuthPacket(true));
                 return;
             }
         }
         //not found, kick them
-        this.disconnect({
-            type: packets.AUTH,
-            valid: false
-        });
+        this.disconnect(new AuthPacket(false, "Not in TINY"));
     }
 
     setOffline() {
@@ -105,6 +103,10 @@ module.exports = class User {
     }
 
     sendMessage(packet) {
+        this.socket.write(JSON.stringify(packet) + '\r');
+    }
+
+    sendPacket(packet) {
         this.socket.write(JSON.stringify(packet) + '\r');
     }
 
