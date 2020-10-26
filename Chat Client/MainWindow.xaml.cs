@@ -1,28 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using SimpleTcp;
 using Newtonsoft.Json;
 using System.Threading;
 using Chat_Client.utils;
 using Chat_Client.Packets;
 using System.Windows.Interop;
-using System.Windows.Media.Animation;
 using Gw2Sharp;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.InteropServices;
-using System.Windows.Controls.Primitives;
 using System.Runtime.CompilerServices;
 using Chat_Client.Properties;
 using Chat_Client.utils.Log;
@@ -50,7 +40,7 @@ namespace Chat_Client
         private TcpClient client;
         private State clientState = State.Disconnected;
         private bool _autoScroll = true;
-        private bool _debugMode = false;
+        //private bool _debugMode = false;
         private string _mumbleFile = "MumbleLink";
 
         private System.Windows.Forms.NotifyIcon _notifyIcon;
@@ -93,14 +83,11 @@ namespace Chat_Client
 
         public static T GetSetting<T>([CallerMemberName] string settingName = "")
         {
-            var value = (T)Settings.Default[settingName];
-            _log.AddNotice($"Getting value of {settingName} = {value}");
-            return value;
+            return (T)Settings.Default[settingName];
         }
 
         public static void SetSetting(object value, [CallerMemberName] string settingName = "")
         {
-            _log.AddNotice($"Setting {settingName} to {value}");
             Settings.Default[settingName] = value;
             Settings.Default.Save();
         }
@@ -165,7 +152,7 @@ namespace Chat_Client
             // --debug
             if(CommandLine["debug"] != null)
             {
-                _debugMode = true;
+                //_debugMode = true;
                 _log.AddWarning("Starting in Debug Mode");
             }
             if(CommandLine["mumble"] != null)
