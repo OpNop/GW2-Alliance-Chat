@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
 
 namespace Chat_Client.utils
 {
@@ -27,9 +28,10 @@ namespace Chat_Client.utils
             _api = new Gw2Client();
 
             //Load the json
-            using StreamReader file = System.IO.File.OpenText(@"maps.jsonc");
-            using JsonTextReader reader = new JsonTextReader(file);
-            _maps = JsonConvert.DeserializeObject<Dictionary<string, int>>(JToken.ReadFrom(reader).ToString());
+            using var stream = Application.GetResourceStream(new Uri("Assets/maps.jsonc", UriKind.Relative)).Stream;
+            using var reader = new StreamReader(stream);
+            using var maps = new JsonTextReader(reader);
+            _maps = JsonConvert.DeserializeObject<Dictionary<string, int>>(JToken.ReadFrom(maps).ToString());
         }
         public void Start()
         {
