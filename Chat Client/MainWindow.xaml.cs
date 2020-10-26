@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -50,6 +51,7 @@ namespace Chat_Client
         public Mumble mumble;
         public DiscordRichPresence discord;
         private static readonly Logger _log = Logger.getInstance();
+        private readonly string _logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Guild Wars 2\addons\TACS\Logs");
 
         //Settings
         public string apiKey
@@ -71,13 +73,11 @@ namespace Chat_Client
                 UpdateDiscord(value);
             }
         }
-
         public bool showTimestamp
         {
             get => GetSetting<bool>();
             set => SetSetting(value);
         }
-
 
         private int hookId;
 
@@ -110,9 +110,9 @@ namespace Chat_Client
 
             //Init logger class
 #if DEBUG
-            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
+            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 #else
-            _log.Initialize("TACS_", "", "./log", LogIntervalType.IT_PER_DAY, LogLevel.E, true, true, true);
+            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, true, true, true);
 #endif
 
             //Setup Tray Icon
