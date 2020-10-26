@@ -271,9 +271,11 @@ namespace Chat_Client
                     {
                         case PacketType.ENTER:
                             //Handle ENTER message
+                            WriteToChat($"{packet.user} is online", Brushes.GreenYellow);
                             break;
                         case PacketType.LEAVE:
                             //Handle LEAVE message
+                            WriteToChat($"{packet.user} is offline", Brushes.GreenYellow);
                             break;
                         case PacketType.MESSAGE:
                             WriteToChat(DateTime.Now.ToString("h:mm tt"), (string)packet.name, (string)packet.message);
@@ -350,8 +352,11 @@ namespace Chat_Client
             });
         }
 
-        private void WriteToChat(string message)
+        private void WriteToChat(string message, Brush color = null)
         {
+            if (color == null)
+                color = Brushes.DarkGray;
+
             ChatBox.Dispatcher.Invoke(() =>
             {
                 if (showTimestamp)
@@ -359,7 +364,7 @@ namespace Chat_Client
                     var time = DateTime.Now.ToString("h:mm tt");
                     ChatBox.AppendText($"[{time}] ", Brushes.Gray);
                 }
-                ChatBox.AppendText(message, Brushes.DarkGray);
+                ChatBox.AppendText(message, color);
                 ChatBox.AppendText(Environment.NewLine);
                 ChatBox.ScrollToEnd();
             });
