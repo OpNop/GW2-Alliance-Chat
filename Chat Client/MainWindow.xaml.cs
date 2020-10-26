@@ -595,7 +595,7 @@ namespace Chat_Client
             if (clientState == State.Authed && !(client is null) && client.IsConnected)
             {
                 //update Discord (this should be optimised)
-                discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
+                if(enableDiscord) discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
 
                 //Send update packet
                 client.Send(new Update(mumble.MumbleData).Send());
