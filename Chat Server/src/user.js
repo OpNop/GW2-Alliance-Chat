@@ -63,11 +63,8 @@ module.exports = class User {
         let guilds = account.guilds;
         this.accountName = account.name;
 
-        console.dir(guilds);
-        
         //check for valid guild
         for (let i = 0; i < config.guilds.length; i++) {
-            console.log(`checking for guild ${config.guilds[i]}`);
             if (guilds.includes(config.guilds[i])) {
                 this.isAuthenticated = true;
                 this.sendMessage(new AuthPacket(true));
