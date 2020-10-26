@@ -112,7 +112,7 @@ namespace Chat_Client
 #if DEBUG
             _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
 #else
-            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, true, true, true);
+            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, false, false, true);
 #endif
 
             //Setup Tray Icon
