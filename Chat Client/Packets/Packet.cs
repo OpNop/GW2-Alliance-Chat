@@ -1,4 +1,4 @@
-﻿using DLG.ToolBox.Log;
+﻿using Chat_Client.utils.Log;
 using Newtonsoft.Json;
 
 namespace Chat_Client.Packets

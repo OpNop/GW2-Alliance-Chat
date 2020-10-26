@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using DLG.ToolBox.Log;
+using Chat_Client.utils.Log;
 
 namespace Chat_Client
 {

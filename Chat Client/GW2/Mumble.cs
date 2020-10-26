@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using DLG.ToolBox.Log;
+using Chat_Client.utils.Log;
 using Gw2Sharp;
 using Gw2Sharp.Mumble;
 

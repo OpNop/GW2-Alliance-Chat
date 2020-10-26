@@ -1,6 +1,6 @@
-﻿using DiscordRPC;
+﻿using Chat_Client.utils.Log;
+using DiscordRPC;
 using DiscordRPC.Logging;
-using DLG.ToolBox.Log;
 using Gw2Sharp;
 using Gw2Sharp.WebApi.V2.Models;
 using Newtonsoft.Json;

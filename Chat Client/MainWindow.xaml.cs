@@ -15,7 +15,6 @@ using System.Windows.Shapes;
 using SimpleTcp;
 using Newtonsoft.Json;
 using System.Threading;
-using DLG.ToolBox.Log;
 using Chat_Client.utils;
 using Chat_Client.Packets;
 using System.Windows.Interop;
@@ -26,6 +25,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Controls.Primitives;
 using System.Runtime.CompilerServices;
 using Chat_Client.Properties;
+using Chat_Client.utils.Log;
 
 delegate void ChatMessage(string time, string from, string message);
 
