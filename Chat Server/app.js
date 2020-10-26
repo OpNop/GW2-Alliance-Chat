@@ -416,7 +416,7 @@ const server = net.createServer(socket => {
 const onConnect = async (user, packet) => {
     //Version check
     if (packet.version != config.version) {
-        user.disconnect(new AuthPacket(false, "Old version, please update."));
+        user.disconnect(new AuthPacket(false, "Old version, please update. https://tinyarmy.org/tacs/"));
         return;
     }
 

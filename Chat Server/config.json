@@ -1,5 +1,5 @@
 {
-    "version": "1.0.1.0",
+    "version": "1.0.2.0",
     "name": "TINY Alliance Chat Server (TACS)",
     "address": "0.0.0.0",
     "port": 8888,
