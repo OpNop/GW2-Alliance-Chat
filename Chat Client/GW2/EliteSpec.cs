@@ -47,7 +47,7 @@ namespace Chat_Client
         {
             if (Enum.IsDefined(typeof(EliteSpecs), spec))
                 return ((EliteSpecs)spec).ToString();
-            return "None";
+            return null;
         }
     }
 }
