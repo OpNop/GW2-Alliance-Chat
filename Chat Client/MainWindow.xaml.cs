@@ -624,11 +624,6 @@ namespace Chat_Client
             });
         }
 
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            //Topmost = true;
-        }
-
         private void debugMap()
         {
             using Gw2Client apiclient = new Gw2Client();
