@@ -18,6 +18,7 @@
     Loaded="Window_Loaded"
     ResizeMode="CanResizeWithGrip"
     ShowActivated="False"
+    ShowInTaskbar="False"
     WindowStyle="None"
     mc:Ignorable="d">
 
