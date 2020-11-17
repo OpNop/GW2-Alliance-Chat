@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Chat_Client.utils
@@ -22,6 +23,8 @@ namespace Chat_Client.utils
         private readonly Gw2Client _api;
         private readonly Dictionary<string, int> _maps;
         private static readonly Logger _log = Logger.getInstance();
+        private bool _discordRunning;
+        private bool _discordReady;
 
         public DiscordRichPresence()
         {
@@ -37,23 +40,28 @@ namespace Chat_Client.utils
         {
             _discordClient = new DiscordRpcClient(CLIENT_ID)
             {
-                Logger = new ConsoleLogger() { Level = DiscordRPC.Logging.LogLevel.Warning }
+                Logger = new NullLogger()
             };
 
             //Subscribe to events
             _discordClient.OnReady += (sender, e) =>
             {
-                Console.WriteLine("Received Ready from user {0}", e.User.Username);
+                _discordReady = true;
+            };
+
+            _discordClient.OnClose += (sender, e) =>
+            {
+                _discordRunning = false;
+            };
+
+            _discordClient.OnConnectionEstablished += (sender, e) =>
+            {
+                _discordRunning = true;
             };
 
             _discordClient.OnPresenceUpdate += (sender, e) =>
             {
                 Console.WriteLine("Received Update! {0}", e.Presence);
-            };
-
-            _discordClient.OnError += (sender, e) =>
-            {
-                _log.AddError(e.Message);
             };
 
             //Connect to the RPC
@@ -63,23 +71,23 @@ namespace Chat_Client.utils
 
         public void Stop()
         {
+            _discordReady = false;
+            _discordRunning = false;
             _discordClient?.Dispose();
             _discordClient = null;
         }
 
-        public void Update(string character, int map_id)
+        public async Task Update(string character, int map_id)
         {
-            _api.WebApi.V2.Maps.GetAsync(map_id).ContinueWith(task =>
+            if (_discordRunning && _discordReady)
             {
-                if (!task.IsFaulted && task.Result != null)
-                {
-                    UpdatePresence(character, task.Result);
-                }
-            });
+                var map = await _api.WebApi.V2.Maps.GetAsync(map_id);
+                UpdatePresence(character, map);
+            }
         }
 
-        private void UpdatePresence(string character, Map map_info) { 
-            
+        private void UpdatePresence(string character, Map map_info)
+        {
             _discordClient.SetPresence(new RichPresence()
             {
                 Details = character, //Character Name
