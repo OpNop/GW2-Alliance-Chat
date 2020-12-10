@@ -30,9 +30,11 @@ namespace Chat_Client
 #if DEBUG
         private string serverAddr = "127.0.0.1";
         private int serverPort = 8888;
+        private bool debug = true;
 #else
         private string serverAddr = "chat.jumpsfor.science";
         private int serverPort = 8888;
+        private bool debug = false;
 #endif
 
         [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -105,15 +107,12 @@ namespace Chat_Client
                 Settings.Default.Save();
             }
 
+            //Init logger class
+            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, true, false, true);
+
             //Parse Arguments
             ParseArguments();
 
-            //Init logger class
-#if DEBUG
-            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.D, true, true, true);
-#else
-            _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, false, false, true);
-#endif
 
             //Setup Tray Icon
             SetupNotifyIcon();
@@ -134,31 +133,56 @@ namespace Chat_Client
                 Console.WriteLine("  --mumble\tSet the mumble file to use");
                 Environment.Exit(0);
             }
-                        
+
+            // --debug
+            if (CommandLine["debug"] != null)
+            {
+                SetDebug(true);
+                debug = true;
+                _log.ChangeLevel(LogLevel.D);
+                Console.SetOut(new ConsoleWritter(ChatBox));
+                _log.AddWarning("Starting in Debug Mode");
+            }
+
             // --server
-            if(CommandLine["server"] != null)
+            if (CommandLine["server"] != null)
             {
                 serverAddr = CommandLine["server"];
                 _log.AddInfo($"Using Server IP: {serverAddr}");
             }
 
             // --port
-            if(CommandLine["port"] != null)
+            if (CommandLine["port"] != null)
             {
                 serverPort = int.Parse(CommandLine["port"]);
                 _log.AddInfo($"Using Server Port: {serverPort}");
             }
 
-            // --debug
-            if(CommandLine["debug"] != null)
-            {
-                //_debugMode = true;
-                _log.AddWarning("Starting in Debug Mode");
-            }
-            if(CommandLine["mumble"] != null)
+            // --mumble
+            if (CommandLine["mumble"] != null)
             {
                 _mumbleFile = CommandLine["mumble"];
-            }    
+            }
+        }
+
+        public void SetDebug(bool enableDebug)
+        {
+            if (enableDebug)
+            {
+                // Redirect console to chat window
+                Console.SetOut(new ConsoleWritter(ChatBox));
+                _log.ChangeLevel(LogLevel.D);
+                _log.AddInfo("Turining on debug.");
+                debug = true;
+            }
+            else
+            {
+                // Reset console output
+                _log.AddInfo("Turining off debug.");
+                _log.ChangeLevel(LogLevel.E);
+                Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
+                debug = false;
+            }
         }
 
         /// <summary>
@@ -217,7 +241,7 @@ namespace Chat_Client
                     //Start Mumble Watcher
                     mumble.Start();
                     //Start Discord RPC (if enabled)
-                    if(enableDiscord) discord.Start();
+                    if (enableDiscord) discord.Start();
                     //Connect to the chat server (if needed)
                     ConnectToServer();
                     //Show the UI
@@ -290,7 +314,9 @@ namespace Chat_Client
                             if ((bool)packet.valid)
                             {
                                 clientState = State.Authed;
-                            } else {
+                            }
+                            else
+                            {
                                 clientState = State.BadAuth;
                                 WriteToChat("Auth failed!");
                                 WriteToChat((string)packet.reason);
@@ -308,7 +334,7 @@ namespace Chat_Client
                 }
             }
 
-            
+
         }
 
         async void ServerConnected(object sender, EventArgs e)
@@ -325,7 +351,7 @@ namespace Chat_Client
             //Dont reconnect if the game is closed or bad auth
             if (game.GameState == GameState.NotRunning || clientState == State.BadAuth)
                 return;
-            
+
             clientState = State.Disconnected;
             WriteToChat("Server disconnected, Retrying in 5 seconds.");
             new Thread(TryReconnect).Start();
@@ -344,7 +370,7 @@ namespace Chat_Client
         {
             ChatBox.Dispatcher.Invoke(() =>
             {
-                if(showTimestamp) ChatBox.AppendText($"[{time}] ", Brushes.Gray);
+                if (showTimestamp) ChatBox.AppendText($"[{time}] ", Brushes.Gray);
                 ChatBox.AppendText($"{from}: ", Brushes.DarkTurquoise);
                 ChatBox.AppendText(message, Brushes.PowderBlue);
                 ChatBox.AppendText(Environment.NewLine);
@@ -385,7 +411,7 @@ namespace Chat_Client
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if(Keyboard.IsKeyDown(Key.RightShift) && e.Key == Key.Return)
+            if (Keyboard.IsKeyDown(Key.RightShift) && e.Key == Key.Return)
                 return;
 
             if (e.Key == Key.Return)
@@ -402,6 +428,9 @@ namespace Chat_Client
                             Properties.Settings.Default.showOnMap = showOnMap;
                             Properties.Settings.Default.Save();
                             WriteToChat($"StayOpenOnMap changed to {showOnMap}");
+                            break;
+                        case "//debug":
+                            SetDebug(!debug);
                             break;
                         case "/map":
                             debugMap();
@@ -454,7 +483,7 @@ namespace Chat_Client
             Settings.Default.chatHeight = this.Height;
             Settings.Default.chatWidth = this.Width;
             Settings.Default.Save();
-            
+
             if (!_isExit)
             {
                 e.Cancel = true;
@@ -534,7 +563,7 @@ namespace Chat_Client
             catch (Exception)
             {
                 WriteToChat("Can not connect to server, retrying in 5 seconds");
-                if(!reconnect) new Thread(TryReconnect).Start();
+                if (!reconnect) new Thread(TryReconnect).Start();
             }
         }
 
@@ -585,7 +614,8 @@ namespace Chat_Client
                 {
                     Topmost = true;
                 });
-            } else
+            }
+            else
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -600,7 +630,7 @@ namespace Chat_Client
             if (clientState == State.Authed && !(client is null) && client.IsConnected)
             {
                 //update Discord (this should be optimised)
-                if(enableDiscord) discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
+                if (enableDiscord) discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
 
                 //Send update packet
                 client.Send(new Update(mumble.MumbleData).Send());
@@ -639,7 +669,7 @@ namespace Chat_Client
             WriteToChat($"\"{hashRectangle(mapData.Result.ContinentRect)}\": , //{mapData.Result.Name}");
         }
 
-        private int hashRectangle (Gw2Sharp.WebApi.V2.Models.Rectangle Rect)
+        private int hashRectangle(Gw2Sharp.WebApi.V2.Models.Rectangle Rect)
         {
             return $"{Rect.TopLeft}.{Rect.TopRight}.{Rect.BottomLeft}.{Rect.BottomRight}".GetHashCode();
         }
@@ -653,6 +683,47 @@ namespace Chat_Client
         private void ChangeKey_Click(object sender, RoutedEventArgs e)
         {
             ShowKeyDialog();
+        }
+    }
+
+    public class ConsoleWritter : TextWriter
+    {
+        private readonly RichTextBox textbox;
+        public ConsoleWritter(RichTextBox textbox)
+        {
+            this.textbox = textbox;
+        }
+
+        public override void Write(char value)
+        {
+            textbox.Dispatcher.Invoke(() =>
+            {
+                textbox.AppendText(value.ToString());
+            });
+        }
+
+        public override void Write(string value)
+        {
+            textbox.Dispatcher.Invoke(() =>
+            {
+                var logType = value.Substring(0, 2);
+                
+                Brush color = logType switch
+                {
+                    "E " => Brushes.Red,
+                    "W " => Brushes.Yellow,
+                    "I " => Brushes.White,
+                    "N " => Brushes.Green,
+                    "D " => Brushes.Cyan,
+                    _ => Brushes.Gray,
+                };
+                textbox.AppendText(value, color);
+            });
+        }
+
+        public override Encoding Encoding
+        {
+            get { return Encoding.ASCII; }
         }
     }
 

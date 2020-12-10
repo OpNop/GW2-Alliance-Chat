@@ -173,6 +173,11 @@ namespace Chat_Client.utils.Log
             }
         }
 
+        public void ChangeLevel(LogLevel newLevel)
+        {
+            _mLogLevel = newLevel;
+        }
+
         private static void PrintLog(string logMessage, LogLevel logLevel)
         {
             switch (logLevel)
