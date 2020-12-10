@@ -113,7 +113,6 @@ namespace Chat_Client
             //Parse Arguments
             ParseArguments();
 
-
             //Setup Tray Icon
             SetupNotifyIcon();
         }
@@ -271,6 +270,13 @@ namespace Chat_Client
             Close();
             _notifyIcon.Dispose();
             _notifyIcon = null;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            // Call Dispose to remove the icon out of notification area of Taskbar.
+            _notifyIcon.Dispose();
         }
 
         private void ShowMainWindow()
