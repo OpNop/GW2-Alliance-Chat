@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Chat_Client.Properties;
 using Chat_Client.utils.Log;
+using System.Threading.Tasks;
 
 delegate void ChatMessage(string time, string from, string message);
 
@@ -309,6 +310,7 @@ namespace Chat_Client
                             break;
                         case PacketType.MESSAGE:
                             WriteToChat(DateTime.Now.ToString("h:mm tt"), (string)packet.name, (string)packet.message);
+                            await PlaySound();
                             break;
                         case PacketType.SYSTEM:
                             WriteToChat((string)packet.message);
@@ -341,6 +343,17 @@ namespace Chat_Client
             }
 
 
+        }
+
+        private async Task PlaySound()
+        {
+            if (this.Visibility != Visibility.Visible)
+            {
+                notifyPlayer.Dispatcher.Invoke(() =>
+                {
+                    notifyPlayer.Play();
+                });
+            }
         }
 
         async void ServerConnected(object sender, EventArgs e)
@@ -689,6 +702,11 @@ namespace Chat_Client
         private void ChangeKey_Click(object sender, RoutedEventArgs e)
         {
             ShowKeyDialog();
+        }
+
+        private void notifyPlayer_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            notifyPlayer.Stop();
         }
     }
 

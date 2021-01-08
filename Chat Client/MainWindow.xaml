@@ -336,7 +336,12 @@
                 FontStyle="Normal"
                 FontWeight="Normal"
                 Foreground="DarkTurquoise" />
-
+            <MediaElement
+                x:Name="notifyPlayer"
+                LoadedBehavior="Manual"
+                Source="Assets/notify.mp3"
+                UnloadedBehavior="Manual"
+                Visibility="Hidden" MediaEnded="notifyPlayer_MediaEnded" />
         </Grid>
     </DockPanel>
 
