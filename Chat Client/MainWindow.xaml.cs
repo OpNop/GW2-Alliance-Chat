@@ -555,8 +555,9 @@ namespace Chat_Client
 
         private void FocusChat()
         {
-            this.Activate();
-            this.Focus();
+            Show();
+            Activate();
+            Focus();
             message.Focus();
         }
 
