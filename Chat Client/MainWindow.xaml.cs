@@ -83,6 +83,7 @@ namespace Chat_Client
         }
 
         private int hookId;
+        private bool IsClosed;
 
         public static T GetSetting<T>([CallerMemberName] string settingName = "")
         {
@@ -116,6 +117,7 @@ namespace Chat_Client
 
             //Setup Tray Icon
             SetupNotifyIcon();
+
         }
 
         private void ParseArguments()
@@ -263,6 +265,7 @@ namespace Chat_Client
             _notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             _notifyIcon.ContextMenuStrip.Items.Add("Show Chat").Click += (s, e) => ShowMainWindow();
             _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, e) => ExitApplication();
+
         }
 
         private void ExitApplication()
@@ -282,6 +285,7 @@ namespace Chat_Client
 
         private void ShowMainWindow()
         {
+            IsClosed = false;
             Show();
         }
 
@@ -496,17 +500,11 @@ namespace Chat_Client
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //Save window location and size
-            Settings.Default.chatTop = this.Top;
-            Settings.Default.chatLeft = this.Left;
-            Settings.Default.chatHeight = this.Height;
-            Settings.Default.chatWidth = this.Width;
-            Settings.Default.Save();
-
             if (!_isExit)
             {
                 e.Cancel = true;
                 Hide();
+                IsClosed = true;
             }
 
             //Really quitting stop the watchers
@@ -596,6 +594,8 @@ namespace Chat_Client
 
         public void ShowUI()
         {
+            if (IsClosed) return; //Closed by user
+            
             Dispatcher.Invoke(() =>
             {
                 Show();
@@ -708,6 +708,16 @@ namespace Chat_Client
         {
             notifyPlayer.Stop();
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //Save window location and size
+            Settings.Default.chatTop = this.Top;
+            Settings.Default.chatLeft = this.Left;
+            Settings.Default.chatHeight = this.Height;
+            Settings.Default.chatWidth = this.Width;
+            Settings.Default.Save();
+        }
     }
 
     public class ConsoleWritter : TextWriter
@@ -731,7 +741,7 @@ namespace Chat_Client
             textbox.Dispatcher.Invoke(() =>
             {
                 var logType = value.Substring(0, 2);
-                
+
                 Brush color = logType switch
                 {
                     "E " => Brushes.Red,
