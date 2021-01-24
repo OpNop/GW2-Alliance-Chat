@@ -1,4 +1,4 @@
-﻿namespace Chat_Client.utils.Log
+﻿namespace Chat_Client.Utils.Log
 {
     public enum LogIntervalType
     {

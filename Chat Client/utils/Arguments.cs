@@ -6,7 +6,7 @@
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 
-namespace Chat_Client.utils
+namespace Chat_Client.Utils
 {
     class Arguments
     {

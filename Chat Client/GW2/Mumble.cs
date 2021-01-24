@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading;
-using Chat_Client.utils.Log;
+﻿using Chat_Client.Utils.Log;
 using Gw2Sharp;
 using Gw2Sharp.Mumble;
+using System;
+using System.Threading;
 
 namespace Chat_Client
 {

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Chat_Client.utils.Log
+namespace Chat_Client.Utils.Log
 {
     public class Logger
     {

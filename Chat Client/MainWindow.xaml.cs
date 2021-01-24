@@ -9,14 +9,14 @@ using System.Windows.Media;
 using SimpleTcp;
 using Newtonsoft.Json;
 using System.Threading;
-using Chat_Client.utils;
+using Chat_Client.Utils;
 using Chat_Client.Packets;
 using System.Windows.Interop;
 using Gw2Sharp;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Chat_Client.Properties;
-using Chat_Client.utils.Log;
+using Chat_Client.Utils.Log;
 using System.Threading.Tasks;
 
 delegate void ChatMessage(string time, string from, string message);

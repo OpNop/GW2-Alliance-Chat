@@ -1,4 +1,4 @@
-﻿using Chat_Client.utils.Log;
+﻿using Chat_Client.Utils.Log;
 using Newtonsoft.Json;
 
 namespace Chat_Client.Packets

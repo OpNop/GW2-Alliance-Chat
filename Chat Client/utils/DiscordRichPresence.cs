@@ -1,4 +1,4 @@
-﻿using Chat_Client.utils.Log;
+﻿using Chat_Client.Utils.Log;
 using DiscordRPC;
 using DiscordRPC.Logging;
 using Gw2Sharp;
@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Chat_Client.utils
+namespace Chat_Client.Utils
 {
     public class DiscordRichPresence
     {
