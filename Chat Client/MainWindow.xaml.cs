@@ -1,23 +1,21 @@
-﻿using System;
+﻿using Chat_Client.Packets;
+using Chat_Client.Utils;
+using Chat_Client.Utils.Log;
+using Gw2Sharp;
+using Newtonsoft.Json;
+using SimpleTcp;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using SimpleTcp;
-using Newtonsoft.Json;
-using System.Threading;
-using Chat_Client.Utils;
-using Chat_Client.Packets;
 using System.Windows.Interop;
-using Gw2Sharp;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using Chat_Client.Properties;
-using Chat_Client.Utils.Log;
-using System.Threading.Tasks;
+using System.Windows.Media;
 
 delegate void ChatMessage(string time, string from, string message);
 
@@ -41,6 +39,8 @@ namespace Chat_Client
         [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern bool SwitchToThisWindow(IntPtr hWnd, Boolean fAltTab);
 
+        private Settings Settings = new Settings();
+
         private TcpClient client;
         private State clientState = State.Disconnected;
         private bool _autoScroll = true;
@@ -56,58 +56,17 @@ namespace Chat_Client
         private static readonly Logger _log = Logger.getInstance();
         private readonly string _logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Guild Wars 2\addons\TACS\Logs");
 
-        //Settings
-        public string apiKey
-        {
-            get => GetSetting<string>();
-            set => SetSetting(value);
-        }
-        public bool showOnMap
-        {
-            get => GetSetting<bool>();
-            set => SetSetting(value);
-        }
-        public bool enableDiscord
-        {
-            get => GetSetting<bool>();
-            set
-            {
-                SetSetting(value);
-                UpdateDiscord(value);
-            }
-        }
-        public bool showTimestamp
-        {
-            get => GetSetting<bool>();
-            set => SetSetting(value);
-        }
-
+        //Session Settings
         private int hookId;
         private bool IsClosed;
-
-        public static T GetSetting<T>([CallerMemberName] string settingName = "")
-        {
-            return (T)Settings.Default[settingName];
-        }
-
-        public static void SetSetting(object value, [CallerMemberName] string settingName = "")
-        {
-            Settings.Default[settingName] = value;
-            Settings.Default.Save();
-        }
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = this;
 
             //Load Settings
-            if (Settings.Default.needUpgrade)
-            {
-                Settings.Default.Upgrade();
-                Settings.Default.needUpgrade = false;
-                Settings.Default.Save();
-            }
+            Settings = Settings.Load();
+            DataContext = Settings;
 
             //Init logger class
             _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, true, false, true);
@@ -117,7 +76,6 @@ namespace Chat_Client
 
             //Setup Tray Icon
             SetupNotifyIcon();
-
         }
 
         private void ParseArguments()
@@ -193,7 +151,7 @@ namespace Chat_Client
         /// <returns>0 if the APIKey setting was found or user succesfully stored it using the dialog.</returns>
         private int CheckForAPIKey()
         {
-            if (apiKey.Length == 0)
+            if (string.IsNullOrEmpty(Settings.APIKey))
             {
                 return ShowKeyDialog();
             }
@@ -202,7 +160,7 @@ namespace Chat_Client
 
         private int ShowKeyDialog()
         {
-            var keyWindow = new APIKey();
+            var keyWindow = new APIKey(Settings);
             keyWindow.Owner = this;
             bool? dialogResult = keyWindow.ShowDialog();
 
@@ -212,8 +170,6 @@ namespace Chat_Client
                 return 1;
             }
 
-            //Reload Key
-            apiKey = Properties.Settings.Default.apiKey;
             return 0;
         }
 
@@ -243,7 +199,7 @@ namespace Chat_Client
                     //Start Mumble Watcher
                     mumble.Start();
                     //Start Discord RPC (if enabled)
-                    if (enableDiscord) discord.Start();
+                    if (Settings.EnableDiscord) discord.Start();
                     //Connect to the chat server (if needed)
                     ConnectToServer();
                     //Show the UI
@@ -366,7 +322,7 @@ namespace Chat_Client
 
             WriteToChat("Server connected");
             //Send Connect Packet
-            client.Send(new Connect(apiKey).Send());
+            client.Send(new Connect(Settings.APIKey).Send());
         }
 
         private void ServerDisconnected(object sender, EventArgs e)
@@ -393,7 +349,7 @@ namespace Chat_Client
         {
             ChatBox.Dispatcher.Invoke(() =>
             {
-                if (showTimestamp) ChatBox.AppendText($"[{time}] ", Brushes.Gray);
+                if (Settings.ShowTimestamp) ChatBox.AppendText($"[{time}] ", Brushes.Gray);
                 ChatBox.AppendText($"{from}: ", Brushes.DarkTurquoise);
                 ChatBox.AppendText(message, Brushes.PowderBlue);
                 ChatBox.AppendText(Environment.NewLine);
@@ -408,7 +364,7 @@ namespace Chat_Client
 
             ChatBox.Dispatcher.Invoke(() =>
             {
-                if (showTimestamp)
+                if (Settings.ShowTimestamp)
                 {
                     var time = DateTime.Now.ToString("h:mm tt");
                     ChatBox.AppendText($"[{time}] ", Brushes.Gray);
@@ -447,10 +403,8 @@ namespace Chat_Client
                             ShowKeyDialog();
                             break;
                         case "/togglestayopen":
-                            showOnMap = !showOnMap;
-                            Properties.Settings.Default.showOnMap = showOnMap;
-                            Properties.Settings.Default.Save();
-                            WriteToChat($"StayOpenOnMap changed to {showOnMap}");
+                            Settings.ShowOnMap = !Settings.ShowOnMap;
+                            WriteToChat($"StayOpenOnMap changed to {Settings.ShowOnMap}");
                             break;
                         case "//debug":
                             SetDebug(!debug);
@@ -490,10 +444,10 @@ namespace Chat_Client
 
         protected override void OnSourceInitialized(EventArgs e)
         {
-            Top = Settings.Default.chatTop;
-            Left = Settings.Default.chatLeft;
-            Height = Settings.Default.chatHeight;
-            Width = Settings.Default.chatWidth;
+            Top = Settings.ChatTop;
+            Left = Settings.ChatLeft;
+            Height = Settings.ChatHeight;
+            Width = Settings.ChatWidth;
 
             base.OnSourceInitialized(e);
         }
@@ -614,7 +568,7 @@ namespace Chat_Client
         private void IsMapShowing(object sender, MapStatusChangedArgs e)
         {
             //Dont do anything it map is set to stay open
-            if (showOnMap) return;
+            if (Settings.ShowOnMap) return;
 
             if (e.IsMapOpen)
             {
@@ -650,7 +604,7 @@ namespace Chat_Client
             if (clientState == State.Authed && !(client is null) && client.IsConnected)
             {
                 //update Discord (this should be optimised)
-                if (enableDiscord) discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
+                if (Settings.EnableDiscord) discord.Update(mumble.MumbleData.CharacterName, mumble.MumbleData.MapId);
 
                 //Send update packet
                 client.Send(new Update(mumble.MumbleData).Send());
@@ -713,11 +667,11 @@ namespace Chat_Client
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             //Save window location and size
-            Settings.Default.chatTop = this.Top;
-            Settings.Default.chatLeft = this.Left;
-            Settings.Default.chatHeight = this.Height;
-            Settings.Default.chatWidth = this.Width;
-            Settings.Default.Save();
+            Settings.ChatTop = this.Top;
+            Settings.ChatLeft = this.Left;
+            Settings.ChatHeight = this.Height;
+            Settings.ChatWidth = this.Width;
+            //Settings.Save();
         }
     }
 

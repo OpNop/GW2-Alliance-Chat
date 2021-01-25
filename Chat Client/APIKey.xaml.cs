@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Chat_Client.Utils;
+using Gw2Sharp;
+using Gw2Sharp.WebApi.V2.Models;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Gw2Sharp;
-using Gw2Sharp.WebApi.V2.Models;
 
 namespace Chat_Client
 {
@@ -16,13 +16,15 @@ namespace Chat_Client
     public partial class APIKey : Window
     {
         private readonly Regex apiKeyFormat = new Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{20}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+        private readonly Settings s;
 
         public bool ValidKey = false;
 
-        public APIKey()
+        public APIKey(Settings settings)
         {
+            s = settings;
             InitializeComponent();
-            txtApiKey.Text = Properties.Settings.Default.apiKey;
+            txtApiKey.Text = s.APIKey;
         }
 
         private async void ValidateKey()
@@ -76,8 +78,7 @@ namespace Chat_Client
             if (ValidKey)
             {
                 //Save key
-                Properties.Settings.Default.apiKey = txtApiKey.Text;
-                Properties.Settings.Default.Save();
+                s.APIKey = txtApiKey.Text;
                 DialogResult = true;
             }
             else

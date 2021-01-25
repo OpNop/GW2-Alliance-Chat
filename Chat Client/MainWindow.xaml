@@ -214,7 +214,7 @@
                                 FontFamily="Assets/#menomonia"
                                 FontSize="14"
                                 Foreground="#FFDDDDDD"
-                                IsChecked="{Binding showTimestamp}"
+                                IsChecked="{Binding ShowTimestamp}"
                                 Style="{DynamicResource gw2Checkbox}" />
                             <CheckBox
                                 Margin="5,0,0,0"
@@ -225,7 +225,7 @@
                                 FontFamily="Assets/#menomonia"
                                 FontSize="14"
                                 Foreground="#FFDDDDDD"
-                                IsChecked="{Binding showOnMap}"
+                                IsChecked="{Binding ShowOnMap}"
                                 Style="{DynamicResource gw2Checkbox}" />
                             <CheckBox
                                 Margin="5,0,0,0"
@@ -236,7 +236,7 @@
                                 FontFamily="Assets/#menomonia"
                                 FontSize="14"
                                 Foreground="#FFDDDDDD"
-                                IsChecked="{Binding enableDiscord}"
+                                IsChecked="{Binding EnableDiscord}"
                                 Style="{DynamicResource gw2Checkbox}" />
                             <Button
                                 Margin="5,5,0,0"
