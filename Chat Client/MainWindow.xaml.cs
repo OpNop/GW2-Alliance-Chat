@@ -39,6 +39,7 @@ namespace Chat_Client
 
         [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern bool SwitchToThisWindow(IntPtr hWnd, Boolean fAltTab);
+        private const int WM_EXITSIZEMOVE = 0x232;
 
         private Settings Settings = new Settings();
 
@@ -63,11 +64,11 @@ namespace Chat_Client
 
         public MainWindow()
         {
-            InitializeComponent();
-
             //Load Settings
             Settings = Settings.Load();
             DataContext = Settings;
+
+            InitializeComponent();
 
             //Init logger class
             _log.Initialize("TACS_", "", _logPath, LogIntervalType.IT_PER_DAY, LogLevel.E, true, false, true);
@@ -484,6 +485,11 @@ namespace Chat_Client
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+
+            //Hook for resizing
+            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            source.AddHook(new HwndSourceHook(WndProc));
+
             //Check For API key
             int apiCheckResult = CheckForAPIKey();
             if (apiCheckResult != 0)
@@ -678,14 +684,18 @@ namespace Chat_Client
             notifyPlayer.Stop();
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            //Save window location and size
-            Settings.ChatTop = this.Top;
-            Settings.ChatLeft = this.Left;
-            Settings.ChatHeight = this.Height;
-            Settings.ChatWidth = this.Width;
-            //Settings.Save();
+            if (msg == WM_EXITSIZEMOVE)
+            {
+                //Save window location and size
+                Settings.ChatTop = this.Top;
+                Settings.ChatLeft = this.Left;
+                Settings.ChatHeight = this.Height;
+                Settings.ChatWidth = this.Width;
+            }
+
+            return IntPtr.Zero;
         }
     }
 

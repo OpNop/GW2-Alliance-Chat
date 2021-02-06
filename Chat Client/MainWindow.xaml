@@ -20,7 +20,7 @@
     ShowActivated="False"
     ShowInTaskbar="False"
     WindowStyle="None"
-    mc:Ignorable="d" SizeChanged="Window_SizeChanged">
+    mc:Ignorable="d">
 
     <Window.Background>
         <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
