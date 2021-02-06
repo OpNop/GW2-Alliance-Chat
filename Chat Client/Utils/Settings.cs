@@ -139,7 +139,7 @@ namespace Chat_Client.Utils
             {
                 reader = File.ReadAllText(SettingsPath);
             }
-            catch (FileNotFoundException)
+            catch (Exception ex) when (ex is FileNotFoundException || ex is DirectoryNotFoundException)
             {
                 //Settings not found, using defaults
                 Console.WriteLine("settings.json is missing. Using defualts");
@@ -153,6 +153,9 @@ namespace Chat_Client.Utils
 
         public void Save()
         {
+            FileInfo fileInfo = new FileInfo(SettingsPath);
+            if (!fileInfo.Directory.Exists) fileInfo.Directory.Create();
+            
             try
             {
                 var settingsJson = JsonConvert.SerializeObject(this, Formatting.Indented);
