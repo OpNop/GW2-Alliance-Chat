@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SimpleTcp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -171,6 +172,17 @@ namespace Chat_Client
             }
 
             return 0;
+        }
+
+        private void SettingsUpdate(object sender, PropertyChangedEventArgs args)
+        {
+            //watch non databound setting
+            switch (args.PropertyName)
+            {
+                case "EnableDiscord":
+                    UpdateDiscord();
+                    break;
+            }
         }
 
         private void GameStateChanged(object sender, GameStateChangedArgs e)
@@ -505,6 +517,8 @@ namespace Chat_Client
             //Hook Shift+Enter hotkey
             hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
 
+            Settings.PropertyChanged += SettingsUpdate;
+
         }
 
         private void FocusChat()
@@ -539,9 +553,9 @@ namespace Chat_Client
             }
         }
 
-        private void UpdateDiscord(bool enabled)
+        private void UpdateDiscord()
         {
-            if (enabled)
+            if (Settings.EnableDiscord)
                 discord.Start(game.GameProcess.StartTime);
             else
                 discord.Stop();
