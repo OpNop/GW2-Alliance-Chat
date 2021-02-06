@@ -68,7 +68,7 @@ namespace Chat_Client.Utils
             _discordClient.Initialize();
 
             //set GW2 start time
-            _start = GW2StartTime.ToUniversalTime(); ;
+            _start = GW2StartTime.ToUniversalTime();
         }
 
         public void Stop()
