@@ -36,7 +36,7 @@ namespace Chat_Client.Utils
             using var maps = new JsonTextReader(reader);
             _maps = JsonConvert.DeserializeObject<Dictionary<string, int>>(JToken.ReadFrom(maps).ToString());
         }
-        public void Start()
+        public void Start(DateTime GW2StartTime)
         {
             _discordClient = new DiscordRpcClient(CLIENT_ID)
             {
@@ -66,7 +66,9 @@ namespace Chat_Client.Utils
 
             //Connect to the RPC
             _discordClient.Initialize();
-            _start = DateTime.UtcNow;
+
+            //set GW2 start time
+            _start = GW2StartTime;
         }
 
         public void Stop()

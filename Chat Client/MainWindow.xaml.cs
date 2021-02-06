@@ -199,7 +199,7 @@ namespace Chat_Client
                     //Start Mumble Watcher
                     mumble.Start();
                     //Start Discord RPC (if enabled)
-                    if (Settings.EnableDiscord) discord.Start();
+                    if (Settings.EnableDiscord) discord.Start(game.GameProcess.StartTime);
                     //Connect to the chat server (if needed)
                     ConnectToServer();
                     //Show the UI
@@ -542,7 +542,7 @@ namespace Chat_Client
         private void UpdateDiscord(bool enabled)
         {
             if (enabled)
-                discord.Start();
+                discord.Start(game.GameProcess.StartTime);
             else
                 discord.Stop();
         }
