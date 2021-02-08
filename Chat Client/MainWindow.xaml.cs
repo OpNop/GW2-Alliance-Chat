@@ -228,7 +228,7 @@ namespace Chat_Client
             _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
             _notifyIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/Assets/tiny_icon.ico")).Stream);
             _notifyIcon.Visible = true;
-            _notifyIcon.Text = "Tiny Alliance Chat Service (TACS)";
+            _notifyIcon.Text = $"Tiny Alliance Chat Service (TACS)\nversion {getVersionText()}";
 
             //Menu
             _notifyIcon.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
@@ -424,6 +424,9 @@ namespace Chat_Client
                             break;
                         case "/map":
                             debugMap();
+                            break;
+                        case "/version":
+                            WriteToChat($"You are running TACS version {getVersionText()}.");
                             break;
                         default:
                             if (client.IsConnected)
@@ -696,6 +699,11 @@ namespace Chat_Client
             }
 
             return IntPtr.Zero;
+        }
+
+        private String getVersionText()
+        {
+            return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
     }
 
