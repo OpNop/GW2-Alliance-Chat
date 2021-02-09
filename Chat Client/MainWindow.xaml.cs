@@ -255,7 +255,11 @@ namespace Chat_Client
         private void ShowMainWindow()
         {
             IsClosed = false;
-            Show();
+
+            if (game.GameState == GameState.InGame)
+                Show();
+            else
+                MessageBox.Show("To use TACS, please launch the game and select a character.", "Nothing to see here", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         async void MessageReceived(object sender, DataReceivedFromServerEventArgs e)
