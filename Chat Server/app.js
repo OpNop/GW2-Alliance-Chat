@@ -251,6 +251,12 @@ const chatCommands = [{
         }
     },
     {
+        names: 'stretch',
+        func: (user, args) => {
+            broadcast(new SystemPacket(`${user.getName()} is streching.`));
+        }
+    },
+    {
         names: 'surprised',
         func: (user, args) => {
             if (args)
