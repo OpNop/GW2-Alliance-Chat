@@ -147,24 +147,24 @@
     <DockPanel>
 
         <Grid
-            x:Name="HeaderGrid"
+            x:Name="DragableArea"
             Height="20"
             VerticalAlignment="Top"
-            DockPanel.Dock="Top">
-            <Grid
-                x:Name="DragableArea"
-                Background="Black"
-                MouseLeftButtonDown="DragWindow" />
+            Background="Black"
+            DockPanel.Dock="Top"
+            >
+
             <TextBlock
                 Height="20"
                 Margin="4,0,0,0"
                 Padding="0,3,0,0"
-                HorizontalAlignment="Left"
                 Background="Transparent"
                 FontFamily="Assets/#menomonia"
                 FontStyle="Italic"
                 Foreground="#FF8BB9E0"
-                TextDecorations="{x:Null}">
+                TextDecorations="{x:Null}"
+                MouseLeftButtonDown="DragWindow"
+                >
                 Tiny Alliance Chat Service (TACS)
             </TextBlock>
             <StackPanel
@@ -263,6 +263,7 @@
                     Source="Assets/close.png"
                     Stretch="UniformToFill" />
             </StackPanel>
+
         </Grid>
 
         <Grid DockPanel.Dock="Top" FocusManager.FocusedElement="{Binding ElementName=message}">
@@ -339,9 +340,10 @@
             <MediaElement
                 x:Name="notifyPlayer"
                 LoadedBehavior="Manual"
+                MediaEnded="notifyPlayer_MediaEnded"
                 Source="Assets/notify.mp3"
                 UnloadedBehavior="Manual"
-                Visibility="Hidden" MediaEnded="notifyPlayer_MediaEnded" />
+                Visibility="Hidden" />
         </Grid>
     </DockPanel>
 
