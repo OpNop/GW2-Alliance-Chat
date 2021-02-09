@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Media;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -57,6 +58,7 @@ namespace Chat_Client
         public DiscordRichPresence discord;
         private static readonly Logger _log = Logger.getInstance();
         private readonly string _logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Guild Wars 2\addons\TACS\Logs");
+        private SoundPlayer notifyPlayer;
 
         //Session Settings
         private int hookId;
@@ -78,6 +80,10 @@ namespace Chat_Client
 
             //Setup Tray Icon
             SetupNotifyIcon();
+            
+            //Setup notification sound
+            notifyPlayer = new SoundPlayer(Application.GetResourceStream(new Uri("pack://application:,,,/Assets/notify.wav")).Stream);
+            notifyPlayer.Load();
         }
 
         private void ParseArguments()
@@ -326,10 +332,7 @@ namespace Chat_Client
         {
             if (this.Visibility != Visibility.Visible)
             {
-                notifyPlayer.Dispatcher.Invoke(() =>
-                {
-                    notifyPlayer.Play();
-                });
+                notifyPlayer.Play();
             }
         }
 
@@ -684,11 +687,6 @@ namespace Chat_Client
         private void ChangeKey_Click(object sender, RoutedEventArgs e)
         {
             ShowKeyDialog();
-        }
-
-        private void notifyPlayer_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            notifyPlayer.Stop();
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

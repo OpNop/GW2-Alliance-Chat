@@ -42,6 +42,7 @@
     <None Remove="Assets\maps.jsonc" />
     <None Remove="Assets\menomonia.ttf" />
     <None Remove="Assets\mouse.cur" />
+    <None Remove="Assets\notify.wav" />
     <None Remove="Assets\SettingsBackground.png" />
     <None Remove="Assets\tiny_icon.ico" />
     <None Remove="Assets\tiny_icon.png" />
@@ -64,6 +65,7 @@
     <Resource Include="Assets\maps.jsonc" />
     <Resource Include="Assets\menomonia.ttf" />
     <Resource Include="Assets\mouse.cur" />
+    <Resource Include="Assets\notify.wav" />
     <Resource Include="Assets\tiny_icon.ico" />
     <Resource Include="Assets\tiny_icon.png" />
   </ItemGroup>
@@ -91,12 +93,6 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Assets\notify.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <PropertyGroup>

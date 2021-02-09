@@ -151,8 +151,7 @@
             Height="20"
             VerticalAlignment="Top"
             Background="Black"
-            DockPanel.Dock="Top"
-            >
+            DockPanel.Dock="Top">
 
             <TextBlock
                 Height="20"
@@ -162,9 +161,8 @@
                 FontFamily="Assets/#menomonia"
                 FontStyle="Italic"
                 Foreground="#FF8BB9E0"
-                TextDecorations="{x:Null}"
                 MouseLeftButtonDown="DragWindow"
-                >
+                TextDecorations="{x:Null}">
                 Tiny Alliance Chat Service (TACS)
             </TextBlock>
             <StackPanel
@@ -172,7 +170,6 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Orientation="Horizontal">
-
                 <Image
                     x:Name="btnSettings"
                     Width="20"
@@ -250,8 +247,6 @@
                         </StackPanel>
                     </Border>
                 </Popup>
-
-
                 <Image
                     x:Name="btnExit"
                     Width="20"
@@ -263,7 +258,6 @@
                     Source="Assets/close.png"
                     Stretch="UniformToFill" />
             </StackPanel>
-
         </Grid>
 
         <Grid DockPanel.Dock="Top" FocusManager.FocusedElement="{Binding ElementName=message}">
@@ -337,13 +331,7 @@
                 FontStyle="Normal"
                 FontWeight="Normal"
                 Foreground="DarkTurquoise" />
-            <MediaElement
-                x:Name="notifyPlayer"
-                LoadedBehavior="Manual"
-                MediaEnded="notifyPlayer_MediaEnded"
-                Source="Assets/notify.mp3"
-                UnloadedBehavior="Manual"
-                Visibility="Hidden" />
+            
         </Grid>
     </DockPanel>
 
