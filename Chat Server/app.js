@@ -311,7 +311,7 @@ const chatCommands = [{
         }
     },
     {
-        names: 'me',
+        names: ['me', 'e'],
         func: (user, args) => {
             if (args)
                 broadcast(new SystemPacket(`${user.getName()} ${args}`));
