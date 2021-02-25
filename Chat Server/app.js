@@ -446,7 +446,7 @@ const onConnect = async (user, packet) => {
     if (clients.length == 1) {
         user.sendPacket(new SystemPacket(`There's no one else here! The lab is all yours... for now. Please keep the explosion's to a minimum.`));
     } else {
-        user.sendPacket(new SystemPacket(`There is currently ${clients.length} users connected`));
+        user.sendPacket(new SystemPacket(`There is currently ${userCount()} users connected`));
     }
 
     //Broadcast Joined message
@@ -467,6 +467,11 @@ const onMessage = (user, packet) => {
     }
 }
 //#endregion
+
+const userCount = () => {
+    return clients.filter(client => client.isAuthenticated).length
+}
+    
 
 const broadcast = (packet, toSelf = true) => {
     clients.filter(client => client.isAuthenticated).forEach(client => client.sendPacket(packet));
