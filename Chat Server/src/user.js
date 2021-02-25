@@ -30,7 +30,7 @@ module.exports = class User {
     }
 
     getName() {
-        let name = this.id;
+        let name = this.accountName;
         if (this.isAuthenticated) {
             if (this.isOnline)
                 name = this.characterName;
