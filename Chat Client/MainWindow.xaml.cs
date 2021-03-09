@@ -221,9 +221,9 @@ namespace Chat_Client
                     if (Settings.EnableDiscord) discord.Start(game.GameProcess.StartTime);
                     //Connect to the chat server (if needed)
                     ConnectToServer();
-                    //Show the UI
-                    //ShowUI();
                     AttachToGame(game.GameProcess.MainWindowHandle);
+                    //Clear chat (this should be on a timer when game exits)
+                    ClearChat();
                     break;
             }
         }
@@ -363,6 +363,14 @@ namespace Chat_Client
                 Thread.Sleep(5000);
                 ConnectToServer(true);
             }
+        }
+
+        private void ClearChat()
+        {
+            ChatBox.Dispatcher.Invoke(() =>
+            {
+                ChatBox.Document.Blocks.Clear();
+            });
         }
 
         private void WriteToChat(string time, string from, string message)
@@ -509,9 +517,7 @@ namespace Chat_Client
                 return;
             }
 
-            //Clear the chat log
-            ChatBox.Document.Blocks.Clear();
-
+            
             //Start Hidden
             HideUI();
 
