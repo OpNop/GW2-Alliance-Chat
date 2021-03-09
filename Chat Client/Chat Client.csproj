@@ -8,6 +8,7 @@
     <StartupObject />
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <LangVersion>8.0</LangVersion>
+    <Configurations>Debug;Release;Debug to Live</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -18,6 +19,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug to Live|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputType>Exe</OutputType>
   </PropertyGroup>

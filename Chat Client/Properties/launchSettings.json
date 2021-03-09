@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Chat Client": {
+      "commandName": "Project"
+    },
+    "Debug on Live": {
+      "commandName": "Project",
+      "commandLineArgs": "--server chat.jumpsfor.science"
+    }
+  }
+}
