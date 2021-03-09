@@ -19,6 +19,7 @@
     ResizeMode="CanResizeWithGrip"
     ShowActivated="False"
     ShowInTaskbar="False"
+    StateChanged="Window_StateChanged"
     WindowStyle="None"
     mc:Ignorable="d">
 
@@ -331,7 +332,7 @@
                 FontStyle="Normal"
                 FontWeight="Normal"
                 Foreground="DarkTurquoise" />
-            
+
         </Grid>
     </DockPanel>
 

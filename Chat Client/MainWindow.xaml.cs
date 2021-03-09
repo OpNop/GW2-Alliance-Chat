@@ -703,9 +703,14 @@ namespace Chat_Client
             return IntPtr.Zero;
         }
 
-        private String getVersionText()
+        private string getVersionText()
         {
             return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            this.WindowState = WindowState.Normal;
         }
     }
 
