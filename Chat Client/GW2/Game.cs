@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Windows;
 
 namespace Chat_Client
 {
@@ -104,10 +105,20 @@ namespace Chat_Client
             
             if (Processes.Length >= 1 )
             {
-                _log.AddInfo($"Found {Processes.Length} Processes");
-                _gw2Process = Processes[0];
-                _gw2Process.EnableRaisingEvents = true;
-                _gw2Process.Exited += GameExited;
+                try
+                {
+                    //might get access denied here 
+                    _log.AddInfo($"Found {Processes.Length} Processes");
+                    _gw2Process = Processes[0];
+                    _gw2Process.EnableRaisingEvents = true;
+                    _gw2Process.Exited += GameExited;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Guild Wars 2 is running as Administrator.\n\nPlease launch TACS as Administrator.", "Running as Administrator", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    GameState = GameState.NotRunning;
+                    _requestStop = true;
+                }
             }
         }
 
