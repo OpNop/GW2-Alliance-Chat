@@ -539,10 +539,13 @@ namespace Chat_Client
 
         private void FocusChat()
         {
-            Show();
-            Activate();
-            Focus();
-            message.Focus();
+            if (game.GameState == GameState.InGame)
+            {
+                Show();
+                Activate();
+                Focus();
+                message.Focus();
+            }
         }
 
         private void ConnectToServer(bool reconnect = false)
