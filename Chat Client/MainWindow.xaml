@@ -10,8 +10,8 @@
     Height="450"
     MinWidth="245"
     MinHeight="180"
-    MaxWidth="512"
-    MaxHeight="512"
+    MaxWidth="1024"
+    MaxHeight="1024"
     AllowsTransparency="True"
     Closing="Window_Closing"
     Cursor="Assets/mouse.cur"
@@ -24,7 +24,7 @@
     mc:Ignorable="d">
 
     <Window.Background>
-        <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
+        <ImageBrush ImageSource="Assets/155139.png" Stretch="UniformToFill" />
     </Window.Background>
     <Window.Resources>
         <Style TargetType="local:MainWindow">
