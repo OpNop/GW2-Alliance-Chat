@@ -24,7 +24,7 @@
     mc:Ignorable="d">
 
     <Window.Background>
-        <ImageBrush ImageSource="Assets/155139.png" Stretch="None" />
+        <ImageBrush ImageSource="Assets/155139.png" Stretch="UniformToFill" />
     </Window.Background>
     <Window.Resources>
         <Style TargetType="local:MainWindow">
