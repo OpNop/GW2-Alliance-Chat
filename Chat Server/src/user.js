@@ -29,7 +29,7 @@ module.exports = class User {
         this.clientVersion = "Unknown";
     }
 
-    getName() {
+    get name() {
         let name = this.accountName;
         if (this.isAuthenticated) {
             if (this.isOnline)

@@ -7,13 +7,10 @@ const express = require('express');
 const cors = require('cors');
 const apiserver = express();
 const TINYPacket = require('./src/packets/Packet.js');
-const packets = require("./src/packets/Packet").packets;
-const connectPacket = require("./src/packets/Connect.js");
 const MessagePacket = require("./src/packets/Message.js");
 const EnterPacket = require("./src/packets/Enter.js");
 const LeavePacket = require("./src/packets/Leave.js");
 const SystemPacket = require('./src/packets/System.js');
-const updatePacket = require("./src/packets/Update.js");
 const AuthPacket = require('./src/packets/Auth.js');
 
 const config = require('./config.json');
@@ -21,9 +18,10 @@ const tcolors = require('./src/tinyColor.js').colors;
 const tinyPrompt = require('serverline');
 const chatCommand = require('./src/chatCommand.js');
 const chatUser = require('./src/user.js');
-//const { default: SystemMessage } = require('./src/packets/System.js');
+const chatUserNoApi = require('./src/userNoApi.js');
+const apiTest = require('./apiTest');
 
-
+let apiIsLive = false;
 
 tinyPrompt.init();
 tinyPrompt.setCompletion(['help', 'list', 'say', 'announce', 'inspect']);
@@ -70,251 +68,251 @@ tinyPrompt.on('line', line => {
 })
 
 // Keep track of the chat clients
-let clients = [];
+let clients = new Map();//made this a map to keep things easier
 
 //#region Chat Commands (dear lord I want to put these someplace else)
 const chatCommands = [{
         names: 'beckon',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} beckons to ${args}.`));
+                broadcast(new SystemPacket(`${user.name} beckons to ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} beckons.`));
+                broadcast(new SystemPacket(`${user.name} beckons.`));
         }
     },
     {
         names: 'bow',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} bows for ${args}.`));
+                broadcast(new SystemPacket(`${user.name} bows for ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} bows.`));
+                broadcast(new SystemPacket(`${user.name} bows.`));
         }
     },
     {
         names: 'cheer',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} cheers for ${args}.`));
+                broadcast(new SystemPacket(`${user.name} cheers for ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} cheers.`));
+                broadcast(new SystemPacket(`${user.name} cheers.`));
         }
     },
     {
         names: 'cower',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} cowers in fear from ${args}.`));
+                broadcast(new SystemPacket(`${user.name} cowers in fear from ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} cowers.`));
+                broadcast(new SystemPacket(`${user.name} cowers.`));
         }
     },
     {
         names: 'crossarms',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} crosses their arms.`));
+            broadcast(new SystemPacket(`${user.name} crosses their arms.`));
         }
     },
     {
         names: 'cry',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} is crying.`));
+            broadcast(new SystemPacket(`${user.name} is crying.`));
         }
     },
     {
         names: 'dance',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} is busting out some moves, some sweet dance moves.`));
+            broadcast(new SystemPacket(`${user.name} is busting out some moves, some sweet dance moves.`));
         }
     },
     {
         names: ['facepalm', 'upset'],
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} is upset.`));
+            broadcast(new SystemPacket(`${user.name} is upset.`));
         }
     },
     {
         names: 'geargrind',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} does the Gear Grind.`));
+            broadcast(new SystemPacket(`${user.name} does the Gear Grind.`));
         }
     },
     {
         names: 'gg',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} says "Good Game"`));
+            broadcast(new SystemPacket(`${user.name} says "Good Game"`));
         }
     },
     {
         names: 'kneel',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} kneels.`));
+            broadcast(new SystemPacket(`${user.name} kneels.`));
         }
     },
     {
         names: 'laugh',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} laughs at ${args}.`));
+                broadcast(new SystemPacket(`${user.name} laughs at ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} laughs.`));
+                broadcast(new SystemPacket(`${user.name} laughs.`));
         }
     },
     {
         names: 'no',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} disagrees with ${args}.`));
+                broadcast(new SystemPacket(`${user.name} disagrees with ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} disagrees.`));
+                broadcast(new SystemPacket(`${user.name} disagrees.`));
         }
     },
     {
         names: 'playdead',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} is probably dead.`));
+            broadcast(new SystemPacket(`${user.name} is probably dead.`));
         }
     },
     {
         names: 'point',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} points at ${args}.`));
+                broadcast(new SystemPacket(`${user.name} points at ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} points.`));
+                broadcast(new SystemPacket(`${user.name} points.`));
         }
     },
     {
         names: 'ponder',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} ponders.`));
+            broadcast(new SystemPacket(`${user.name} ponders.`));
         }
     },
     {
         names: 'rockout',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} is rocking out!.`));
+            broadcast(new SystemPacket(`${user.name} is rocking out!.`));
         }
     },
     {
         names: 'sad',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} is sad.`));
+            broadcast(new SystemPacket(`${user.name} is sad.`));
         }
     },
     {
         names: 'salute',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} salutes ${args}.`));
+                broadcast(new SystemPacket(`${user.name} salutes ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} salutes.`));
+                broadcast(new SystemPacket(`${user.name} salutes.`));
         }
     },
     {
         names: 'shiver',
         func: (user, ) => {
-            broadcast(new SystemPacket(`${user.getName()} shivers.`));
+            broadcast(new SystemPacket(`${user.name} shivers.`));
         }
     },
     {
         names: 'shrug',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} shrugs at ${args}.`));
+                broadcast(new SystemPacket(`${user.name} shrugs at ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} shrugs.`));
+                broadcast(new SystemPacket(`${user.name} shrugs.`));
         }
     },
     {
         names: 'shuffle',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} does the Inventory Shuffle.`));
+            broadcast(new SystemPacket(`${user.name} does the Inventory Shuffle.`));
         }
     },
     {
         names: 'sit',
         func: (user) => {
-            broadcast(new SystemPacket(`${user.getName()} sits.`));
+            broadcast(new SystemPacket(`${user.name} sits.`));
         }
     },
     {
         names: ['sleep', 'nap'],
         func: (user, args) => {
-            broadcast(new SystemPacket(`${user.getName()} goes to sleep.`));
+            broadcast(new SystemPacket(`${user.name} goes to sleep.`));
         }
     },
     {
         names: 'step',
         func: (user, args) => {
-            broadcast(new SystemPacket(`${user.getName()} does the Dodge Step.`));
+            broadcast(new SystemPacket(`${user.name} does the Dodge Step.`));
         }
     },
     {
         names: 'stretch',
         func: (user, args) => {
-            broadcast(new SystemPacket(`${user.getName()} is streching.`));
+            broadcast(new SystemPacket(`${user.name} is streching.`));
         }
     },
     {
         names: 'surprised',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} is surprised by ${args}.`));
+                broadcast(new SystemPacket(`${user.name} is surprised by ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} is surprised.`));
+                broadcast(new SystemPacket(`${user.name} is surprised.`));
         }
     },
     {
         names: 'talk',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} is talking to ${args}.`));
+                broadcast(new SystemPacket(`${user.name} is talking to ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} is talking.`));
+                broadcast(new SystemPacket(`${user.name} is talking.`));
         }
     },
     {
         names: ['thanks', 'thank', 'thk', 'ty'],
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} thanks ${args}.`));
+                broadcast(new SystemPacket(`${user.name} thanks ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} is grateful.`));
+                broadcast(new SystemPacket(`${user.name} is grateful.`));
         }
     },
     {
         names: 'threaten',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} threatens ${args}.`));
+                broadcast(new SystemPacket(`${user.name} threatens ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} is threatening.`));
+                broadcast(new SystemPacket(`${user.name} is threatening.`));
         }
     },
     {
         names: 'wave',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} waves at ${args}.`));
+                broadcast(new SystemPacket(`${user.name} waves at ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} waves.`));
+                broadcast(new SystemPacket(`${user.name} waves.`));
         }
     },
     {
         names: 'yes',
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} agrees with ${args}.`));
+                broadcast(new SystemPacket(`${user.name} agrees with ${args}.`));
             else
-                broadcast(new SystemPacket(`${user.getName()} agrees.`));
+                broadcast(new SystemPacket(`${user.name} agrees.`));
         }
     },
     {
         names: ['me', 'e'],
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} ${args}`));
+                broadcast(new SystemPacket(`${user.name} ${args}`));
             else
                 user.sendSystemMessage('Usage: /me <whatever you like>');
         }
@@ -323,9 +321,9 @@ const chatCommands = [{
         names: ['bite', 'biteankle'],
         func: (user, args) => {
             if (args)
-                broadcast(new SystemPacket(`${user.getName()} bites ${args}'s ankles.`));
+                broadcast(new SystemPacket(`${user.name} bites ${args}'s ankles.`));
             else
-                broadcast(new SystemPacket(`Watch out! ${user.getName()} is going to start biting the nearest ankle.`));
+                broadcast(new SystemPacket(`Watch out! ${user.name} is going to start biting the nearest ankle.`));
         }
     },
     {
@@ -357,14 +355,17 @@ const chatCommands = [{
             //set mute status
 
             //broadcast to admins
-            broadcastToAdmins(`${target} was muted by ${user.getName()}`);
+            broadcastToAdmins(`${target} was muted by ${user.name}`);
         }
     }
 ]
 //#endregion
 
 // Start the TCP server
-const server = net.createServer(socket => {
+const server = net.createServer(async function(socket) {
+
+    apiIsLive = await apiTest();
+    let user;
 
     // Init packet class?
     const packet = new TINYPacket();
@@ -372,10 +373,17 @@ const server = net.createServer(socket => {
     console.log("User connecting");
 
     //Create user
-    const user = new chatUser(socket);
+    if(apiIsLive){
+        user = new chatUser(socket);
+        console.log(`Created new user id ${user.id} with a live API`)
+    }
+    else {
+        user = new chatUserNoApi(socket)
+        console.log(`Created new user id ${user.id} with a dead API`)
+    }
 
     // Add client to the list
-    clients.push(user);
+    clients.set(user.id, user);
 
     // Define packet handlers
     packet.on('connect', onConnect);
@@ -388,18 +396,13 @@ const server = net.createServer(socket => {
         packet.handle(data, user);
     });
 
-    //socket.on('end', function () {
-    //    clients.splice(clients.indexOf(socket), 1);
-    //    broadcast(socket.name + " left the chat.\n");
-    //});
-
     socket.once('close', function () {
         console.log(`removing user (${user.characterName})`);
-        clients.splice(clients.indexOf(user), 1);
-        console.log(`Clients = ${clients.length}`);
+        clients.delete(user.id);
+        console.log(`Clients = ${clients.size}`);
         //Rando bots
-        if (user.isAuthenticated)
-            broadcast(new LeavePacket(user.accountName));
+        // if (user.isAuthenticated) //What was this supposed to do?
+        broadcast(new LeavePacket(user.accountName));
     })
 
     socket.on('error', function (error) {
@@ -433,18 +436,21 @@ const onConnect = async (user, packet) => {
     }
 
     // Guild check
-    user.apiKey = packet.key;
-    user.clientVersion = packet.version;
-    await user.authenticate();
-    if (!user.isAuthenticated) {
-        user.disconnect(new AuthPacket(false, "Bookah!!! you are not a TINY, what are you doing here!"));
-        return;
+    if(apiIsLive){
+        //If the GW2 API is inaccessible, we cannot verify [TINY] membership; just assume users are in [TINY].
+        user.apiKey = packet.key;
+        user.clientVersion = packet.version;
+        await user.authenticate();
+        if (!user.isAuthenticated) {
+            user.disconnect(new AuthPacket(false, "Bookah!!! you are not a TINY, what are you doing here!"));
+            return;
+        }
     }
 
     // Everything passed Send welcome message
     user.sendPacket(new SystemPacket(`Welcome to the ${config.name} version ${config.version}!`));
-    if (clients.length == 1) {
-        user.sendPacket(new SystemPacket(`There's no one else here! The lab is all yours... for now. Please keep the explosion's to a minimum.`));
+    if (clients.size === 1) {
+        user.sendPacket(new SystemPacket(`There's no one else here! The lab is all yours... for now. Please keep the explosions to a minimum.`));
     } else {
         user.sendPacket(new SystemPacket(`There is currently ${userCount()} users connected`));
     }
@@ -463,18 +469,24 @@ const onMessage = (user, packet) => {
         handleCommand(user, packet);
     } else {
         //Normal message
-        broadcast(new MessagePacket(user.getName(), packet.message));
+        broadcast(new MessagePacket(user.name, packet.message));
     }
 }
 //#endregion
 
-const userCount = () => {
-    return clients.filter(client => client.isAuthenticated).length
+const authedUsers = (ignoreAuth = false)=> {
+    if(!apiIsLive || ignoreAuth){
+        return clients;
+    }
+    return [...clients.values()].filter(client => client.isAuthenticated);
 }
-    
+
+const userCount = () => {
+    return authedUsers().length;
+}    
 
 const broadcast = (packet, toSelf = true) => {
-    clients.filter(client => client.isAuthenticated).forEach(client => client.sendPacket(packet));
+    authedUsers().forEach(client => client.sendPacket(packet));
 }
 
 const broadcastToAdmins = (message) => {
@@ -483,7 +495,7 @@ const broadcastToAdmins = (message) => {
 
 //Thanks @once#6585, @Throne3d#2479 
 const listUsers = async () => {
-    let players = clients.filter(client => client.isAuthenticated).map(client => client.getListName());
+    let players = authedUsers().map(client => client.getListName());
     return (await Promise.all(players)).join(', ');
 }
 
@@ -516,7 +528,7 @@ apiserver.use(cors());
 apiserver.use(express.static('public'));
 
 apiserver.get('/update', (req, res) => {
-    let geoJSON = clients.filter(client => client.mumbleData).map(client => {
+    let geoJSON = authedUsers(true).filter(client => client.mumbleData).map(client => {
         let result = {
             type: "Feature",
             geometry: {
