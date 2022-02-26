@@ -6,7 +6,8 @@
     <title>TINY Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/menomonia.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/menomonia.css">
     <style>
         body {
             font-family: Menomonia;
@@ -136,7 +137,7 @@
 
             // Create TINY Icon
             tinyIcon = L.icon({
-                iconUrl: 'https://tinyarmy.org/wp-content/uploads/2018/12/fav_57.png',
+                iconUrl: '/images/157335.png',
                 iconSize: [32, 32]
             });
 
@@ -157,10 +158,20 @@
             var realtime = L.realtime({
                 url: '/update',
                 crossOrigin: true,
-                type: 'json'
+                type: 'json',
             }, {
                 interval: 1 * 1000,
                 coordsToLatLng: unproject,
+                pointToLayer: function (feature, latlng) {
+                    let icon = generateIcon(feature.properties.mount);
+                    return L.marker(latlng, {
+                        'icon': L.icon({
+                            iconUrl: `images/${icon}.png`,
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16],
+                        })
+                    });
+                }
             }).addTo(map);
 
             realtime.on('update', function (event) {
@@ -188,8 +199,20 @@
                     realtime.getLayer(fid).getPopup().setContent(popupContent(fid));
                 }
 
+                function updateIcon(fid) {
+                    let user = event.features[fid],
+                        icon = generateIcon(user.properties.mount);
+
+                    realtime.getLayer(fid).setIcon(L.icon({
+                        iconUrl: `images/${icon}.png`,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                    }))
+                }
+
                 Object.keys(event.enter).forEach(bindPopup);
                 Object.keys(event.update).forEach(updatePopup);
+                Object.keys(event.update).forEach(updateIcon);
             });
 
             L.tileLayer("https://tiles.tinyarmy.org/1/1/{z}/{x}/{y}.jpg").addTo(map);
@@ -223,6 +246,39 @@
         /* Set the width of the side navigation to 0 */
         function closeNav() {
             document.getElementById("tiny-nav").style.width = "0";
+        }
+
+        function generateIcon(mountID) {
+            switch (mountID) {
+                case 0:
+                    icon = 'dot';
+                    break;
+                case 1:
+                    icon = 'jackal';
+                    break;
+                case 2:
+                    icon = 'griffon';
+                    break;
+                case 3:
+                    icon = 'springer';
+                    break;
+                case 4:
+                    icon = 'skimmer';
+                    break;
+                case 5:
+                    icon = 'raptor';
+                    break;
+                case 6:
+                    icon = 'beetle';
+                    break;
+                case 7:
+                    icon = 'warclaw';
+                    break;
+                case 8:
+                    icon = 'skyscale';
+                    break;
+            }
+            return icon;
         }
     </script>
 </body>

@@ -530,7 +530,8 @@ apiserver.get('/update', (req, res) => {
                 name: client.characterName,
                 class: client.mumbleData.eliteSpec || client.mumbleData.profession,
                 ip: client.mumbleData.serverAddress,
-                id: client.id
+                id: client.id,
+                mount: client.mumbleData.mount
             }
         };
         return result;

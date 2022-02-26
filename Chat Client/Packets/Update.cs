@@ -31,6 +31,9 @@ namespace Chat_Client.Packets
         protected private readonly object position;
 
         [JsonProperty]
+        protected private readonly int mount;
+
+        [JsonProperty]
         protected private readonly string serverAddress;
 
         public Update(IGw2MumbleClient data)
@@ -46,6 +49,7 @@ namespace Chat_Client.Packets
                 data.PlayerLocationMap.Y 
             };
             map = data.MapId;
+            mount = (int)data.Mount;
             serverAddress = data.ServerAddress;
         }
     }
