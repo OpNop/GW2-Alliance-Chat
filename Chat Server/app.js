@@ -484,7 +484,9 @@ const broadcastToAdmins = (message) => {
 //Thanks @once#6585, @Throne3d#2479 
 const listUsers = async () => {
     let players = clients.filter(client => client.isAuthenticated).map(client => client.getListName());
-    return (await Promise.all(players)).join(', ');
+    let message = `Users: ${players.length} ${(await Promise.all(players)).join(', ')}`;
+    return message;
+    return message (await Promise.all(players)).join(', ');
 }
 
 const handleCommand = (user, packet) => {
