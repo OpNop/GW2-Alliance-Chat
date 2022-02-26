@@ -443,6 +443,11 @@ namespace Chat_Client
                         case "/version":
                             WriteToChat($"You are running TACS version {getVersionText()}.");
                             break;
+                        case "/quit":
+                        case "/exit":
+                            _isExit = true;
+                            Close();
+                            break;
                         default:
                             if (client.IsConnected)
                             {
