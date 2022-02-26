@@ -551,7 +551,8 @@ namespace Chat_Client
             mumble.HasSelectedCharacter += OnFirstCharacteSelected;
 
             //Hook Shift+Enter hotkey
-            hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
+            hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.LeftShift, Key.Enter }, FocusChat, out string errorMessage);
+            _ = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage2);
 
             Settings.PropertyChanged += SettingsUpdate;
 
