@@ -480,12 +480,21 @@ namespace Chat_Client
 
         protected override void OnSourceInitialized(EventArgs e)
         {
+            base.OnSourceInitialized(e);
+
+            //This be a hack for first time launching
+            //Needs fixed (but it works™️)
+            if (Settings == null)
+            {
+                //Load Settings
+                Settings = new Settings();
+                Settings = Settings.Load();
+            }
+            
             Top = Settings.ChatTop;
             Left = Settings.ChatLeft;
             Height = Settings.ChatHeight;
             Width = Settings.ChatWidth;
-
-            base.OnSourceInitialized(e);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
