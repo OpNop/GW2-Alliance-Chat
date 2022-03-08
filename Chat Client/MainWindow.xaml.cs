@@ -443,11 +443,6 @@ namespace Chat_Client
                         case "/version":
                             WriteToChat($"You are running TACS version {getVersionText()}.");
                             break;
-                        case "/quit":
-                        case "/exit":
-                            _isExit = true;
-                            Close();
-                            break;
                         default:
                             if (client.IsConnected)
                             {
@@ -480,21 +475,12 @@ namespace Chat_Client
 
         protected override void OnSourceInitialized(EventArgs e)
         {
-            base.OnSourceInitialized(e);
-
-            //This be a hack for first time launching
-            //Needs fixed (but it works™️)
-            if (Settings == null)
-            {
-                //Load Settings
-                Settings = new Settings();
-                Settings = Settings.Load();
-            }
-            
             Top = Settings.ChatTop;
             Left = Settings.ChatLeft;
             Height = Settings.ChatHeight;
             Width = Settings.ChatWidth;
+
+            base.OnSourceInitialized(e);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -551,8 +537,7 @@ namespace Chat_Client
             mumble.HasSelectedCharacter += OnFirstCharacteSelected;
 
             //Hook Shift+Enter hotkey
-            hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.LeftShift, Key.Enter }, FocusChat, out string errorMessage);
-            _ = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage2);
+            hookId = GlobalKeyboardHook.Instance.Hook(new List<Key> { Key.RightShift, Key.Enter }, FocusChat, out string errorMessage);
 
             Settings.PropertyChanged += SettingsUpdate;
 

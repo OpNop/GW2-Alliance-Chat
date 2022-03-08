@@ -424,7 +424,7 @@ const server = net.createServer(async function(socket) {
 //#region Packet Handlers
 const onConnect = async (user, packet) => {
     //Version check
-    if (packet.version != config.version && packet.version != '1.0.3.0') {
+    if (packet.version != config.version) {
         user.disconnect(new AuthPacket(false, "Old version, please update. https://tinyarmy.org/tacs/"));
         return;
     }
@@ -495,10 +495,8 @@ const broadcastToAdmins = (message) => {
 
 //Thanks @once#6585, @Throne3d#2479 
 const listUsers = async () => {
-    let players = clients.filter(client => client.isAuthenticated).map(client => client.getListName());
-    let message = `Users: ${players.length} ${(await Promise.all(players)).join(', ')}`;
-    return message;
-    return message (await Promise.all(players)).join(', ');
+    let players = authedUsers().map(client => client.getListName());
+    return (await Promise.all(players)).join(', ');
 }
 
 const handleCommand = (user, packet) => {
