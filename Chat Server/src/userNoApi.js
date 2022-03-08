@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const packet = require('./packets/Packet.js').packets;
+const AuthPacket = require('./packets/Auth.js');
+
 module.exports = class User {
 
     constructor(socket) {
@@ -32,6 +34,12 @@ module.exports = class User {
      */
     getListName() {
         return `${this.characterName} (unverified)`;
+    }
+
+    async authenticate() {
+        this.isAuthenticated = true;
+        this.sendMessage(new AuthPacket(true));
+        return;
     }
 
     /**
