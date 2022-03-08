@@ -533,7 +533,7 @@ const parseCommad = (line) => {
 
 apiserver.use(cors());
 
-apiserver.use(express.static('public'));
+apiserver.use(express.static(__dirname + '/public'));
 
 apiserver.get('/update', (req, res) => {
     let geoJSON = authedUsers(true).filter(client => client.mumbleData).map(client => {
