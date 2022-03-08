@@ -423,6 +423,9 @@ const server = net.createServer(async function(socket) {
 
 //#region Packet Handlers
 const onConnect = async (user, packet) => {
+    if(packet.key){
+        console.log(`User ${user.id} is tryingto auth with ${packet.key}`);
+    }
     //Version check
     if (packet.version != config.version && packet.version != '1.0.3.0') {
         user.disconnect(new AuthPacket(false, "Old version, please update. https://tinyarmy.org/tacs/"));
