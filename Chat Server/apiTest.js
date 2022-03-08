@@ -11,7 +11,7 @@ module.exports = function(){
         let status = 200;
         let req = https.request(options, response => {
             response.on('data', ()=> {
-                status = res.statusCode;
+                status = response.statusCode;
             })
             response.on('end', () => {
                 resolve(status < 400);
