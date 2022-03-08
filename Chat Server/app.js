@@ -401,8 +401,8 @@ const server = net.createServer(async function(socket) {
         clients.delete(user.id);
         console.log(`Clients = ${clients.size}`);
         //Rando bots
-        // if (user.isAuthenticated) //What was this supposed to do?
-        broadcast(new LeavePacket(user.accountName));
+        if (user.isAuthenticated)
+            broadcast(new LeavePacket(user.accountName));
     })
 
     socket.on('error', function (error) {
