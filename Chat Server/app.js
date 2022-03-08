@@ -424,7 +424,7 @@ const server = net.createServer(async function(socket) {
 //#region Packet Handlers
 const onConnect = async (user, packet) => {
     //Version check
-    if (packet.version != config.version) {
+    if (packet.version != config.version && packet.version != '1.0.3.0') {
         user.disconnect(new AuthPacket(false, "Old version, please update. https://tinyarmy.org/tacs/"));
         return;
     }
@@ -436,7 +436,7 @@ const onConnect = async (user, packet) => {
     }
 
     // Guild check
-    if(apiIsLive){
+    //if(apiIsLive){
         //If the GW2 API is inaccessible, we cannot verify [TINY] membership; just assume users are in [TINY].
         user.apiKey = packet.key;
         user.clientVersion = packet.version;
@@ -445,7 +445,7 @@ const onConnect = async (user, packet) => {
             user.disconnect(new AuthPacket(false, "Bookah!!! you are not a TINY, what are you doing here!"));
             return;
         }
-    }
+    //}
 
     // Everything passed Send welcome message
     user.sendPacket(new SystemPacket(`Welcome to the ${config.name} version ${config.version}!`));
@@ -456,7 +456,12 @@ const onConnect = async (user, packet) => {
     }
 
     //Broadcast Joined message
-    broadcast(new EnterPacket(user.accountName), false);
+    if(apiIsLive){
+        broadcast(new EnterPacket(user.accountName), false);
+    }
+    else{
+        broadcast(new EnterPacket("A new user"), false);
+    }
 }
 
 const onMessage = (user, packet) => {
@@ -476,7 +481,7 @@ const onMessage = (user, packet) => {
 
 const authedUsers = (ignoreAuth = false)=> {
     if(!apiIsLive || ignoreAuth){
-        return clients;
+        return [...clients.values()];
     }
     return [...clients.values()].filter(client => client.isAuthenticated);
 }
