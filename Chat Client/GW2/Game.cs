@@ -15,6 +15,7 @@ namespace Chat_Client
 
         private const string GW2_PATCHWINDOW_NAME = "ArenaNet";
         private const string GW2_GAMEWINDOW_NAME = "ArenaNet_Dx_Window_Class";
+        private const string GW2_GAMEWINDOW_DX11_NAME = "ArenaNet_Gr_Window_Class";
 
         private static readonly Logger _log = Logger.getInstance();
         private Thread _gameWatcher;
@@ -85,7 +86,7 @@ namespace Chat_Client
                     {
                         GameState = GameState.Launcher;
                     }
-                    else if (gameWindow == GW2_GAMEWINDOW_NAME)
+                    else if (gameWindow == GW2_GAMEWINDOW_NAME || gameWindow == GW2_GAMEWINDOW_DX11_NAME)
                     {
                         //Game is in proper game
                         _requestStop = true;
@@ -99,11 +100,11 @@ namespace Chat_Client
         private void GetProcess()
         {
             _log.AddDebug("Checking for GW2 Process");
-            
+
             // Only checking for x64 client 
             Process[] Processes = Process.GetProcessesByName("Gw2-64");
-            
-            if (Processes.Length >= 1 )
+
+            if (Processes.Length >= 1)
             {
                 try
                 {

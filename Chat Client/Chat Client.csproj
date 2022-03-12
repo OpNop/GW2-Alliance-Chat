@@ -103,12 +103,12 @@
 
   <PropertyGroup>
     <DateFormat>$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</DateFormat>
-    <Version>1.0.2.0</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.3.0</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
     <Authors>Tiny Taimi</Authors>
     <Company>New Novus Krewe</Company>
-    <Copyright>©2020 New Novus Krewe</Copyright>
+    <Copyright>©2022 New Novus Krewe</Copyright>
     <PackageProjectUrl>https://tinyarmy.org/tacs/</PackageProjectUrl>
     <PackageId>Tiny Chat</PackageId>
     <AssemblyName>Tiny Chat</AssemblyName>
