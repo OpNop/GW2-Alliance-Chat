@@ -2,6 +2,7 @@
 using Chat_Client.Utils;
 using Chat_Client.Utils.Log;
 using Gw2Sharp;
+using Gw2Sharp.WebApi.V2.Models;
 using Newtonsoft.Json;
 using SimpleTcp;
 using System;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Media;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -687,14 +689,19 @@ namespace Chat_Client
             });
         }
 
-        private void debugMap()
+        private async void debugMap()
         {
             using Gw2Client apiclient = new Gw2Client();
             apiclient.Mumble.Update();
-            var mapData = apiclient.WebApi.V2.Maps.GetAsync(apiclient.Mumble.MapId);
-            mapData.Wait();
-            WriteToChat($"{mapData.Result.RegionName}");
-            WriteToChat($"\"{hashRectangle(mapData.Result.ContinentRect)}\": , //{mapData.Result.Name}");
+            var map = await apiclient.WebApi.V2.Maps.GetAsync(apiclient.Mumble.MapId);
+            WriteToChat($"{map.RegionName}");
+            WriteToChat($"\"{HashMap(map)}\": {map.Id}, //{map.Name}");
+        }
+
+        private string HashMap(Map map)
+        {
+            var mapString = $"{map.ContinentId}{map.ContinentRect.TopLeft.X}{map.ContinentRect.TopLeft.Y}{map.ContinentRect.BottomRight.X}{map.ContinentRect.BottomRight.Y}";
+            return BitConverter.ToString(new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(mapString))).Replace("-", "").Substring(0, 8).ToLower();
         }
 
         private int hashRectangle(Gw2Sharp.WebApi.V2.Models.Rectangle Rect)
